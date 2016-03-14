@@ -1,0 +1,52 @@
+I think you're really asking two questions here: why use a template engine at all, and why use one like that of Jade.
+
+
+
+Now Jade is another animal.
+Beyond just being a tool for isolating your view markup from the rest of your application,
+Jade (a modified version of Haml) aims to allow for more rapid development by reducing the tedious nature of writing HTML compliant markup.
+It automatically generates compliant markup based on a nested hierarchy of tag names that are extremely to understand and very minimal in nature.
+Using something like this in conjunction with a CSS engine like LESS or Sass will revolutionize the way you write your frontend code.
+
+
+The pros here are fairly obvious — rapid development, code consistency, standards compliance, etc.
+
+The cons are, to be honest, few in my opinion. There is a learning curve, sure, 
+but that's the case with anything new.
+You do lose the flexibility of adding more complex logic to your views,
+but this is extremely undesirable anyways and there are very good reasons many template engines disallow it
+
+
+jade pros
+    - code more organized
+    - proper organization
+    - easier to debug with good seperation of markup and logic
+    - good for collaboration
+    - rapid development by not writing HTML reducing
+    - automatically generates complaint based on nested hierarchy
+    - very minimilistic in nature
+    - can use in conjunction with LESS or SASS
+
+Jade is a tool that isolates the view from the rest of your program. 
+
+
+pros:
+  - 
+
+cons
+    - higher learning curve
+    - you lose flexibility
+    - does not differentiate between tags and the variables which can make code confusing
+    - not designer friendly
+    - code will look horrible because indentation matters
+    - 
+
+
+EJS
+  pros:
+    - very close to html
+
+  cons: 
+    - does not have blocks
+
+
