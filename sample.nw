@@ -1,0 +1,11 @@
+
+
+@ This program has no input, because we want to keep it simple.  The result of the program will be to produce a list of the first thousand prime numbers, and this list will appear on the [[output]] file. Since there is no input, we declare the value [[m = 1000]] as a compile-time constant.  The program itself is capable of generating the first [[m]] prime numbers for any positive [[m]], as long as the computer's finite limitations are not exceeded. 
+
+<<program to print the first thousand prime numbers>>=
+program print_primes(output);
+  const m = 1000;
+    <<other constants of the program>>
+  var <<variables of the program>>
+    begin <<print the first [[m]] prime numbers>>
+    end.

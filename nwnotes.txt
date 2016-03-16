@@ -1,0 +1,44 @@
+noweb notes
+
+
+notangle name.nw > outputfile.c
+  - takes in the noweb file and produces the source code
+
+noweave name.nw > output.tex
+  - produces the documentation
+
+
+
+<<chunk name>>=
+  - this is how code chunks begin, where chunk is a block of code. 
+  - the double angle brackets need to be at column 1
+  - chanks are terminated by the begining of another chunk, or end of file
+
+
+@
+  - this is the begining of a documentation chunk
+  - if first line is not part of chunk, assumed to be doc chunk
+
+
+[[..]]
+  - used to produce source code
+  - 
+
+
+
+COMPILIng
+
+notangle  -L flag
+  - respects indentation of the input, making output easier to read
+
+noweave -x flag
+  - uses latex to figure out on what page each chunk is defined and used
+
+
+
+
+extra stuff
+  - escape character is @
+  - 
+
+

@@ -1,18 +1,16 @@
 
 
-target=main.c
+target=main.html
 
 
 all: $(target)
 
-main.c: main.nw
-	notangle -L foo.nw > foo.c
+main.js: main.nw
+	notangle -L $< > foo.js
 
-main.h: main.nw
-	notangle -Rheader foo.nw > xfoo.h
-	-cmp -s xfoo.h foo.h || cp xfoo.h foo.h
+main.html: main.nw
+	noweave -filter l2h -index -html main.nw > main.html
 
-
-
-
+clean: 
+	rm *.dvi *.aux *.log *.html *.tex
 
