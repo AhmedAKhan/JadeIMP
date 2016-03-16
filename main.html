@@ -3,32 +3,34 @@
 <p>
 <a name="NWD1Xx3lK-2">Introduction</a>
 <p>
-<a name="NWD1Xx3lK-3">&quot;</a>Jade is a high performance template engine implemented with JavaScript.&quot; Essentially it allows HTML content to be generated using all the basic programming principles (e.g. variable assignment, conditionals, loops, etc.). The syntax for Jade is also very similar to HTML with respect to how the file is structured, making it fairly easy to read. The main focus for this project would be to recreate the current engine such that it will allow more dynamic changes to the HTML page without it having to send a request back to the server to compile the file. The idea would be to generate functions that work solely on the client side, allowing things like two-way binding to be possible.
+<a name="NWD1Xx3lK-3">&quot;</a>Jade [1] is a high performance template engine implemented with JavaScript.&quot; Essentially it allows HTML content to be generated using all the basic programming principles (e.g. variable assignment, conditionals, loops, etc.). The syntax for Jade [1] is also very similar to HTML with respect to how the file is structured, making it fairly easy to read. The main focus for this project would be to recreate the current engine such that it will allow more dynamic changes to the HTML page without it having to send a request back to the server to compile the file. The idea would be to generate functions that work solely on the client side, allowing things like two-way binding to be possible.
 <p>
 <a name="NWD1Xx3lK-4">Overview</a>
-<p><a name="NWD1Xx3lK-5">AngularJS is a frontend framework that provides similar functionality to Jade. Unlike Jade however, it performs all its operations on the client side, allowing HTML to be manipulated in real time. To add similar functionality to JadeIMP, the main point of research for this project would be to see how Angular works. By extension, this would mean that the compiler would have to be built primarily using JavaScript.</a>
+<p><a name="NWD1Xx3lK-5">AngularJS [2] is a frontend framework that provides similar functionality to Jade [1]. Unlike Jade [1] however, it performs all its operations on the client side, allowing HTML to be manipulated in real time. To add similar functionality to JadeIMP, the main point of research for this project would be to see how Angular [2] works. By extension, this would mean that the compiler would have to be built primarily using JavaScript.</a>
 <p>
 <a name="NWD1Xx3lK-6">Implementation Details</a>
-<p><a name="NWD1Xx3lK-7">Since the goal is to add real time HTML manipulation functionality to JadeIMP, the compiler built for this project will only target basic functionalities that Jade currently has. As of now, the plan is to at least have the compiler work for the following items:</a>
+<p><a name="NWD1Xx3lK-7">Since the goal is to add real time HTML manipulation functionality to JadeIMP, the compiler built for this project will only target basic functionalities that Jade [1] currently has. As of now, the plan is to at least have the compiler work for the following items:</a>
 Figure out the DOM hierarchy based on line indentations
 Allow creation of HTML tags (div, p, head, etc.) and its attributes (class, style, href, etc.)
 Allow typeless variables
 Allow value of a variable to be changed in real time (via user input); thereby also changing parts of the file where that variable is being used (two-way binding)
 Allow basic programming features such as conditionals, arrays and loops
-After taking all the above items into account, the compiler will simply generate an HTML file. In addition, it will also generate scripts that will allow the value for the variables to be changed in real time and then apply the changes back to the HTML using JQuery (a JavaScript library that simplifies client side scripting).
+After taking all the above items into account, the compiler will simply generate an HTML file. In addition, it will also generate scripts that will allow the value for the variables to be changed in real time and then apply the changes back to the HTML using JQuery [3] (a JavaScript library that simplifies client side scripting).
 <p>
 <a name="NWD1Xx3lK-8">The literate programming tool that was chose was noweb. the number of literate tools that are available and compatible with javascript are very limited. There are three main literate programing tools that are compatiable with javascript, noweb, funnelweb, and lastly a tool called literate-programing which lets the user type code in markdown, this is the github repository link https://github.com/jostylr/literate-programming. There is also a minimalist tool called litPro which is similar to the markdown tool but does not implement all of the things mentioned in Knuth's Literate Programming so was not sufficient. The literate tool called literate-programming has been DEPRECATED and has not been maintained for a long period of time. The two viable solutions left are noweb and funneweb. From the two options available due to factors such as support, syntax, and setup time we decided to use the literate programing tool called noweb.</a>
 <p>
 
 <a name="NWD1Xx3lK-9">Testing</a>
-<p><a name="NWD1Xx3lK-A">During development, unit testing will be used to test the individual modules. Once the project reaches its prototype stage, a combination of black box and white box techniques will be used to assure the product does what it’s intended for and it’s intuitive for the end user to use. The main target audience for this product would be other developers so it is assumed the end user is familiar with basic programming principles. The program documentation will however address all the JadeIMP specific things.</a>
+<p><a name="NWD1Xx3lK-A">During development, unit testing will be used to test the individual modules. Once the project reaches its prototype stage, a combination of black box and white box techniques will be used to assure the product does what it's intended for and it's intuitive for the end user to use. The main target audience for this product would be other developers so it is assumed the end user is familiar with basic programming principles. The program documentation will however address all the JadeIMP specific things.</a>
 <p>
 <a name="NWD1Xx3lK-B">Conclusion</a>
-<p><a name="NWD1Xx3lK-C">To conclude, the JadeIMP will ideally be a combination of Jade and AngularJS. The compiler will essentially be able to translate a Jade file to HTML while completely operating on the client side. This will then allow the HTML to be manipulated in real time with the scripts that are injected into the output file during compilation.</a>
+<p><a name="NWD1Xx3lK-C">To conclude, the JadeIMP will ideally be a combination of Jade [1] and AngularJS [2]. The compiler will essentially be able to translate a Jade [1] file to HTML while completely operating on the client side. This will then allow the HTML to be manipulated in real time with the scripts that are injected into the output file during compilation.</a>
 <p>
-
-
-
+<a name="NWD1Xx3lK-D">References</a>
+<p><a name="NWD1Xx3lK-E">[1]   pugjs, &quot;Pugjs/pug,&quot; GitHub, 2016. [Online]. Available: https://github.com/pugjs/pug. Accessed: Mar. 16, 2016.</a>
+<p><a name="NWD1Xx3lK-F">[2]   2016, &quot;AngularJS — Superheroic JavaScript MVW framework,&quot; 2008. [Online]. Available: https://angularjs.org/. Accessed: Mar. 16, 2016.</a>
+<p><a name="NWD1Xx3lK-G">[3]   jq. Foundation, &quot;JQuery,&quot; 2016. [Online]. Available: https://jquery.com/. Accessed: Mar. 16, 2016.</a>
+<p>
 
 <ul>
 </ul>
