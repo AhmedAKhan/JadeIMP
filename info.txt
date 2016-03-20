@@ -1,0 +1,30 @@
+
+
+
+1. tree should handle that
+
+2. tree should handle that
+
+3. typeless variable, lolz javascript is awesome
+  - needs to have type variable, and its fine
+
+
+4. values to be changed in real time
+  - maybe ?? 
+
+5. allow conditional, arrays and loops
+  ???
+
+
+tokens list
+  - variable
+  - all the dom types, (p, src, hyperlink, b, br,  ...... and so on)
+    - the tokens would also need to have the attributes that correspond to the dom's attributes
+    - example, (id, class, ...)
+  - 
+
+
+stages of the compiler
+lexical analysis --> syntactic analysis --> contextual analysis --> intermediate code --> code optimization --> code generation 
+
+
