@@ -1,30 +1,111 @@
 
 
 
-1. tree should handle that
+stages of the compiler
+lexical analysis --> syntactic analysis --> contextual analysis --> intermediate code --> code optimization --> code generation 
 
-2. tree should handle that
+lexical analysis
+  - 
 
-3. typeless variable, lolz javascript is awesome
-  - needs to have type variable, and its fine
+syntactic analysis
+  - 3. 
+  - 4. 
+  - 5. 
+
+contextual anlyasis
+  - 
+
+intermediate code
+  - 
+
+code optimization
+  - https://developers.google.com/speed/pagespeed/service/OptimizeHtml#operation
+  - Collapse Whitespace
+  - Combine HEADs
+  - Convert Meta Tags
+  - Elide Attributes
+  - Remove Comments
+  - Remove Quotes
+  - Trim URLs 
+
+code generation 
+  - na
 
 
-4. values to be changed in real time
-  - maybe ?? 
-
-5. allow conditional, arrays and loops
-  ???
 
 
-tokens list
+
+
+
+
+-------------------------------------------------- syntax information --------------------------------------------------
+
+
+syntax
+  - indentation matters
+
+- variable declaration
+  - var <keyword> = <value>
+
+- if statements
+- if (<bool> ): 
+    <statement>
+  else:
+    <statement>
+
+
+- loops
+  - for(<variable declaration>; <bool> ; < adjust variable >):
+      <statement>
+
+
+- head tag,
+  - 
+
+- derivatives
+  - 
+
+- body
+  - 
+
+- b tag
+  - 
+
+- p tag
+  -
+
+- 
+
+
+-------------------------------------------------- end syntax information --------------------------------------------------
+
+
+
+
+
+
+
+-------------------------------------------------- tree example --------------------------------------------------
+
+
+Token = {
+  "type":Types,
+  "attributes":"",
+}
+
+-------------------------------------------------- end tree example --------------------------------------------------
+
+
+
+
+
+tokens types
+  - variable
+  - loops
   - variable
   - all the dom types, (p, src, hyperlink, b, br,  ...... and so on)
     - the tokens would also need to have the attributes that correspond to the dom's attributes
     - example, (id, class, ...)
   - 
-
-
-stages of the compiler
-lexical analysis --> syntactic analysis --> contextual analysis --> intermediate code --> code optimization --> code generation 
 
 
