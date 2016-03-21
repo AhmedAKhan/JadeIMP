@@ -85,27 +85,140 @@ syntax
 
 
 
--------------------------------------------------- tree example --------------------------------------------------
+-------------------------------------------------- types of tokens --------------------------------------------------
+
+properties of all tokens
+  - all will have a variable called type, which will equal to the type of that token
+  - all will have a variable called text, which will be the string that encomposes that token
+  
 
 
-Token = {
-  "type":Types,
-  "attributes":"",
+tag = {
+  type = 'tag',
+  tag = '--',
+  attribtues = [{attributes}]
+  text = '--'
 }
 
--------------------------------------------------- end tree example --------------------------------------------------
+<parameter> '=' <expression>
+attributes = {
+  type = '',
+  text = '',
+  parameter = '--',
+  value = '--'
+}
+
+'var' <name> '=' <expression>
+Assignment = {
+  type = 'assignment',
+  name = 'name',
+  expression = {}
+}
+
+'for (' <condition>  '):' \n <statements>
+forloop = {
+  type: 'forloop',
+  condition: 'condition',
+  statements = [<statement>],
+  text = ''
+}
+condition = {
+  token = 'condition',
+  text = '--'
+}
+statements = { 
+  token = 'statement',
+  statements = [<statement>]
+  text = '--'
+}
+statement = {
+  // TODO
+  token = 'statement',
+  value = 'token'
+  text = '--'
+}
+
+name = {
+  type: "name"
+  value: "any list of values"
+  text = '--'
+}
+
+expression = {
+  type = 'expression'
+  value = '';
+  text = '--'
+}
+
+Comment = {
+  type = 'comment'
+  text = ''
+}
+
+rawText = {
+  type = 'rawText',
+  text = ''
+}
+
+Block = {
+  type = 'block'
+  name = '--'
+  statements = <statements>
+  text = '--'
+}
+
+-------------------------------------------------- end types of tokens --------------------------------------------------
 
 
 
 
 
-tokens types
-  - variable
-  - loops
-  - variable
-  - all the dom types, (p, src, hyperlink, b, br,  ...... and so on)
-    - the tokens would also need to have the attributes that correspond to the dom's attributes
-    - example, (id, class, ...)
-  - 
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------- example tree --------------------------------------------------
+
+{
+  'token' = 'root',
+  'head':{
+    type = 'head',
+    statements = [
+      {
+        'type' = 'tag'
+        'name' = 'title',
+        'value' = 'my jade template',
+        'text' = '--'
+      }
+    ]
+    'text'
+  },
+  'body':[
+    {
+      'type' = 'tag',
+      'name' = 'h1',
+
+      text = '--'
+    }
+  ]
+  text = '--'
+}
+
+
+
+-------------------------------------------------- end of example tree--------------------------------------------------
+
+
+
+
+
 
 
