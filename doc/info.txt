@@ -82,7 +82,7 @@ properties of all tokens
 
 directive = {
   type = 'directive',
-  tag = '--',
+  name = '--',
   attribtues = [{attributes}],
   content = [<token>]
   text = '--'

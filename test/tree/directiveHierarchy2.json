@@ -1,0 +1,48 @@
+
+{
+    "type":"directive",
+    "tag":"body",
+    "attributes":[],
+    "content":[
+        {
+            "type":"directive",
+            "name":"div",
+            "attributes":[],
+            "content":[
+            {
+                "type":"directive",
+                "attributes":[],
+                "name":"p",
+                "content":[
+                    {
+                        "type":"directive",
+                        "name":"b",
+                        "attributes":[],
+                        "content":[
+                            {
+                                "type":"rawText",
+                                "text":"hello"
+                            }
+                        ]
+                        "text":"--"
+                    },{
+                    "type":"rawText",
+                    "text":"Ahmed"
+                    }
+                ],
+                "text":"--"
+            }
+            ],
+            "text":"--"
+        },
+        {
+            "type":"directive",
+            "attributes":[],
+            "name":"b",
+            "content":[{"type":"rawText", "text":"HAHAHA"}]
+            "text":"--"
+        }
+    ],
+    "text":"---"
+}
+

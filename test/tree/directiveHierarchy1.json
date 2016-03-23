@@ -1,0 +1,30 @@
+
+{
+  "type":"directive",
+  "tag":"body",
+  "attributes":[],
+  "content":[
+    {
+      "type":"directive",
+      "name":"p",
+      "content":[
+        {
+          "type":"b",
+          "content":[
+            {
+               "type":"rawText",
+               "text":"hello"
+            }
+          ]
+          "text":"--"
+        },{
+          "type":"rawText",
+          "text":"Ahmed"
+        }
+      ],
+      "text":"--"
+    }
+  ],
+  "text":"---"
+}
+
