@@ -1,0 +1,22 @@
+{
+  "name": "jade-imp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AhmedAKhan/JadeIMP.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AhmedAKhan/JadeIMP/issues"
+  },
+  "homepage": "https://github.com/AhmedAKhan/JadeIMP#readme",
+  "dependencies": {
+    "chai": "^3.5.0"
+  }
+}

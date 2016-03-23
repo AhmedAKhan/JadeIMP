@@ -55,30 +55,17 @@ syntax
 
 
 - loops
+  - while( <bool> ):
+        <statements>
   - for(<variable declaration>; <bool> ; < adjust variable >):
       <statement>
+  - for(var <variable name> in <list>):
+      <statement>
 
-
-- head tag,
-  - 
-
-- derivatives
-  - 
-
-- body
-  - 
-
-- b tag
-  - 
-
-- p tag
-  -
-
-- 
+<tag name>(<attribute name>="<value>", ...)
 
 
 -------------------------------------------------- end syntax information --------------------------------------------------
-
 
 
 
@@ -93,12 +80,14 @@ properties of all tokens
   
 
 
-tag = {
-  type = 'tag',
+directive = {
+  type = 'directive',
   tag = '--',
-  attribtues = [{attributes}]
+  attribtues = [{attributes}],
+  content = [<token>]
   text = '--'
 }
+
 
 <parameter> '=' <expression>
 attributes = {
@@ -109,10 +98,19 @@ attributes = {
 }
 
 'var' <name> '=' <expression>
-Assignment = {
+variable = {
   type = 'assignment',
   name = 'name',
   expression = {}
+}
+
+
+if = {
+  type = 'if',
+  condition = '',
+  statements = [<statement>],
+  else = [<statement>]
+  text = '--'
 }
 
 'for (' <condition>  '):' \n <statements>
@@ -150,12 +148,6 @@ expression = {
   text = '--'
 }
 
-'/* ' [<rawText>] '*/'
-'//' <text>
-Comment = {
-  type = 'comment'
-  text = '--'
-}
 
 rawText = {
   type = 'rawText',
@@ -165,59 +157,194 @@ rawText = {
 Block = {
   type = 'block'
   name = '--'
-  statements = <statements>
+  statements = [<tokens>]
+  text = '--'
+}
+
+
+
+
+'/* ' [<rawText>] '*/'
+'//' <text>
+Comment = {
+  type = 'comment'
   text = '--'
 }
 
 -------------------------------------------------- end types of tokens --------------------------------------------------
 
 
+head
+body
+b
+p
+h
+div
+span
+ul
+  - li
+href = 
+
+
+-------------------------------------------------- start html example  --------------------------------------------------
+
+
+ul()
+    li 
+        a(href="asdasd") Book A
+    li --
+
+
+var book = { name:"asdasd",   price:'10'  }
+
+
+body
+    div
+        if (@book.name == "ahmed")
+            asdasd
+        else if()
+            asdasdasd
+
+
+
+body
+    ul
+        for( var i = 0; i < 10; i++ )
 
 
 
 
 
 
+var sdf = 'Twitter'
+
+body
+    table
+        tr
+            td  $book.name
+            td  Forasdfasfasdfasdf
+        tr
+            td  asasd
+            td  asdasdasd
+        
+            
+            
+
+
+
+-------------------------------------------------- end html example --------------------------------------------------
+
+
+
+{
+  type = 'directive',
+  'text '= '--',
+  content = [{
+    type='div',
+    text='--'
+    cotent = [{ type='block', name='title', text ='--'  }]
+  }]
+}
+
+
+
+title block
+{
+    'type' = 'tag',
+    'name' = 'title',
+    content = [
+    {
+        'type' = 'directive',
+        'name' = 'p',
+        content = [{ 'type' = 'directive', 'name'= 'b', content = [{'type'= 'rawText', text = 'hello' }]  }, {'type' = rawText, text = 'Ahmed'}]
+    }
+    ]
+    text = ''
+}
 
 
 
 
+attribute = {
+  type = 'attribute',
+  name ='',
+  value = '',
+  text = ''
+}
 
 
+{
+  'type'='directive',
+  'name' = 'body',
+  'attributes' = [ {
+    type = 'attribute',
+    name = 'id',
+    value = 'nasd',
+    text = 'id = "nash"'
+  }, ]
+      content : [
+      {
+        type = 'directive',
+        name = div,
+        content = [
+        {
+            type = 'if',
+            condition = --,
+            statement = [
+
+            ],
+            else = []
+
+        }
+        ]
+      }
+      ]
+          text='--'
+}
+
+
+{
+  type = 'block'
+  name = 'title',
+       statements = [{
+            title
+       }]
+  text = '--'
+}
+
+
+
+
+jade code
+
+create block content
+    h1 this is something
+
+
+body
+    div Ahmed 
+    br 1324501
+
+
+tree
+
+
+
+html
 
 
 
 -------------------------------------------------- example tree --------------------------------------------------
 
 {
-  'token' = 'root',
-  'head':{
-    type = 'head',
-    statements = [
-      {
-        'type' = 'tag'
-        'name' = 'title',
-        'value' = 'my jade template',
-        'text' = '--'
-      }
-    ]
-    'text'
-  },
-  'body':[
-    {
-      'type' = 'tag',
-      'name' = 'h1',
-      text = '--'
-    }
-  ]
-  text = '--'
+    'token' = 'root',
+
+        text = '--'
 }
 
 
 
 -------------------------------------------------- end of example tree--------------------------------------------------
-
-
 
 
 
