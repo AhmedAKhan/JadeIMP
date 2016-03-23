@@ -150,9 +150,11 @@ expression = {
   text = '--'
 }
 
+'/* ' [<rawText>] '*/'
+'//' <text>
 Comment = {
   type = 'comment'
-  text = ''
+  text = '--'
 }
 
 rawText = {
@@ -205,7 +207,6 @@ Block = {
     {
       'type' = 'tag',
       'name' = 'h1',
-
       text = '--'
     }
   ]
