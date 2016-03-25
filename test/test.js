@@ -68,7 +68,6 @@ describe("testing the checkEqual function that is inside the tester", function()
 // function to test one test case
 function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
-  console.log("got the filename: " + filename);
 
   // run the test case
   describe("going to test " + testname, function(){
