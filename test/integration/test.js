@@ -9,8 +9,10 @@ var fs = require("fs");
 var normalizedPath = require("path").join(__dirname, "jadeimp");
 
 // the jade code
-var jadeimp = require("../index");
+var jadeimp = require("../../index");
 
+// var path = './test/integration/';
+var path = './test/integration/';
 
 
 
@@ -77,9 +79,9 @@ function testFile(filename){
 
     beforeEach(function(){
       // load the files
-      var expectedJsonString = fs.readFileSync("./test/tree/"+testname + ".json");
-      expectedHtml = fs.readFileSync("./test/html/"+testname+".html");
-      jadeCode     = fs.readFileSync("./test/jadeimp/"+testname+".jimp");
+      var expectedJsonString = fs.readFileSync( path+ "tree/"+testname + ".json");
+      expectedHtml = fs.readFileSync(path + "html/"+testname+".html");
+      jadeCode     = fs.readFileSync(path + "jadeimp/"+testname+".jimp");
 
       // parse the file
       expectedJson = JSON.parse(expectedJsonString);
@@ -105,6 +107,7 @@ function testFile(filename){
 
 
 //load all the files and run the test case
-fs.readdirSync(normalizedPath).forEach(function(file) {
-  testFile(file);
-});
+// fs.readdirSync(normalizedPath).forEach(function(file) { testFile(file); });
+fs.readdirSync(normalizedPath).forEach(testFile);
+
+
