@@ -30,7 +30,8 @@ function checkEqual(obj1, obj2){
         // expect(obj1).to.include(obj2[i]); // order does not matter
       }
     }else{
-      expect(Object.keys(obj1)).to.have.length(Object.keys(obj2)); // make sure the object's have the same number of length
+      if(Object.keys(obj1).length === 0){ expect(obj2).to.be.empty;  return; }
+      expect(obj1).to.have.keys(Object.keys(obj2)); // make sure the object's have the same number of length
       for(var key in Object.keys(obj1)){
         if(key == "text") continue;
         checkEqual(obj1[key], obj2[key]);
@@ -43,7 +44,7 @@ function checkEqual(obj1, obj2){
 
 
 // check if the two html strings are the same
-function checkhtml(html1, html2){
+function checkHtml(html1, html2){
   expect(html1).to.be.equal(html2); // just check if the two strings are equal
 }
 
