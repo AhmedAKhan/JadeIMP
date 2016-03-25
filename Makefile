@@ -18,3 +18,8 @@ main.html: main.nw
 clean: 
 	rm *.dvi *.aux *.log *.html *.tex *.pdf
 
+
+runTest:
+	mocha
+
+
