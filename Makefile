@@ -13,7 +13,7 @@ GP=pdflatex
 GPFLAGS=-aux-directory=intDoc -output-directory=doc
 
 ## this would be all the files
-docFiles := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, doc/%, $(path:%.nw=%.pdf)))
+docFiles  := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, doc/%, $(path:%.nw=%.pdf)))
 codeFiles := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, code/%, $(path:%.nw=%.js)))
 
 main: generateCode doc
@@ -36,8 +36,11 @@ main: generateCode doc
 # ------------------------------------------------ code generation ----------------------------------------------------
 #
 ## start generating the code
-generateCode: $(codeFiles)
+generateCode: setupCode $(codeFiles)
 	echo "inside the generate code"
+
+setupCode:
+	mkdir ./code
 
 code/%.js: %.nw
 	@echo "the < has the value of $<, the @ = $@ the gcflags=$(GCFlAGS)"
@@ -47,7 +50,7 @@ code/%.js: %.nw
 
 ## clean the code
 cleanCode:
-	rm -rf code/*
+	rm -rf code
 
 # ------------------------------------------------ end code generation ----------------------------------------------------
 
@@ -63,7 +66,12 @@ cleanCode:
 # This is the part that will generate the documentation
 
 ## generate the pdf
-doc: generatePdf
+doc: setupDoc generatePdf
+
+setupDoc:
+	mkdir doc
+	mkdir intDoc
+	mkdir latexDoc
 
 ## this tells the makefile not to delete the latex file,
 ### usually when it creates files through chains, it treats them as an intermedtiate file and 
@@ -86,7 +94,7 @@ doc/%.pdf: latexDoc/%.latex
 
 ## clean all the files that relate to the documentation
 cleanDoc:
-	rm -rf doc/* intDoc/* latexDoc/*
+	rm -rf doc intDoc latexDoc
 
 # ------------------------------------------- end documentation  ---------------------------------------------------------#
 
@@ -99,13 +107,14 @@ clean: cleanDoc cleanCode
 
 ## run the testers
 runTest:
+	$(MAKE) -C test/Makefile test
 	mocha
 
 
 
 
 
-# ----------
+# ---------- old stuff -------
 main.js: main.nw
 	notangle -L $< > foo.js
 
