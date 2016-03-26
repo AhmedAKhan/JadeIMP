@@ -29,3 +29,6 @@ After taking all the above items into account, the compiler will simply generate
 @ [1]	pugjs, "Pugjs/pug," GitHub, 2016. [Online]. Available: https://github.com/pugjs/pug. Accessed: Mar. 16, 2016.
 @ [2]	2016, "AngularJS — Superheroic JavaScript MVW framework," 2008. [Online]. Available: https://angularjs.org/. Accessed: Mar. 16, 2016.
 @ [3]	jq. Foundation, "JQuery," 2016. [Online]. Available: https://jquery.com/. Accessed: Mar. 16, 2016.
+
+
+<<main.nw>>=

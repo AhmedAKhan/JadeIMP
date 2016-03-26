@@ -1,10 +1,19 @@
+this is the render part 
 
 
-
+<<render>>=
+/* 
+ * function that will return the string, that represents the output
+ */
 function render(jadeString, options){
-
+  return "";
 }
 
+@
+
+this is the parse part
+
+<<parse>>=
 /*
   this function will take in the jade input and will return the parseTree
   also called analysis
@@ -13,7 +22,11 @@ function parse(jadeString){
   return {};
 }
 
+@
 
+this is the syntesis part
+
+<<synthesis>>=
 /*
   this function will take a
  */
@@ -21,7 +34,10 @@ function synthesis(syntaxTree){
   return "";
 }
 
+@
+this is just setting up the api, to enusre which functions other users can use
 
+<<api>>=
 // make the API functions, it will only have render and compile
 module.exports.parse = parse;
 module.exports.synthesis = synthesis;
@@ -29,6 +45,15 @@ module.exports.render = render;
 module.exports.compile = function(jadeimpString){
   return function(){ return render(jadeString, options);  }
 }
+
+
+<<index.nw>>=
+<<render>>
+<<synthesis>>
+<<render>>
+<<api>>
+
+
 
 
 
