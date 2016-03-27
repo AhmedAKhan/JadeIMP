@@ -1,13 +1,11 @@
-this is the render part 
+@
 
+import the necessary things
 
-<<render>>=
-/* 
- * function that will return the string, that represents the output
- */
-function render(jadeString, options){
-  return "";
-}
+<<import statements>>=
+var analysis  = require('analysis');
+var synthesis = require('synthesis');
+
 
 @
 
@@ -19,20 +17,37 @@ this is the parse part
   also called analysis
 */
 function parse(jadeString){
-  return {};
+  return analysis.parse(jadeString);
 }
 
 @
 
-this is the syntesis part
+this is the synthesis part
 
 <<synthesis>>=
 /*
   this function will take a
  */
 function synthesis(syntaxTree){
-  return "";
+  return synthesis.convert(syntaxTree);
 }
+
+
+
+@
+this is the render part 
+
+<<render>>=
+/* 
+ * function that will return the string, that represents the output
+ */
+function render(jadeString, options){
+  syntaxTree = parse(jadeString);
+  outputHtml = synthesis(syntaxTree);
+  return outputHtml;
+}
+
+
 
 @
 this is just setting up the api, to enusre which functions other users can use
@@ -41,13 +56,14 @@ this is just setting up the api, to enusre which functions other users can use
 // make the API functions, it will only have render and compile
 module.exports.parse = parse;
 module.exports.synthesis = synthesis;
-module.exports.render = render;
+module.exports.render = render; // will take in the jadeimp code and return the html as a string
 module.exports.compile = function(jadeimpString){
   return function(){ return render(jadeString, options);  }
 }
 
 
 <<index.nw>>=
+<<import statements>>
 <<render>>
 <<synthesis>>
 <<render>>
