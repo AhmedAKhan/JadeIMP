@@ -34,7 +34,7 @@ main: generateCode doc
 
 #
 # ------------------------------------------------ code generation ----------------------------------------------------
-#
+
 ## start generating the code
 generateCode: setupCode $(codeFiles)
 	echo "inside the generate code"
