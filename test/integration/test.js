@@ -9,7 +9,7 @@ var fs = require("fs");
 var normalizedPath = require("path").join(__dirname, "jadeimp");
 
 // the jade code
-var jadeimp = require("../../index");
+var jadeimp = require("../../code/index");
 
 // var path = './test/integration/';
 var path = './test/integration/';

@@ -40,6 +40,21 @@ function contextualAnalysis(syntaxTree){
 }
 
 @
+
+this is the parse function
+
+<<parse>>=
+/*
+  @param1 sourceText = the source text which would be the jadeimp code as a string
+  @return = this will be the abstract syntax tree with contextual analysis
+*/
+function parse(sourceText){
+  return contextualAnalysis(syntacticAnalysis(lexicalAnalysis(sourceText)));
+}
+
+
+
+@
 this is the api portion of the code, meaning the part of the code that is visible from other 
 files. For the porposes of the analysis portion, we only need to make the analysis portion 
 of the program public because other programs do not need access to the other functions.
@@ -53,8 +68,9 @@ module.exports.parse = parse;
 @
 this part will simply produce the output of the program, in this order
 
-<<analysis.nw>>=
+<<analyzer.nw>>=
 <<lexical analysis>>
 <<syntactic analysis>>
 <<contextual analysis>>
+<<parse>>
 <<api>>

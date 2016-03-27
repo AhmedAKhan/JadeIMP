@@ -3,8 +3,8 @@
 import the necessary things
 
 <<import statements>>=
-var analysis  = require('analysis');
-var synthesis = require('synthesis');
+var analyzer = require('./analyzer');
+var synthesizer = require('./synthesizer');
 
 
 @
@@ -14,22 +14,22 @@ this is the parse part
 <<parse>>=
 /*
   this function will take in the jade input and will return the parseTree
-  also called analysis
+  also called analyzer
 */
 function parse(jadeString){
-  return analysis.parse(jadeString);
+  return analyzer.parse(jadeString);
 }
 
 @
 
-this is the synthesis part
+this is the synthesizer part
 
 <<synthesis>>=
 /*
   this function will take a
  */
 function synthesis(syntaxTree){
-  return synthesis.convert(syntaxTree);
+  return synthesizer.convert(syntaxTree);
 }
 
 
@@ -65,6 +65,7 @@ module.exports.compile = function(jadeimpString){
 <<index.nw>>=
 <<import statements>>
 <<render>>
+<<parse>>
 <<synthesis>>
 <<render>>
 <<api>>

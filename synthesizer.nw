@@ -46,8 +46,8 @@ function codeGeneration(intermediateCode){ return intermediateCode; }
 */
 function convert(syntaxTree){
   var intermediateCode = intCodeGen(syntaxTree);
-  var intermediateCode = codeO
-  return codeGeneration();
+  intermediateCode = codeOptimization(intermediateCode);
+  return codeGeneration(intermediateCode);
 }
 
 
@@ -64,7 +64,7 @@ module.exports.convert = convert;
 this is the output of the program, The makefile works in a manor where the filename is root
 of the project. So when this part of the code gets compiled, it will creater the proper code
 
-<<synthesis.nw>>=
+<<synthesizer.nw>>=
 <<intermediate code generation>>
 <<code optimization>>
 <<code generation>>
