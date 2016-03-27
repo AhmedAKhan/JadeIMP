@@ -10,7 +10,7 @@ GLFLAGS=-latex
 
 # pdf stuff
 GP=pdflatex
-GPFLAGS=-aux-directory=intDoc -output-directory=doc
+GPFLAGS=-aux-directory=intDoc -output-directory=intDoc
 
 ## this would be all the files
 docFiles  := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, doc/%, $(path:%.nw=%.pdf)))
@@ -36,11 +36,13 @@ main: generateCode doc
 # ------------------------------------------------ code generation ----------------------------------------------------
 
 ## start generating the code
-generateCode: setupCode $(codeFiles)
+generateCode: code $(codeFiles)
 	echo "inside the generate code"
 
-setupCode:
+code:
+	@echo "inside the setup code"
 	mkdir ./code
+	@echo "done inside the setup code"
 
 code/%.js: %.nw
 	@echo "the < has the value of $<, the @ = $@ the gcflags=$(GCFlAGS)"
@@ -68,10 +70,13 @@ cleanCode:
 ## generate the pdf
 doc: setupDoc generatePdf
 
+## this will move the pdf files to the pdf folder
+movePdf: 
+	mv intDoc/*.pdf doc/
+
+## create the folders for the documentation
 setupDoc:
-	mkdir doc
-	mkdir intDoc
-	mkdir latexDoc
+	mkdir -p doc intDoc latexDoc
 
 ## this tells the makefile not to delete the latex file,
 ### usually when it creates files through chains, it treats them as an intermedtiate file and 
@@ -91,6 +96,7 @@ latexDoc/%.latex: %.nw
 doc/%.pdf: latexDoc/%.latex
 	@echo "make pdf: the < = $< and @ = $@, %=$%, ?=$?, ^=$^, *=$*"
 	$(GP) $(GPFLAGS) $<
+	mv intDoc/$*.pdf doc/
 
 ## clean all the files that relate to the documentation
 cleanDoc:
