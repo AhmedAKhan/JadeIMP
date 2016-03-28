@@ -1,3 +1,8 @@
+@
+these are all the import statements
+
+<<import statements>>=
+var RegExp = require("regex");
 
 @
 
@@ -113,8 +118,6 @@ function getTokenStatement(source){}
 /**/
 function getTokenStatements(source){}
 /**/
-function getTokenName(source){}
-/**/
 function getTokenExpression(source){}
 /**/
 function getTokenVariable(source){
@@ -137,8 +140,6 @@ function getTokenVariable(source){
 /**/
 function getTokenRawText(source){}
 /**/
-function getTokenText(source){}
-/**/
 function getTokenBlock(source){}
 
 function getTokenNumber(source){
@@ -158,38 +159,24 @@ function getTokenNumber(source){
 
 /// simple tokens
 /*
-  getTokenMaker(source, type){
-  =
-  (
-  )
-  var
-  if
-  for
-  else
-  block
-  create
-  |
-  .
+  = () var if for else block create | .
 */
-function getTokenMaker(type){
-  return function(source){
-    var sourceText = source.text;
-    var regex = new RegExp("^"+type +"\s*");
-    var result = regex.exec(sourceText); // this will get the name of the variable
-    if(!result) return false;
-    var value = result[0].trim();
-    adjustString(source, result[0].length);
-
-    var token = {
-      type : type,
-      level: source.level,
-      value: value,
-      text : result[0]
-    };
-    source.tokens.push(token);
-    // found the variable, actually start converting it
-    return true;
-  }
+function getSimpleToken(source){
+  var result = /^(=|\(|\)|var|for|if|else|block|create|\| ) */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  var token = {};
+  if(value == "|") result[0] = result[0].trim() + " ";
+  adjustString(source, result[0].length);
+  token = {
+    type  : value,
+    value : value,
+    text  : result[0],
+    level : source.level
+  };
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
 }
 /**/
 function getTokenSimpleIf(source){
@@ -243,6 +230,74 @@ function getTokenSimpleVar(source){
   source.tokens.push(token);
   // found the variable, actually start converting it
   return true;
+}
+/**/
+function getTokenDot(source){
+  var result = /^\. *\n/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = {
+    type : "dot",
+    level: source.level,
+    value: value,
+    text : result[0]
+  };
+  source.tokens.push(token);
+  source.level = 0; // because a new line was created by the dot
+  
+  // the raw text
+  findLevel(source);
+  getTokenText(source);
+
+  // found the variable, actually start converting it
+  return true;
+}
+
+/*
+  @param1 {object source} = 
+  @return {boolean} represents if it was successful getting the text or not
+*/
+function getTokenText(source){
+  // get current level
+  console.log("inside the getTokenText");
+  var currentLevel = source.level;
+  
+  while(true){
+    print("inside the token text: source.text: " + source.text);
+    var isNewLine = getTokenEOL(source);
+    // if this is a new line and the indentation is lower then the begining then 
+    // exit the function
+    if(isNewLine && source.level < currentLevel) return; 
+    if(source.text == "") return;
+
+    // take everything from the begining and a $ symbol. (unless if its another $) or end of line
+    var result = /^[^\n$]+/.exec(source.text);
+    if(result){
+      var textToken = {
+        type:"rawText",
+        level:source.level,
+        value:result[0],
+        text:result[0]
+      };
+      source.tokens.push(textToken);
+      adjustString(source, result[0].length);
+    }
+
+    //check for the dollor sign
+    result = /^\$[^\s$][\S]*/.exec(source.text);
+    if(result){
+      var asgToken = {
+        type:"varCall",
+        level:source.level,
+        name:result[0].substr(1), // remove the $ from the variable name
+        text:result[0]
+      };
+      source.tokens.push(asgToken);
+      adjustString(source, result[0].length);
+    }
+  }
 }
 
 
@@ -319,31 +374,34 @@ this is the list of token validators
 
 **/
 [ 
-  getTokenMaker("="),
-  getTokenMaker("("),
-  getTokenMaker(")"),
-  getTokenMaker("var"),
-  getTokenMaker("if"),
-  getTokenMaker("for"),
-  getTokenMaker("else"),
-  getTokenMaker("block"),
-  getTokenMaker("create"),
-  getTokenMaker("|"),
-  getTokenMaker("."),
+  /* getTokenMaker("="), */
+  /* getTokenMaker("("), */
+  /* getTokenMaker(")"), */
+  /* getTokenMaker("var"), */
+  /* getTokenMaker("if"), */
+  /* getTokenMaker("for"), */
+  /* getTokenMaker("else"), */
+  /* getTokenMaker("block"), */
+  /* getTokenMaker("create"), */
+  /* getTokenMaker("|"), */
+  /* getTokenMaker("."), */
+  getTokenDot,
+  getSimpleToken, // all the simple tokens, such as = (  ) . var if else for
+
   getTokenDirective,
   getTokenAttributes,
   getTokenVariable,
   /* getTokenSimpleIf, */
   /* getTokenSimpleFor, */
-  getTokenNumber,
   getTokenCondition,
   getTokenStatement,
-  getTokenStatements,
-  getTokenName,
+  /* getTokenStatements, */
   getTokenExpression,
   getTokenRawText,
-  getTokenText,
+  /* getTokenText, */
   getTokenBlock,
+
+  getTokenNumber,
   getTokenIdent,
   getTokenEOL
 ];
@@ -418,7 +476,7 @@ function test(){
   /* if(result && result.type == "ident" && result.level == 0){ print("--broke 1---");  } */
   /* print("source: '" + source.text + "'"); */
 
-  result = lexer("var | asdasd . ");
+  result = lexer("p. \n  asdasd asda \n  sdasdasd asdsa \n  dsa $zcxz adsad \n  asdad asda \nsdas d asd ");
   print(" result: " + JSON.stringify(result));
 }
 test();
@@ -447,6 +505,7 @@ function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(s
 <<lexer.nw>>=
 'use strict'
 
+<<import statements>>
 <<debugging information>>
 <<create the token specific functions>>
 <<next token function>>
