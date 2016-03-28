@@ -118,7 +118,48 @@ function getTokenStatement(source){}
 /**/
 function getTokenStatements(source){}
 /**/
-function getTokenExpression(source){}
+function getTokenExpression(source){
+  //
+
+  //
+
+}
+/**/
+function operator(source){
+  var result = /^(\+|-|\*|\/)/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = {
+    type : "operator",
+    level: source.level,
+    value: value,
+    text : result[0]
+  };
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+}
+
+/**/
+function boolOperator(source){
+  var result = /^(==|!==|>=?|<=?)\s*/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = {
+    type : "boolOperator",
+    level: source.level,
+    value: value,
+    text : result[0]
+  };
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+}
+
 /**/
 function getTokenVariable(source){
   var sourceText = source.text;
