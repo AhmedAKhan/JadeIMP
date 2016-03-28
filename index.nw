@@ -62,6 +62,9 @@ module.exports.compile = function(jadeimpString){
 }
 
 
+@
+this is the part of the code that will actually render the code
+
 <<index.nw>>=
 <<import statements>>
 <<render>>

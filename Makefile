@@ -16,7 +16,7 @@ GPFLAGS=-aux-directory=intDoc -output-directory=intDoc
 docFiles  := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, doc/%, $(path:%.nw=%.pdf)))
 codeFiles := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, code/%, $(path:%.nw=%.js)))
 
-main: generateCode doc
+main: generateCode # doc
 # main:
 # 	echo "allfiles: $(allFiles)"
 

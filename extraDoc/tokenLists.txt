@@ -1,3 +1,4 @@
+simple tokens
 
 
 -------------------------------------------------- types of tokens --------------------------------------------------
@@ -5,7 +6,7 @@
 properties of all tokens
   - all will have a variable called type, which will equal to the type of that token
   - all will have a variable called text, which will be the string that encomposes that token
-  
+  - all the tags will have a variable called level, which will tell you the number of indentations that the directive has 
 
 
 directive = {
@@ -64,6 +65,7 @@ statement = {
   text = '--'
 }
 
+// literally have no idea what this was for lol
 name = {
   type: "name"
   value: "any list of values"

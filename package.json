@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/AhmedAKhan/JadeIMP#readme",
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^3.5.0"
+  },
+  "dependencies": {
+    "regex": "^0.1.1"
   }
 }

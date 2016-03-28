@@ -1,4 +1,10 @@
 @
+this are the necessary imports for this project
+
+<<import statements>>=
+var lexer = require("./lexer");
+
+@
 
 there are three main parts for the analysis part of the program
 
@@ -9,7 +15,7 @@ there are three main parts for the analysis part of the program
                 is available at --REF--
 */
 function lexicalAnalysis(sourceText){
-  return {};
+  return lexer(sourceText);
 }
 
 @
