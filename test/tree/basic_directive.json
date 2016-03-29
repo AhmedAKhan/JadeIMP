@@ -1,0 +1,13 @@
+{
+  "type":"directive",
+  "name":"div",
+  "attributes":[],
+  "text":"---",
+  "content":[
+    {
+      "type":"rawText",
+      "text":"---",
+      "value":"abc"
+    }
+  ]
+}

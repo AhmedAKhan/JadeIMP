@@ -1,0 +1,26 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"directive",
+      "name":"div",
+      "attributes":[
+        {
+          "type":"attribute",
+          "text":"---",
+          "parameter":"id",
+          "value":"aaa"
+        },
+        {
+          "type":"attribute",
+          "text":"---",
+          "parameter":"class",
+          "value":"ccc"
+        }
+      ],
+      "text":"---",
+      "content":[]
+    }
+  ]
+}
