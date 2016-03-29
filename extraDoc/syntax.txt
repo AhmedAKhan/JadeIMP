@@ -1,0 +1,93 @@
+
+
+escape character = \
+
+variables
+
+var temp = 10
+
+use variable
+
+example
+
+p
+    | i have $(temp) souls
+
+div(class="$(temp)", )
+
+
+
+basic directives
+
+<directive>(<attributes>)
+    | <rawText>
+    <directive>
+
+
+div(class='--', id='-')
+    p(id='asd') my name is whatever
+
+
+div(class='--', id='-')
+    p(id='asd'). 
+        my name is whatever
+        asdasdasd
+        asdasdasd
+
+p(id='asd')
+    | my name is br whatever 
+    \br
+    button(id='myButton')
+
+- br in string = html br
+- \br in string = write the text br
+- \br normally = html br
+- br as a directive = it will create a directive br
+- not allowed to have br directive with closing
+- ! = means the directive has no closing tag
+
+div 
+  | First name: 
+  input(name='asd', id='asd')!
+  | Second name: 
+
+
+directives that will not create a new line
+  - input
+  - submit
+  - button
+  - span
+  - b
+  - u
+  - i
+
+
+
+
+
+if statements
+
+if( 1 == 1 )
+    <statements>
+else 
+    <statements>
+
+
+div 
+    var lkj = 10
+    if 1 == 1
+        lkj += 10
+        h1
+            YAYY 
+    else 
+        h1 
+            NOOOOO
+    p.
+        lkj is equal to $(lkj)
+
+div 
+    p. 
+        asds is equal to $(lkj)
+
+
+

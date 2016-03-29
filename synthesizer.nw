@@ -1,0 +1,75 @@
+
+<<intermediate code generation>>=
+/*
+  @param1 syntaxTree = this will be the syntax tree
+  @return = this will return the intermediate code, currently that is the html
+*/
+function intCodeGen(syntaxTree){
+  return "";
+}
+
+
+@
+this is the code optimization part
+
+<<code optimization>>=
+/*
+  @param1 intermediateCode = this will be the intermediate code that is generated from the intermediate code generation part 
+  return = this will be the optimized html
+*/
+function codeOptimization(intermediateCode){ return intermediateCode; }
+
+
+@ 
+this is the part of the code that will actually generate the code. It is one of the phases
+for compilation. For our purposes we do not need this phase because our intermediate code 
+will be the same as our output code. The reason this part is still here is because if we 
+decided to add a semi state for the code to be, we would not have to change the structure 
+of the code.
+
+<<code generation>>=
+/*
+  @param1 intermediateCode = This is the intermediate code
+  return = the final html code that is needed after the compilation
+  
+  currently the intermediate code is the same as the final code, this function is still here
+  to ensure that if we wanted to add a state for the code before html we could with ease
+*/
+function codeGeneration(intermediateCode){ return intermediateCode; }
+
+@
+
+
+<<convert>>=
+/*
+
+*/
+function convert(syntaxTree){
+  var intermediateCode = intCodeGen(syntaxTree);
+  intermediateCode = codeOptimization(intermediateCode);
+  return codeGeneration(intermediateCode);
+}
+
+
+@
+this is the part of the code that will be public. For the purposes of our code we made 
+the convert, the only function that will be public. The reason we chose this is because 
+the other functions are not needed from any other file.
+
+<<api>>=
+module.exports.convert = convert;
+
+
+@
+this is the output of the program, The makefile works in a manor where the filename is root
+of the project. So when this part of the code gets compiled, it will creater the proper code
+
+<<synthesizer.nw>>=
+<<intermediate code generation>>
+<<code optimization>>
+<<code generation>>
+<<convert>>
+<<api>>
+
+
+
