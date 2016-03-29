@@ -1,0 +1,87 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.3.28)  28 MAR 2016 23:55
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**latexDoc/lexer.latex
+(./latexDoc/lexer.latex
+LaTeX2e <2015/01/01>
+Babel <3.9l> and hyphenation patterns for 21 languages loaded.
+(/usr/local/texlive/2015basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2015basic/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(./noweb.sty
+\nwmarginglue=\dimen103
+\codehsize=\dimen104
+\codemargin=\dimen105
+\nwdefspace=\dimen106
+\equivbox=\box26
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 79.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 79.
+\plusequivbox=\box27
+\nwcodetopsep=\skip43
+\nwcodepenalty=\count87
+\nwbreakcodespace=\dimen107
+\@original@textwidth=\dimen108
+\nwcodecommentsep=\skip44
+\@nwlopage=\count88
+\@nwhipage=\count89
+\@nwlosub=\count90
+\@nwhisub=\count91
+\@nwpagetemp=\count92
+\@nwpagecount=\count93
+\sub@page=\count94
+\@nwalph@n=\count95
+\nw@chunkcount=\count96
+\@commacount=\count97
+\nwix@counter=\count98
+) (intDoc/lexer.aux)
+\openout1 = `lexer.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 1.
+LaTeX Font Info:    ... okay on input line 1.
+
+! Undefined control sequence.
+l.24 'if' '(' <condition>  ')' \n
+                                  <statements> \n 'else' \n <statements>
+? 
+! Emergency stop.
+l.24 'if' '(' <condition>  ')' \n
+                                  <statements> \n 'else' \n <statements>
+End of file on the terminal!
+
+ 
+Here is how much of TeX's memory you used:
+ 476 strings out of 494501
+ 5614 string characters out of 6167030
+ 55908 words of memory out of 5000000
+ 3838 multiletter control sequences out of 15000+600000
+ 4154 words of font info for 16 fonts, out of 8000000 for 9000
+ 319 hyphenation exceptions out of 8191
+ 25i,2n,17p,411b,232s stack positions out of 5000i,500n,10000p,200000b,80000s
+!  ==> Fatal error occurred, no output PDF file produced!

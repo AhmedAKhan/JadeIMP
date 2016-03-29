@@ -1,0 +1,625 @@
+\documentclass{article}\usepackage{noweb}\pagestyle{noweb}\noweboptions{}\begin{document}\nwfilename{lexer.nw}\nwbegindocs{0}\nwenddocs{}\nwbegindocs{1}\nwdocspar% ===> this file was generated automatically by noweave --- better not edit it
+these are all the import statements
+
+\nwenddocs{}\nwbegincode{2}\moddef{import statements}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+var RegExp = require("regex");
+
+\nwendcode{}\nwbegindocs{3}\nwdocspar
+
+the grammer for the program is this
+
+directive
+
+<parameter> '=' <expression>
+attributes = {
+  type = '',
+  text = '',
+  parameter = '--',
+  value = '--'
+}
+
+'var' <name> '=' <expression>
+variable
+
+'if' '(' <condition>  ')' \n <statements> \n 'else' \n <statements>
+if 
+
+'for (' <condition>  '):' \n <statements>
+forloop 
+
+
+
+<expression> <bool operator> <expression> // example 4 != 5
+<inline bool> <expression> // example: !false
+condition
+
+[<statements>]
+statements 
+
+<variable assignment>
+statement 
+
+
+name 
+
+(<number> | <ident>) ' = ' (<number>|<ident>)(<operator> (<number>|<ident>))*
+expression 
+
+<stuff>
+rawText 
+
+'create' 'block' <ident> \n <statements>
+Block creation
+
+'block' <ident>
+using a block 
+
+number = '-?[0-9]*'
+ident = '\w+'
+
+'  ' <-- just adds one
+indent
+
+\nwenddocs{}\nwbegindocs{4}\nwdocspar
+this is the part that will create stuff
+
+\nwenddocs{}\nwbegincode{5}\moddef{create the token specific functions}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+
+function getTokenEOL(source)\{
+  var result = /^\\n/.exec(source.text);
+  if(!result) return undefined;
+  adjustString(source, result[0].length);
+  source.level = 0; // since a new line was added, the current level is 0
+  findLevel(source);
+  source.lineBegin = true;
+  print("inside the end of line reached, the lineBegin is " + source.lineBegin);
+  return true;
+\}
+
+
+/*
+ * this function will find the level of the current line. It will be called after end of line and the will set the level depending on the level of the first character
+ */
+function findLevel(source)\{
+  var result = /^ */.exec(source.text); // always match because an empty string is considered valid
+  adjustString(source, result[0].length);
+  source.level = result[0].length/2; // since a new line was added, the current level is 0
+\}
+/*
+ * this function will convert the next sequence of characters to tokens
+ *
+ * @param1 \{String\} sourceText = the current jadeimp code
+ * return \{Token\} an object that will hold the next token
+ */
+function getTokenDirective(source)\{
+  // it is only a directive if its the first thing in the line
+  if(!source.lineBegin) return;
+
+  var result = /^[\\w_-]+ */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "directive",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenVerticalBar(source)\{
+  var sourceText = source.text;
+  var result = /^\\| /.exec(sourceText); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "vertical bar",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  getTokenText(source);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenAttributes(source)\{\}
+/**/
+function getTokenCondition(source)\{\}
+/**/
+function getTokenStatement(source)\{\}
+/**/
+function getTokenStatements(source)\{\}
+/**/
+function getTokenExpression(source)\{
+  //
+
+  //
+
+\}
+/**/
+function operator(source)\{
+  var result = /^(\\+|-|\\*|\\/)/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "operator",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+
+/**/
+function boolOperator(source)\{
+  var result = /^(==|!==|>=?|<=?)\\s*/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "boolOperator",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+
+/**/
+function getTokenVariable(source)\{
+  var sourceText = source.text;
+  var result = /^\\$[\\w_-]+ */.exec(sourceText); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "variable",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenRawText(source)\{\}
+/**/
+function getTokenBlock(source)\{\}
+
+function getTokenNumber(source)\{
+  var number = /^[0-9]+ */.exec(source.text);
+  if(!number) return undefined;
+  var value = number[0].trim();
+  adjustString(source, number[0].length);
+  var token = \{
+    type : "number",
+    level: source.level,
+    value: parseInt(value),
+    text : number[0]
+  \};
+  source.tokens.push(token);
+  return true;
+\}
+
+/// simple tokens
+/*
+  = () var if for else block create | .
+*/
+function getSimpleToken(source)\{
+  var result = /^(=|\\(|\\)|var|for|if|else|block|create) */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  var token = \{\};
+  if(value == "|") result[0] = result[0].trim() + " ";
+  adjustString(source, result[0].length);
+  token = \{
+    type  : value,
+    value : value,
+    text  : result[0],
+    level : source.level
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenSimpleIf(source)\{
+  var sourceText = source.text;
+  var result = /^if */.exec(sourceText); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "if",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenSimpleFor(source)\{
+  var sourceText = source.text;
+  var result = /^for */.exec(sourceText); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "for",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+\}
+/**/
+function getTokenSimpleVar(source)\{
+  var sourceText = source.text;
+  var result = /^var */.exec(sourceText); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "var",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+/**/
+function getTokenDot(source)\{
+  var result = /^\\. */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var token = \{
+    type : "dot",
+    level: source.level,
+    value: value,
+    text : result[0]
+  \};
+  source.tokens.push(token);
+  source.level = 0; // because a new line was created by the dot
+  
+  // the raw text
+  findLevel(source);
+  getTokenText(source);
+
+  // found the variable, actually start converting it
+  return true;
+\}
+
+/*
+  @param1 \{object source\} = 
+  @return \{boolean\} represents if it was successful getting the text or not
+*/
+function getTokenText(source)\{
+  // get current level
+  print("inside the getTokenText");
+  var currentLevel = source.level;
+  
+  while(true)\{
+    print("inside the token text: source.text: " + source.text);
+    var isNewLine = getTokenEOL(source);
+    // if this is a new line and the indentation is lower then the begining then 
+    // exit the function
+    if(isNewLine && source.level < currentLevel) return; 
+    if(source.text == "") return;
+
+    // take everything from the begining and a $ symbol. (unless if its another $) or end of line
+    var result = /^[^\\n$]+/.exec(source.text);
+    if(result)\{
+      var textToken = \{
+        type:"rawText",
+        level:source.level,
+        value:result[0],
+        text:result[0]
+      \};
+      source.tokens.push(textToken);
+      adjustString(source, result[0].length);
+    \}
+
+    //check for the dollor sign
+    result = /^\\$[^\\s$][\\S]*/.exec(source.text);
+    if(result)\{
+      var asgToken = \{
+        type:"varCall",
+        level:source.level,
+        name:result[0].substr(1), // remove the $ from the variable name
+        text:result[0]
+      \};
+      source.tokens.push(asgToken);
+      adjustString(source, result[0].length);
+    \}
+  \}
+\}
+
+
+/*
+ * this function will convert the next sequence of characters to the token
+ * ident, which means variable names, or just names in general
+ * 
+ * @param1 \{String\} sourceText = the current jadeimp code
+ * return \{Token\} an object that will hold the next token
+ */
+function getTokenIdent(source)\{
+  var ident = /^[\\w_-]+ */.exec(source.text); // this will get the name of the variable
+  if(!ident) return false;
+  var value = ident[0].trim();
+  adjustString(source, ident[0].length);
+
+  var token = \{
+    type : "ident",
+    level: source.level,
+    value: value,
+    text : ident[0]
+  \};
+  source.tokens.push(token);
+  // found the variable, actually start converting it
+  return true;
+\}
+
+
+\nwendcode{}\nwbegindocs{6}\nwdocspar
+this is the consume function
+
+\nwenddocs{}\nwbegincode{7}\moddef{helper functions}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+*/
+function adjustString(source, num)\{
+  source.text = source.text.substr(num);
+\}
+/*
+ * this function is for creating simple tokens, for example vertical bar, | or var, 
+ * /// not really used so far
+ * @param1 \{object\}
+ * @param2 \{string\}
+ * @param3 \{--\} value
+ * @return \{Object token\} this will be the newly created token
+ */
+/* function createToken(source, type, val)\{ */
+  /* var token = \{ */
+  /*   type: name, */
+  /*   level: source.level, */
+  /*   text: type */
+  /* \} */
+  /* if(val !== undefined)\{ token.val = val; token.text = val; \} */
+  /* return token; */
+/* \} */
+
+\nwendcode{}\nwbegindocs{8}\nwdocspar
+this is the list of token validators
+
+\nwenddocs{}\nwbegincode{9}\moddef{list of token validator functions}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/***
+
+'blank', 'endInterpolation', 'interpolation', 'block',
+'conditional', 'each', 'while', 'directive',
+'attrs', 'indent', 'text', this.fail()
+
+---idk
+'slash'     , 'textHtml'  , 'dot'  ,
+'className' , 'blockCode' , 'code' ,
+'colon'     ,
+
+--- should add
+'include',
+
+**/
+[ 
+  /* getTokenMaker("="), */
+  /* getTokenMaker("("), */
+  /* getTokenMaker(")"), */
+  /* getTokenMaker("var"), */
+  /* getTokenMaker("if"), */
+  /* getTokenMaker("for"), */
+  /* getTokenMaker("else"), */
+  /* getTokenMaker("block"), */
+  /* getTokenMaker("create"), */
+  /* getTokenMaker("|"), */
+  /* getTokenMaker("."), */
+  getTokenDot,
+  getTokenVerticalBar,
+  getSimpleToken, // all the simple tokens, such as = (  ) . var if else for
+
+  getTokenDirective,
+  getTokenAttributes,
+  getTokenVariable,
+  /* getTokenSimpleIf, */
+  /* getTokenSimpleFor, */
+  getTokenCondition,
+  getTokenStatement,
+  /* getTokenStatements, */
+  getTokenExpression,
+  getTokenRawText,
+  /* getTokenText, */
+  getTokenBlock,
+
+  getTokenNumber,
+  getTokenIdent,
+  getTokenEOL
+];
+
+\nwendcode{}\nwbegindocs{10}\nwdocspar
+
+this is the part of the code that will convert the string to a list of tokens
+
+\nwenddocs{}\nwbegincode{11}\moddef{lexerFunction}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  @param1 \{String\} sourceText = this function takes in the jadeimp code as string
+  @return \{object\} this function returns a list of tokens
+  @api public
+*/
+function lexer(sourceText)\{
+  // convert all the tabs to four spaces
+  print("sourceText: " + sourceText);
+  var source = \{
+    "text":sourceText,
+    "level":0,
+    "tokens":[],
+    "lineBegin":true
+  \};
+  source.text = sourceText.replace(/\\t/, "    ");
+  findLevel(source);
+  // start lexing the code
+  while(sourceText.length > 0)\{
+    // ok so if the next token returns false meaning error, stop everything
+    if(!nextToken(source)) break;
+  \}
+  return source.tokens;
+\}
+
+
+\nwendcode{}\nwbegindocs{12}\nwdocspar
+
+this is the part of the code that will find the next token
+
+\nwenddocs{}\nwbegincode{13}\moddef{next token function}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+ * @param1 \{object\} source = is an object used to tokenize the string
+ * @return \{boolean\} = returns if it was able to get the next token
+ */
+function nextToken(source)\{
+  print("the source text is '" + source.text + "'");
+  // this is a list of functions that the token will use
+  var tokenValidators = \LA{}list of token validator functions\RA{}
+  var gotToken = false;
+  var oldLineBegin = source.lineBegin;
+  for(var i = 0; i < tokenValidators.length; i++)\{
+    /* print("going to try out tokenValidators[i]: " + tokenValidators[i].name); */
+    if(tokenValidators[i](source))\{ gotToken = true; break; \}
+  \}
+
+  // if it was false before and true now, then keep it true. or else make it false
+  if(!(!oldLineBegin && source.lineBegin))\{ source.lineBegin = false; \}
+  return gotToken;
+\}
+
+
+
+\nwendcode{}\nwbegindocs{14}\nwdocspar
+
+this is the part of the code that will test the function
+
+\nwenddocs{}\nwbegincode{15}\moddef{test}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+
+*/
+function test()\{
+  var result = "";
+  /* result = \{"text":"original"\}; */
+  /* adjustString(result, 4); */
+  /* if(result.text != "inal")\{ print("did not get the proper result for test 1, got: " + result.text + " expected inal"); return; \} */
+
+  /* var source = \{"text":"var numberOfApples = 10", "tokens":[], "level":0\}; */
+  /* result = nextToken(source); */
+  /* if(result && result.type == "ident" && result.level == 0)\{ print("--broke 1---");  \} */
+  /* print("source: '" + source.text + "'"); */
+
+  /* result = lexer("p. \\n  asdasd asda \\n  sdasdasd asdsa \\n  dsa $zcxz adsad \\n  asdad asda \\nsdas d asd "); */
+  /* print(" result: " + JSON.stringify(result)); */
+
+  /* result = lexer("var apples = 10"); */
+  /* expectedTypeOrder(result, ["var", "ident", "=", "number"]) */
+
+  /* result = lexer("  var apples = 10"); */
+  /* expectedTypeOrder(result, ["var", "ident", "=", "number"]) */
+
+  /* result = lexer("div. \\n  abc\\n  | def"); */
+  /* print("result: " + JSON.stringify(result)); */
+
+  /* result = lexer("div. \\n  abc asd sfsdf \\ndiv  \\n  | inside the second div"); */
+  /* result = lexer("div \\n  abc \\ndiv  \\n  | inside the second div"); */
+
+  /*
+div 
+  asd
+    asdasd
+  zcasd
+asdsad
+  */
+  /* result = lexer("div \\n  asd\\n    asdasd\\n  zcasd\\nasdsad"); */
+  /* result = lexer("if true \\n  var i = 10\\nelse\\n  var i = 20"); */
+
+  /* result = lexer("div\\n  if true \\n    var i = 10\\n  else\\n    var i = 20"); */
+
+  /* result = lexer("if 1 = 10\\n  p\\n    | this is in the true condition\\nelse\\n  p. \\n    this is in the false condition"); */
+
+  /* result = lexer("create block title\\n  h1. \\n  Welcome to our website"); */
+  result = lexer("create block title\\n  h1.  Welcome to our website");
+  print("result: " + JSON.stringify(result));
+\}
+function expectedTypeOrder(actual, expected)\{
+  if(expected.length != actual.length)
+    throw("the length is not the same expected: " + JSON.stringify(expected) +" actual: " + JSON.stringify(actual));
+  for(var i = 0; i < actual.length; i++)\{
+    /* console.log("i: " + i + " actual: " + actual[i]); */
+    if(expected[i] !== actual[i].type)
+      throw("i:  " + i + " expected type to be " + expected + " but got " + actual[i].type);
+  \}
+\}
+test();
+
+
+\nwendcode{}\nwbegindocs{16}\nwdocspar
+for this file, the part of the code that is visible to the outside files is just the lexer function. 
+
+
+\nwenddocs{}\nwbegincode{17}\moddef{api}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+// this is the part of the code that should be available to the rest of the program
+module.exports = lexer;
+
+
+
+\nwendcode{}\nwbegindocs{18}\nwdocspar
+this is for all the debugging information
+\nwenddocs{}\nwbegincode{19}\moddef{debugging information}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+var DEBUG = true;
+var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
+function print(str)\{ printwp(str, 0); \}
+function printwp(str, priority)\{ if(DEBUG && THRESHOLD > priority) console.log(str); \}
+
+
+
+\nwendcode{}\nwbegincode{20}\moddef{lexer.nw}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+'use strict'
+
+\LA{}import statements\RA{}
+\LA{}debugging information\RA{}
+\LA{}create the token specific functions\RA{}
+\LA{}next token function\RA{}
+\LA{}helper functions\RA{}
+\LA{}lexerFunction\RA{}
+\LA{}api\RA{}
+
+\LA{}test\RA{}
+
+\nwendcode{}\end{document}
+

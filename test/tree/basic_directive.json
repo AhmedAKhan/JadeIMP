@@ -1,13 +1,19 @@
 {
-  "type":"directive",
-  "name":"div",
-  "attributes":[],
+  "type":"root",
   "text":"---",
   "content":[
     {
-      "type":"rawText",
+      "type":"directive",
+      "name":"div",
+      "attributes":[],
       "text":"---",
-      "value":"abc"
+      "content":[
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"abc"
+        }
+      ]
     }
   ]
 }

@@ -16,11 +16,22 @@
           "type":"attribute",
           "text":"---",
           "parameter":"class",
-          "value":"ccc"
+          "value":"ccc ddd"
         }
       ],
       "text":"---",
-      "content":[]
+      "content":[
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"abcdef"
+        },
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"efghij"
+        }
+      ]
     }
   ]
 }

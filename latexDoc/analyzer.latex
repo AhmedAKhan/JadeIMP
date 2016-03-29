@@ -1,0 +1,84 @@
+\documentclass{article}\usepackage{noweb}\pagestyle{noweb}\noweboptions{}\begin{document}\nwfilename{analyzer.nw}\nwbegindocs{0}\nwenddocs{}\nwbegindocs{1}\nwdocspar% ===> this file was generated automatically by noweave --- better not edit it
+this are the necessary imports for this project
+
+\nwenddocs{}\nwbegincode{2}\moddef{import statements}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+var lexer = require("./lexer");
+
+\nwendcode{}\nwbegindocs{3}\nwdocspar
+
+there are three main parts for the analysis part of the program
+
+\nwenddocs{}\nwbegincode{4}\moddef{lexical analysis}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  @param1 = the source text of the jade file
+  @return = returns a sequence of tokens/symbols, more information about tokens 
+                is available at --REF--
+*/
+function lexicalAnalysis(sourceText)\{
+  return lexer(sourceText);
+\}
+
+\nwendcode{}\nwbegindocs{5}\nwdocspar
+this is the part that will conver the syntactic analysis to a syntax tree
+
+
+\nwenddocs{}\nwbegincode{6}\moddef{syntactic analysis}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  @param1 tokens_list = this is a list of tokens that got parsed from the jade code file. 
+                more information about tokens is available at -REF--
+  @return = This function will return the abstract syntax tree that is produced from the tokens list
+*/
+function syntacticAnalysis(tokens_list)\{
+  return [];
+\}
+
+\nwendcode{}\nwbegindocs{7}\nwdocspar
+this is the contextual analysis part
+
+\nwenddocs{}\nwbegincode{8}\moddef{contextual analysis}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  @param1 syntaxTree = this is the syntax tree
+  @return = a syntax tree with contextual information, in this case it is adding the information
+  needed for the variables. More information is available at --REF--.
+*/
+function contextualAnalysis(syntaxTree)\{
+  return syntaxTree;
+\}
+
+\nwendcode{}\nwbegindocs{9}\nwdocspar
+
+this is the parse function
+
+\nwenddocs{}\nwbegincode{10}\moddef{parse}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  @param1 sourceText = the source text which would be the jadeimp code as a string
+  @return = this will be the abstract syntax tree with contextual analysis
+*/
+function parse(sourceText)\{
+  return contextualAnalysis(syntacticAnalysis(lexicalAnalysis(sourceText)));
+\}
+
+
+
+\nwendcode{}\nwbegindocs{11}\nwdocspar
+this is the api portion of the code, meaning the part of the code that is visible from other 
+files. For the porposes of the analysis portion, we only need to make the analysis portion 
+of the program public because other programs do not need access to the other functions.
+By hiding the other functions we allow this code to be more abstract and changable if needed.
+
+\nwenddocs{}\nwbegincode{12}\moddef{api}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+// this is the api of the program, the only function that should be visible from outside
+// this file is parse. 
+module.exports.parse = parse;
+
+\nwendcode{}\nwbegindocs{13}\nwdocspar
+this part will simply produce the output of the program, in this order
+
+\nwenddocs{}\nwbegincode{14}\moddef{analyzer.nw}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+\LA{}lexical analysis\RA{}
+\LA{}syntactic analysis\RA{}
+\LA{}contextual analysis\RA{}
+\LA{}parse\RA{}
+\LA{}api\RA{}
+\nwendcode{}\end{document}
+

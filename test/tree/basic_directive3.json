@@ -11,7 +11,12 @@
         {
           "type":"rawText",
           "text":"---",
-          "value":""
+          "value":"abc"
+        },
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"| def"
         }
       ]
     }
