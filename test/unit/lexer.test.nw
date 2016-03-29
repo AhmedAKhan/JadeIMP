@@ -1,0 +1,8 @@
+
+
+<<lexer test>>
+console.log("this is from the test file");
+
+
+
+

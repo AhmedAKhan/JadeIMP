@@ -47,7 +47,6 @@ syntax
 - variable declaration
   - var <keyword> = <value>
 
-- if statements
 - if (<bool> ): 
     <statement>
   else:
