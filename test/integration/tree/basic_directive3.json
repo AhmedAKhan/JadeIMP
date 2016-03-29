@@ -1,0 +1,24 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"directive",
+      "name":"div",
+      "attributes":[],
+      "text":"---",
+      "content":[
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"abc"
+        },
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"| def"
+        }
+      ]
+    }
+  ]
+}

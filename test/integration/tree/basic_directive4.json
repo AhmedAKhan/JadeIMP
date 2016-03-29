@@ -1,0 +1,37 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"directive",
+      "name":"div",
+      "attributes":[
+        {
+          "type":"attribute",
+          "text":"---",
+          "parameter":"id",
+          "value":"aaa"
+        },
+        {
+          "type":"attribute",
+          "text":"---",
+          "parameter":"class",
+          "value":"ccc ddd"
+        }
+      ],
+      "text":"---",
+      "content":[
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"abcdef"
+        },
+        {
+          "type":"rawText",
+          "text":"---",
+          "value":"efghij"
+        }
+      ]
+    }
+  ]
+}

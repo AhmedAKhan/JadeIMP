@@ -1,0 +1,81 @@
+\documentclass{article}\usepackage{noweb}\pagestyle{noweb}\noweboptions{}\begin{document}\nwfilename{index.nw}\nwbegindocs{0}\nwenddocs{}\nwbegindocs{1}\nwdocspar% ===> this file was generated automatically by noweave --- better not edit it
+
+import the necessary things
+
+\nwenddocs{}\nwbegincode{2}\moddef{import statements}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+var analyzer = require('./analyzer');
+var synthesizer = require('./synthesizer');
+
+
+\nwendcode{}\nwbegindocs{3}\nwdocspar
+
+this is the parse part
+
+\nwenddocs{}\nwbegincode{4}\moddef{parse}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  this function will take in the jade input and will return the parseTree
+  also called analyzer
+*/
+function parse(jadeString)\{
+  return analyzer.parse(jadeString);
+\}
+
+\nwendcode{}\nwbegindocs{5}\nwdocspar
+
+this is the synthesizer part
+
+\nwenddocs{}\nwbegincode{6}\moddef{synthesis}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/*
+  this function will take a
+ */
+function synthesis(syntaxTree)\{
+  return synthesizer.convert(syntaxTree);
+\}
+
+
+
+\nwendcode{}\nwbegindocs{7}\nwdocspar
+this is the render part 
+
+\nwenddocs{}\nwbegincode{8}\moddef{render}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+/* 
+ * function that will return the string, that represents the output
+ */
+function render(jadeString, options)\{
+  syntaxTree = parse(jadeString);
+  outputHtml = synthesis(syntaxTree);
+  return outputHtml;
+\}
+
+
+
+\nwendcode{}\nwbegindocs{9}\nwdocspar
+this is just setting up the api, to enusre which functions other users can use
+
+\nwenddocs{}\nwbegincode{10}\moddef{api}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+// make the API functions, it will only have render and compile
+module.exports.parse = parse;
+module.exports.synthesis = synthesis;
+module.exports.render = render; // will take in the jadeimp code and return the html as a string
+module.exports.compile = function(jadeimpString)\{
+  return function()\{ return render(jadeString, options);  \}
+\}
+
+
+\nwendcode{}\nwbegindocs{11}\nwdocspar
+this is the part of the code that will actually render the code
+
+\nwenddocs{}\nwbegincode{12}\moddef{index.nw}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+\LA{}import statements\RA{}
+\LA{}render\RA{}
+\LA{}parse\RA{}
+\LA{}synthesis\RA{}
+\LA{}render\RA{}
+\LA{}api\RA{}
+
+
+
+
+
+\nwendcode{}\end{document}
+
