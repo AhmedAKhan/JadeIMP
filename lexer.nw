@@ -607,73 +607,6 @@ function nextToken(source){
 
 
 
-@
-
-this is the part of the code that will test the function
-
-<<test>>=
-/*
-
-*/
-function test(){
-  var result = "";
-  /* result = {"text":"original"}; */
-  /* adjustString(result, 4); */
-  /* if(result.text != "inal"){ print("did not get the proper result for test 1, got: " + result.text + " expected inal"); return; } */
-
-  /* var source = {"text":"var numberOfApples = 10", "tokens":[], "level":0}; */
-  /* result = nextToken(source); */
-  /* if(result && result.type == "ident" && result.level == 0){ print("--broke 1---");  } */
-  /* print("source: '" + source.text + "'"); */
-
-  /* result = lexer("p. \n  asdasd asda \n  sdasdasd asdsa \n  dsa $zcxz adsad \n  asdad asda \nsdas d asd "); */
-  /* print(" result: " + JSON.stringify(result)); */
-
-  /* result = lexer("var apples = 10"); */
-  /* expectedTypeOrder(result, ["var", "ident", "=", "number"]) */
-
-  /* result = lexer("  var apples = 10"); */
-  /* expectedTypeOrder(result, ["var", "ident", "=", "number"]) */
-
-  /* result = lexer("div. \n  abc\n  | def"); */
-  /* print("result: " + JSON.stringify(result)); */
-
-  /* result = lexer("div. \n  abc asd sfsdf \ndiv  \n  | inside the second div"); */
-  /* result = lexer("div \n  abc \ndiv  \n  | inside the second div"); */
-
-  /*
-div 
-  asd
-    asdasd
-  zcasd
-asdsad
-  */
-  /* result = lexer("div \n  asd\n    asdasd\n  zcasd\nasdsad"); */
-  /* result = lexer("if true \n  var i = 10\nelse\n  var i = 20"); */
-
-  /* result = lexer("div\n  if true \n    var i = 10\n  else\n    var i = 20"); */
-
-  /* result = lexer("if 1 = 10\n  p\n    | this is in the true condition\nelse\n  p. \n    this is in the false condition"); */
-
-  /* result = lexer("create block title\n  h1. \n  Welcome to our website"); */
-  /* result = lexer("create block title\n  h1.  Welcome to our website"); */
-
-  /* result = lexer("for(var i = 0; i < 10; i++)\n  p.\n    this is the $i div"); */
-
-
-  result = lexer('div(num = "10")');
-  print("result: " + JSON.stringify(result));
-}
-function expectedTypeOrder(actual, expected){
-  if(expected.length != actual.length)
-    throw("the length is not the same expected: " + JSON.stringify(expected) +" actual: " + JSON.stringify(actual));
-  for(var i = 0; i < actual.length; i++){
-    /* console.log("i: " + i + " actual: " + actual[i]); */
-    if(expected[i] !== actual[i].type)
-      throw("i:  " + i + " expected type to be " + expected + " but got " + actual[i].type);
-  }
-}
-test();
 
 
 @
@@ -706,7 +639,6 @@ function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(s
 <<helper functions>>
 <<lexerFunction>>
 <<api>>
-<<test code>>
 
 
 @
@@ -714,5 +646,6 @@ this is for the tester code
 
 <<lexer.test.nw>>=
 <<lexer.nw>>
+<<test code>>
 <<test>>
 

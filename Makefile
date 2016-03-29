@@ -120,9 +120,10 @@ clean: cleanDoc cleanCode
 
 
 ## run the testers
-runTest:
-	$(MAKE) -C test/Makefile test
-	mocha
+runTest: generateCode
+	-mocha
+	-mocha code/*.js
+
 
 
 
