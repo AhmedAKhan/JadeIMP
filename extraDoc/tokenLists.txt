@@ -6,13 +6,12 @@ simple tokens
 properties of all tokens
   - all will have a variable called type, which will equal to the type of that token
   - all will have a variable called text, which will be the string that encomposes that token
-  - all the tags will have a variable called level, which will tell you the number of indentations that the directive has 
 
 
 directive = {
   type = 'directive',
   name = '--',
-  attribtues = [{attributes}],
+  attributes = [{attributes}],
   content = [<token>]
   text = '--'
 }
@@ -26,17 +25,10 @@ attributes = {
   value = '--'
 }
 
-'var' <name> '=' <expression>
-variable = {
-  type = 'assignment',
-  name = 'name',
-  expression = {}
-}
-
 
 if = {
   type = 'if',
-  condition = '',
+  condition = 'condition',
   statements = [<statement>],
   else = [<statement>]
   text = '--'
@@ -78,12 +70,40 @@ expression = {
   text = '--'
 }
 
+text = {
+  type = text,
+  content:[
+  
+  ]
+  text = --
+}
 
 rawText = {
   type = 'rawText',
-  value = '-',
+  value = 'my name is $ahmed asdfasdf',
   text = ''
+  variables = ["name"],
   level = -
+}
+
+
+'var' <name> '=' <expression>
+variable = {
+  type = 'variable',
+  name = 'name',
+  variablesUsed = [],
+  variablesCalled = [],
+  expression = {}
+}
+
+
+usable directives
+  - input
+
+
+
+text = {
+
 }
 
 Block = {
@@ -93,6 +113,12 @@ Block = {
   text = '--'
 }
 
+root = {
+  type = root,
+  level = 0,
+  "children":[tokens]
+  text = "--"
+}
 
 
 

@@ -1,11 +1,18 @@
 
 @
-these are all the test cases
+this is the part that will test the lexer file
 
 <<test code>>=
+var expect = require('chai').expect;
 console.log("this is from the test file");
-describe("lexer test 1", function(){
-  it("inside the first test", function(done){
+
+describe("testing the adjustString", function(){
+  it("giving it no input", function(done){
+    
+    var input = {text:"1234567890", column:0}
+    adjustString(input, 0);
+    expect(input).to.have.property("text", "1234567890")
+    expect(input).to.have.property("column", 0)
     done();
   })
 })
@@ -13,11 +20,6 @@ describe("lexer test 1", function(){
 console.log("after the describe part");
 
 
-@
-
-this is the part of the code that will test the function
-
-<<test>>=
 /*
 
  */
