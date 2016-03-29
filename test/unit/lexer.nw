@@ -1,6 +1,6 @@
 
 
-<<lexer test>>
+<<test code>>=
 console.log("this is from the test file");
 
 

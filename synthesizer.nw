@@ -71,5 +71,6 @@ of the project. So when this part of the code gets compiled, it will creater the
 <<convert>>
 <<api>>
 
-
+<<synthesizer.test.nw>>=
+<<synthesizer.nw>>
 

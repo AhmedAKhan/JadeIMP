@@ -73,7 +73,8 @@ this is the part of the code that will actually render the code
 <<render>>
 <<api>>
 
-
+<<index.test.nw>>=
+<<index.nw>>
 
 
 

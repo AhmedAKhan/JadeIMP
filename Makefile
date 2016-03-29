@@ -16,6 +16,11 @@ GPFLAGS=-aux-directory=intDoc -output-directory=intDoc
 docFiles  := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, doc/%, $(path:%.nw=%.pdf)))
 codeFiles := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, code/%, $(path:%.nw=%.js)))
 
+## debugging stuff
+## if you want to make debugging off, then make this an empty string
+debugPath=test/unit/
+testname=.test
+
 main: generateCode # doc
 # main:
 # 	echo "allfiles: $(allFiles)"
@@ -46,7 +51,10 @@ code:
 
 code/%.js: %.nw
 	@echo "the < has the value of $<, the @ = $@ the gcflags=$(GCFlAGS)"
-	$(GC) $(GCFlAGS)$< $< > $@
+	echo "$(debugPath)$*.nw"
+	$(GC) $(GCFlAGS)$*$(testname).nw $< $(debugPath)$*.nw > $@
+
+
 
 
 

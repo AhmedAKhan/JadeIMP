@@ -80,3 +80,6 @@ this part will simply produce the output of the program, in this order
 <<contextual analysis>>
 <<parse>>
 <<api>>
+
+<<analyzer.test.nw>>=
+<<analyzer.nw>>
