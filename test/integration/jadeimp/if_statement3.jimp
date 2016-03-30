@@ -1,0 +1,4 @@
+if (1 == 0)
+  p. true
+else
+  p. false

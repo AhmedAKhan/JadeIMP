@@ -1,0 +1,27 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"if",
+      "text":"---",
+      "condition":"0 == 0",
+      "statements":[
+        {
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
+          "text":"---",
+          "content":[
+            {
+              "type":"rawText",
+              "text":"---",
+              "value":"true"
+            }
+          ]
+        }
+      ],
+      "else":[]
+    }
+  ]
+}
