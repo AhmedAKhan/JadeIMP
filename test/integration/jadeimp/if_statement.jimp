@@ -1,7 +1,0 @@
-body
-  if (1 = 1)
-    p.
-        this is the true condition
-  else 
-    p.
-        this is the false condition
