@@ -17,19 +17,20 @@
               "content":[
                 {
                   "type":"rawText",
-                  "value":"this is the true condition"
+                  "value":"true"
                 }
               ],
               "text":"--"
             },
           ],
           "else":[
+            {
               "type":"directive",
               "name":"p",
               "content":[
                 {
                   "type":"rawText",
-                  "value":"this is the false condition",
+                  "value":"false",
                   "text":"--"
                 }
               ],
@@ -39,7 +40,6 @@
           "text":"--"
         }
       ],
-      "level":0,
       "text":"--"
     }
   ],

@@ -1,0 +1,63 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"if",
+      "text":"---",
+      "condition":"1 == 0",
+      "statements":[
+        {
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
+          "text":"---",
+          "content":[
+            {
+              "type":"rawText",
+              "text":"---",
+              "value":"true one"
+            }
+          ]
+        }
+      ],
+      "else":[
+        {
+          "type":"if",
+          "text":"---",
+          "condition":"1 == 0",
+          "statements":[
+            {
+              "type":"directive",
+              "name":"p",
+              "attributes":[],
+              "text":"---",
+              "content":[
+                {
+                  "type":"rawText",
+                  "text":"---",
+                  "value":"true two"
+                }
+              ]
+            }
+          ],
+          "else":[
+            {
+              "type":"directive",
+              "name":"p",
+              "attributes":[],
+              "text":"---",
+              "content":[
+                {
+                  "type":"rawText",
+                  "text":"---",
+                  "value":"false two"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
