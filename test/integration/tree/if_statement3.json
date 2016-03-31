@@ -1,0 +1,41 @@
+{
+  "type":"root",
+  "text":"---",
+  "content":[
+    {
+      "type":"if",
+      "text":"---",
+      "condition":"1 == 0",
+      "statements":[
+        {
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
+          "text":"---",
+          "content":[
+            {
+              "type":"rawText",
+              "text":"---",
+              "value":"true"
+            }
+          ]
+        }
+      ],
+      "else":[
+        {
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
+          "text":"---",
+          "content":[
+            {
+              "type":"rawText",
+              "text":"---",
+              "value":"false"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "type":"root",
-  "children":[
+  "text":"---",
+  "content":[
     {
       "type":"directive",
       "name":"body",
@@ -9,7 +10,7 @@
       [
         {
           "type":"if",
-          "condition":"1 = 1",
+          "condition":"1 == 1",
           "statements":[
             {
               "type":"directive",
@@ -17,7 +18,7 @@
               "content":[
                 {
                   "type":"rawText",
-                  "value":"this is the true condition"
+                  "value":"true"
                 }
               ],
               "text":"--"
@@ -30,7 +31,7 @@
               "content":[
                 {
                   "type":"rawText",
-                  "value":"this is the false condition",
+                  "value":"false",
                   "text":"--"
                 }
               ],
@@ -42,7 +43,6 @@
       ],
       "text":"--"
     }
-  ],
-  "text":""
+  ]
 }
 
