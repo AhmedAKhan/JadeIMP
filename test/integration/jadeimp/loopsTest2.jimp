@@ -1,0 +1,7 @@
+body
+    for ( var j = 10; j > 0; j-- )
+        p
+            if ($i > 5)
+                | $i has a value bigger then 5
+            else
+                | $i has a value equal to or smaller then 5

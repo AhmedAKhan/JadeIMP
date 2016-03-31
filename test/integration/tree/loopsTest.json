@@ -1,0 +1,28 @@
+{
+  "type":"root",
+  "children":[
+    {
+      "type":"for",
+      "before":"var i = 0",
+      "condition":"i < 10",
+      "after":"i++",
+      "statements":[
+        {
+          "type":"directive",
+          "name":"div",
+          "attributes":[],
+          "content":[
+            {
+              "type":"rawText",
+              "value":"this has the div number of $i",
+              "text":"--"
+            }
+          ],
+          "text":"--"
+        }
+      ],
+      "text":"--"
+    }
+  ],
+  "text":"--"
+}

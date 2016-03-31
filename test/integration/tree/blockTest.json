@@ -1,0 +1,32 @@
+{
+  "type":"root",
+  "children":[
+    {
+      "type":"block",
+      "name":"title",
+      "text":"--"
+    }
+  ],
+  "text":"--"
+}
+{
+  "type":"block",
+  "name":"title",
+  "statements":[
+    {
+      {
+        "type":"directive",
+        "name":"h1",
+        "statements":[
+          {
+             "type":"rawText",
+             "value":"this is the title",
+             "text":"--"
+          }
+        ],
+        "text":"--"
+      }
+    }
+  ],
+  "text":"--"
+}

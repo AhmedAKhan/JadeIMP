@@ -75,6 +75,7 @@ module.exports.parse = parse;
 this part will simply produce the output of the program, in this order
 
 <<analyzer.nw>>=
+<<import statements>>
 <<lexical analysis>>
 <<syntactic analysis>>
 <<contextual analysis>>

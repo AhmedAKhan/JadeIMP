@@ -1,0 +1,6 @@
+create block title
+    h1
+        | this is the title
+
+body
+    block title

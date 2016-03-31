@@ -1,0 +1,41 @@
+{
+  "type":"root",
+  "children":[
+    {
+      "type":"for",
+      "before":"var j = 10",
+      "condition":"j > 0",
+      "after":"j--",
+      "statements":[
+        {
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
+          "content":[
+            {
+              "type":"if",
+              "condition":"$i > 5",
+              "statements":[
+                {
+                  "type":"rawText",
+                  "value":"$i has a value bigger then 5",
+                  "text":"--"
+                }
+              ],
+              "else":[
+                {
+                  "type":"rawText",
+                  "value":"$i has a value equal to or smaller then 5",
+                  "text":"--"
+                }
+              ],
+              "text":"--"
+            }
+          ],
+          "text":"--"
+        }
+      ],
+    }
+  ],
+  "text":"--"
+}

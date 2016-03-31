@@ -1,12 +1,12 @@
 {
   "type":"root",
-  "level":"0",
   "children":[
     {
       "type":"directive",
       "name":"body",
       "attributes":[],
-      "content":[
+      "content":
+      [
         {
           "type":"if",
           "condition":"1 = 1",
@@ -21,9 +21,10 @@
                 }
               ],
               "text":"--"
-            },
+            }
           ],
           "else":[
+            {
               "type":"directive",
               "name":"p",
               "content":[
@@ -34,12 +35,11 @@
                 }
               ],
               "text":"--"
-            },
+            }
           ],
           "text":"--"
         }
       ],
-      "level":0,
       "text":"--"
     }
   ],

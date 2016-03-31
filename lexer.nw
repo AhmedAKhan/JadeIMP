@@ -564,6 +564,7 @@ function lexer(sourceText){
     "line":1,
     "column":1
   };
+  if(sourceText === undefined) throw("the given input string was undefined");
   source.text = sourceText.replace(/\t/, "    ");
   findLevel(source);
   // start lexing the code
