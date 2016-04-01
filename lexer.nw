@@ -739,8 +739,6 @@ this is for the tester code
 start
 
 the ones i will use 
-'if'
-'else'
 'else-if'
 'conditional'
 'block'
@@ -759,6 +757,9 @@ done
 'eos'
 'indent'
 'outdent'
+'raw text'
+'if'
+'else'
 
 
 

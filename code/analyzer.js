@@ -1,4 +1,5 @@
 var lexer = require("./lexer");
+var parser = require("./parser");
 
 /*
   @param1 = the source text of the jade file

@@ -645,9 +645,8 @@ describe("testing the adjustString", function(){
 
 describe("testing text with dot", function(){
   it("basic p with dot text ", function(done){
-    
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
-    console.log("text with dot result: " + JSON.stringify(result, null, 2));
+    /* console.log("text with dot result: " + JSON.stringify(result, null, 2)); */
     
     expect(resultArr).to.be.an("array").with.length(5);
 
@@ -713,23 +712,23 @@ describe("testing the if statement", function(){
 
 describe("going to test directives", function(){
     it("basic simple p directive", function(done){
-        var resultArr = lexer("p");
-        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+      var resultArr = lexer("p");
+      console.log("result: " + JSON.stringify(resultArr, null, 2));
 
-        expect(resultArr).to.be.a("array")
-        .to.have.length(1);
+      expect(resultArr).to.be.a("array")
+      .to.have.length(1);
 
-        var result = resultArr[0];
-        expect(result).to.be.a("object");
-        expect(result).to.have.property("type", "directive");
-        expect(result).to.have.property("name", "p");
+      var result = resultArr[0];
+      expect(result).to.be.a("object");
+      expect(result).to.have.property("type", "directive");
+      expect(result).to.have.property("name", "p");
 
-        done();
-        })
+      done();
+    })
 
     it("bar text + if statement", function(done){
         var resultArr = lexer("if 1 == 2\n  | this is also some text");
-        console.log("result: " + JSON.stringify(resultArr, null, 2));
+        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
         expect(resultArr).to.be.a("array")
         .to.have.length(3);
@@ -755,7 +754,7 @@ describe("going to test directives", function(){
 
     it("bar text + if statement + outdent", function(done){
         var resultArr = lexer("if 1 == 2\n  | this is also some text\n| this is some more text");
-        console.log("result: " + JSON.stringify(resultArr, null, 2));
+        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
         expect(resultArr).to.be.a("array")
         .to.have.length(5);
@@ -796,6 +795,7 @@ describe("testing the for loop", function(){
     it("testing basic for statement", function(done){
         // get the lexed object
         var resultArr = lexer("for (var i = 0; i < 100; i++)");
+        console.log("text with dot result: " + JSON.stringify(resultArr, null, 2));
 
         // run the tests
         expect(resultArr)
@@ -990,8 +990,6 @@ test();
 start
 
 the ones i will use 
-'if'
-'else'
 'else-if'
 'conditional'
 'block'
@@ -1010,6 +1008,9 @@ done
 'eos'
 'indent'
 'outdent'
+'raw text'
+'if'
+'else'
 
 
 

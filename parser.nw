@@ -1,0 +1,152 @@
+@
+these are all the import statements
+<<import statements>>=
+
+
+@
+this is the part that will create stuff
+
+<<tree generator functions>>=
+/**/
+function getError(errString){ throw errString; }
+
+function handleDirective(tokenStream){
+  var tok = tokenStream.advance();
+  var token = {
+    "type":"directive",
+    "name":tok.name,
+    "attributes":[],
+    "content":[],
+    "text":"--"
+  }
+  return token;
+}
+function handleFor(tokenStream){
+  console.log("inside the for function");
+  var tok = tokenStream.advance();
+  var token = {
+    "type":"for",
+    "declaration":tok.declaration,
+    "condition":tok.condition,
+    "iteration":tok.iteration,
+    "statement":[],
+    "else":[],
+    "text":""
+  }
+  
+  console.log("going to return the token: " + token);
+  return token;
+}
+function handleRawText(tokenStream){
+  return tokenStream.advance();
+}
+function handleEOS(tokenStream){}
+function handleIndent(tokenStream){}
+function handleOutdent(tokenStream){}
+function handleIf(tokenStream){}
+
+function handleBlock(tokenStream){
+  tokenStream.expect("indent");
+  var block = [];
+  
+  handleList(tokenStream);
+
+  tokenStream.expect("outdent");
+  return block;
+}
+
+<<handles the list>>=
+function handleList(tokenStream){
+  console.log("the peek value is: " + JSON.stringify(tokenStream.peek()));
+  var tokens = [];
+  while(!tokenStream.isEmpty()){
+    switch(tokenStream.peek().type){
+      case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
+      case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
+      case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
+      case "eos"       : tokens.push(handleEOS(tokenStream))       ; break;
+      case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
+      case "outdent"   : return ; //handleOutdent(tokenStream)   ; break;
+      case "if"        : tokens.push(handleIf(tokenStream))        ; break;
+      default:
+        getError("got an unexpected token recieved" + tokenStream.peek().type);
+        break;
+    }
+  }
+  return tokens;
+}
+
+<<parserFunction>>=
+/*
+  @param1 {list of lexed tokens} sourceText = this function takes in the jadeimp code as string
+  @return {object} this function returns a list of tokens
+  @api public
+*/
+function parser(tokensList){
+  // convert all the tabs to four spaces
+  tokensList.reverse();
+  if(tokensList=== undefined) throw("the given input string was undefined");
+  var source = {};
+  source.tokens = tokensList;
+  source.peek = function(){ return this.tokens.slice(-1).pop(); }
+  source.accept = function(type){ if(this.peek().type === type) return this.advance(); }
+  source.advance = function(type){ if(this.peek().type === type) return this.advance(); }
+
+  source.advance = function(type){ return this.tokens.pop(); };
+  source.expect = function(type){
+    if(this.peek().type === type) return this.advance();
+    else getError("expected to have " + type + " but got " + this.peek().type);
+  }
+  source.isEmpty = function(type){ return (this.tokens.length === 0);  }
+
+  var tree = {
+   "type":"root",
+   "content":handleList(source),
+   "text":""
+  }
+
+  console.log("going to print result: " + JSON.stringify(tree));
+  return tree;
+}
+
+
+@
+for this file, the part of the code that is visible to the outside files is just the lexer function. 
+
+
+<<api>>=
+// this is the part of the code that should be available to the rest of the program
+module.exports = parser;
+
+
+
+@
+this is for all the debugging information
+<<debugging information>>=
+var DEBUG = true;
+var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
+function print(str){ printwp(str, 0); }
+function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }
+
+
+
+<<parser.nw>>=
+'use strict'
+
+<<import statements>>
+<<tree generator functions>>
+<<parserFunction>>
+<<handles the list>>
+<<debugging information>>
+<<api>>
+
+
+@
+this is for the tester code
+
+<<parser.test.nw>>=
+<<parser.nw>>
+<<test code>>
+
+
+

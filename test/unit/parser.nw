@@ -1,0 +1,117 @@
+
+
+<<test code>>=
+var chai = require("chai");
+var expect = chai.expect;
+
+describe("going to test the parser", function(){
+  it("basic for statement", function(done){
+      var input = [
+        {
+          "type": "for",
+          "declaration": "var i = 0",
+          "condition": "i < 100",
+          "iteration": "i++",
+          "level": 0,
+          "text": "for (var i = 0; i < 100; i++)"
+        }
+      ]
+
+    var result = parser(input);
+    console.log("result: " + JSON.stringify(result, null, 2));
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "root")
+
+    var children = result.content;
+    expect(children[0]).to.be.an("object");
+          
+    expect(children[0]).to.have.property("declaration", "var i = 0");
+    expect(children[0]).to.have.property("condition", "i < 100");
+    expect(children[0]).to.have.property("iteration", "i++");
+
+    done();
+  })
+});
+
+
+describe("going to test directives", function(){
+  it("basic directive with text", function(done){
+      var input = [
+        {
+          "type": "directive",
+          "name": "p",
+          "level": 0,
+          "text": "p"
+        }
+      ]
+
+    var result = parser(input);
+    console.log("result: " + JSON.stringify(result, null, 2));
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "root");
+    expect(result).to.have.property("content");
+    expect(result.content).to.have.length(1);
+
+    var content = result.content;
+    expect(content[0]).to.be.an("object");
+    expect(content[0]).to.have.property("type", "directive");
+    expect(content[0]).to.have.property("name", "p");
+
+    done();
+  });
+
+  it("directive + text", function(done){
+      var input = [
+        {
+          "type": "rawText",
+          "value": "1. this is some text",
+          "level": 1,
+          "text": "1. this is some text"
+        }
+      ]
+
+    var result = parser(input);
+    console.log("result: " + JSON.stringify(result, null, 2));
+
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "root");
+    expect(result).to.have.property("content");
+    expect(result.content).to.have.length(1);
+
+    var content = result.content;
+    expect(content[0]).to.be.an("object");
+    expect(content[0]).to.have.property("type", "rawText");
+    expect(content[0]).to.have.property("value", "1. this is some text");
+
+    done();
+  });
+});
+
+describe("going to test for text", function(){
+  it("basic text test", function(done){
+      var input = [
+        {
+          "type": "rawText",
+          "value": "1. this is some text",
+          "level": 1,
+          "text": "1. this is some text"
+        }
+      ]
+
+    var result = parser(input);
+    console.log("result: " + JSON.stringify(result, null, 2));
+
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "root");
+    expect(result).to.have.property("content");
+    expect(result.content).to.have.length(1);
+
+    var content = result.content;
+    expect(content[0]).to.be.an("object");
+    expect(content[0]).to.have.property("type", "rawText");
+    expect(content[0]).to.have.property("value", "1. this is some text");
+
+    done();
+  });
+});
+

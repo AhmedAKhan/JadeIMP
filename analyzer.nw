@@ -3,6 +3,7 @@ this are the necessary imports for this project
 
 <<import statements>>=
 var lexer = require("./lexer");
+var parser = require("./parser");
 
 @
 
