@@ -87,7 +87,7 @@ function getTokenEOL(source){
   source.level = 0; // since a new line was added, the current level is 0
   source.column = 0;
   source.line += 1;
-  findLevel(source);
+  /* findLevel(source); */
   source.lineBegin = true;
   print("inside the end of line reached, the lineBegin is " + source.lineBegin);
   return true;
@@ -97,11 +97,11 @@ function getTokenEOL(source){
 /*
  * this function will find the level of the current line. It will be called after end of line and the will set the level depending on the level of the first character
  */
-function findLevel(source){
-  var result = /^ */.exec(source.text); // always match because an empty string is considered valid
-  adjustString(source, result[0].length);
-  source.level = result[0].length/2; // since a new line was added, the current level is 0
-}
+/* function findLevel(source){ */
+/*   var result = /^ *1/.exec(source.text); // always match because an empty string is considered valid */
+/*   adjustString(source, result[0].length); */
+/*   source.level = result[0].length/2; // since a new line was added, the current level is 0 */
+/* } */
 /*
  * this function will convert the next sequence of characters to tokens
  *
@@ -119,8 +119,8 @@ function getTokenDirective(source){
 
   var token = {
     type : "directive",
+    name: value,
     level: source.level,
-    value: value,
     text : result[0]
   };
   source.tokens.push(token);
@@ -147,21 +147,34 @@ function getTokenVerticalBar(source){
   return true;
 }
 /**/
-function getTokenAttributes(source){}
-/**/
-function getTokenCondition(source){}
-/**/
-function getTokenStatement(source){}
-/**/
-function getTokenStatements(source){}
+function getTokenAttributes(source){
+  
+}
 /**/
 function getTokenExpression(source){
   //
 
   //
-
 }
-/**/
+
+function handleCondition(source){
+  /* var result = /^ *1/.exec(source.text); // this will get the name of the variable */
+  /* if(!result) return false; */
+  /* var value = result[0].trim(); */
+  /* adjustString(source, result[0].length); */
+
+  /* var token = { */
+  /*   type : "if", */
+  /*   level: source.level, */
+  /*   value: value, */
+  /*   text : result[0] */
+  /* }; */
+  /* source.tokens.push(token); */
+  /* // found the variable, actually start converting it */
+  /* return true; */
+}
+
+/* probably not used */
 function operator(source){
   var result = /^(\+|-|\*|\/)/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -179,7 +192,7 @@ function operator(source){
   return true;
 }
 
-/**/
+/* probably not used */
 function boolOperator(source){
   var result = /^(==|!==|>=?|<=?)\s*/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -215,6 +228,47 @@ function getTokenVariable(source){
   // found the variable, actually start converting it
   return true;
 }
+/* indent + outdent */
+function getTokenDent(source){
+  var currentLevel = source.level;
+  console.log("inside the get token dent");
+  console.log("source");
+  console.log(source);
+  // source.level = current number of spaces in the last token
+  // source.indentTokensStack = all the indent tokens and the number of spaces for them
+
+  // always match because an empty string is considered valid
+  var result = /^ */.exec(source.text);
+  adjustString(source, result[0].length);
+  var numSpaces = result[0].length // number of spaces
+  
+  // check indent
+  var currentLevel = 0;
+  if(currentLevel) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
+  if(numSpaces > currentLevel){
+    var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
+    source.tokens.push(indentTokens);
+    source.indentTokensStack.push(indentTokens);
+    return;
+  }
+  else if(numSpaces == currentLevel) return; // the next item is in the same div
+
+  // check the outdents
+  for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
+    if(source.indentTokensStack[i].level < numSpaces)
+      getError("the number of spaces is mismatched at line " + source.line + " numberOfSpaces are " + numSpaces + " execpted to have " + source.indentTokensStack[i].level);
+    
+    if(source.indentTokensStack[i].level == numSpaces) return;
+    source.indentTokensStack.pop();
+    source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i+1, "text":""});
+  }
+
+  if(numSpaces === 0) return;
+  
+  // 
+  getError("got the number of spaces as -1 for some reason");
+}
+
 /**/
 function getTokenRawText(source){}
 /**/
@@ -237,10 +291,10 @@ function getTokenNumber(source){
 
 /// simple tokens
 /*
-  = () var if for else block create | .
+  = () var else block create | .
 */
 function getSimpleToken(source){
-  var result = /^(=|\(|\)|var|for|if|else|block|create|;) */.exec(source.text); // this will get the name of the variable
+  var result = /^(=|\(|\)|var|else|block|create|;) */.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
   var token = {};
@@ -256,37 +310,75 @@ function getSimpleToken(source){
   // found the variable, actually start converting it
   return true;
 }
+
+function getError(source, errorString){
+  throw errorString;
+}
+
 /**/
 function getTokenSimpleIf(source){
-  var sourceText = source.text;
-  var result = /^if */.exec(sourceText); // this will get the name of the variable
+  var result = /^if *(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
+  adjustString(source, result[0].length);
+
+  var result = /^[^)]*)?/.exec(source.text); // this will get the name of the variable
+  if(!result){ getError(source, "no condition specified for if statement"); return false;  };
+  var condition = result[0];
+  condition = condition.substr(0,condition.length).trim();
   adjustString(source, result[0].length);
 
   var token = {
     type : "if",
     level: source.level,
-    value: value,
+    condition: condition,
     text : result[0]
   };
   source.tokens.push(token);
-  // found the variable, actually start converting it
   return true;
 }
 /**/
-function getTokenSimpleFor(source){
-  var sourceText = source.text;
-  var result = /^for */.exec(sourceText); // this will get the name of the variable
+function getTokenFor(source){
+  // get the for token
+  var result = /^for *\(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
-  var value = result[0].trim();
+
+  /* var forValue = result[0].trim(); // value not necessary*/
+  adjustString(source, result[0].length);
+  var totalString = result[0];
+
+  // get the declaration
+  result = /^[^;]*;/.exec(source.text); // this will get the name of the variable
+  var declaration = result[0].trim(); // get the value
+  declaration = declaration.substring(0,declaration.length-1);// remove the semicolon
+  adjustString(source, result[0].length);
+  totalString = totalString + result[0];
+
+  // get the condition
+  result = /^[^;]*;/.exec(source.text); // this will get the name of the variable
+  var condition = result[0].trim(); // get the value
+  condition  = condition .substring(0,condition .length-1);// remove the semicolon
+  adjustString(source, result[0].length);
+  totalString = totalString + result[0];
+
+  // get the iteration
+  result = /^[^)\n]*\)?/.exec(source.text); // this will get the name of the variable
+  var iteration = result[0].trim(); // get the value
+  totalString = totalString + result[0];
+  
+  // if there is an end bracket, remove it
+  console.log("iteration: " + iteration + " length: " + iteration.length );
+  if(iteration[iteration.length-1] == ")")
+    iteration  = iteration.substring(0,iteration.length-1);// remove the semicolon
   adjustString(source, result[0].length);
 
   var token = {
     type : "for",
+    declaration: declaration,
+    condition:condition,
+    iteration:iteration,
     level: source.level,
-    value: value,
-    text : result[0]
+    text : totalString
   };
   source.tokens.push(token);
   // found the variable, actually start converting it
@@ -327,7 +419,8 @@ function getTokenDot(source){
   source.level = 0; // because a new line was created by the dot
   
   // the raw text
-  findLevel(source);
+  // TODO
+  /* findLevel(source); */
   getTokenText(source);
 
   // found the variable, actually start converting it
@@ -404,6 +497,20 @@ function getTokenIdent(source){
   return true;
 }
 
+/* end of string */
+function getTokenEOS(source){
+  if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
+  
+  // add the proper amount of out tokens
+  for(var i = 0; i < source.level; i++){
+    source.tokens.push({"type":"outindent", "text":""});
+  }
+
+  // add the token and end the function
+  source.tokens.push({"type":"eos", "text":""});
+  return true;
+}
+
 
 /*
  * @param1 {object} source = is an object used to tokenize the string
@@ -412,54 +519,22 @@ function getTokenIdent(source){
 function nextToken(source){
   print("the source text is '" + source.text + "'");
   // this is a list of functions that the token will use
-  var tokenValidators = /***
-
-                        'blank', 'endInterpolation', 'interpolation', 'block',
-                        'conditional', 'each', 'while', 'directive',
-                        'attrs', 'indent', 'text', this.fail()
-
-                        ---idk
-                        'slash'     , 'textHtml'  , 'dot'  ,
-                        'className' , 'blockCode' , 'code' ,
-                        'colon'     ,
-
-                        --- should add
-                        'include',
-
-                        **/
-                        [ 
-                          /* getTokenMaker("="), */
-                          /* getTokenMaker("("), */
-                          /* getTokenMaker(")"), */
-                          /* getTokenMaker("var"), */
-                          /* getTokenMaker("if"), */
-                          /* getTokenMaker("for"), */
-                          /* getTokenMaker("else"), */
-                          /* getTokenMaker("block"), */
-                          /* getTokenMaker("create"), */
-                          /* getTokenMaker("|"), */
-                          /* getTokenMaker("."), */
+  var tokenValidators = [ 
+                          getTokenEOS,
+                          getTokenDent,
                           getTokenDot,
                           getTokenVerticalBar,
-                          getSimpleToken, // all the simple tokens, such as = (  ) . var if else for
-                          boolOperator,
-                          operator,
-
+                          getTokenFor,
+                          /* getTokenSimpleIf, */
+                          getSimpleToken, // all the simple tokens, such as = (  ) . var else
                           getTokenDirective,
                           getTokenAttributes,
                           getTokenVariable,
-                          /* getTokenSimpleIf, */
-                          /* getTokenSimpleFor, */
-                          getTokenCondition,
-                          getTokenStatement,
-                          /* getTokenStatements, */
                           getTokenExpression,
                           getTokenRawText,
-                          /* getTokenText, */
                           getTokenBlock,
-
                           getTokenNumber,
-                          getTokenIdent,
+                          /* getTokenIdent, */
                           getTokenEOL
                         ];
 
@@ -487,6 +562,7 @@ function adjustString(source, num){
 }
 /*
  * this function is for creating simple tokens, for example vertical bar, | or var, 
+
  * /// not really used so far
  * @param1 {object}
  * @param2 {string}
@@ -517,19 +593,20 @@ function lexer(sourceText){
     "tokens":[],
     "lineBegin":true,
     "line":1,
-    "column":1
+    "column":1,
+    "indentTokensStack":[]
   };
   if(sourceText === undefined) throw("the given input string was undefined");
-  sourceText = sourceText.text();
   source.text = sourceText.replace(/\t/, "    ");
-  findLevel(source);
   // start lexing the code
-  while(sourceText.length > 0){
+  while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
     var numberOfTokens = source.tokens.length;
     if(!nextToken(source)){
-      if(numberOfTokens !== source.tokens.length) 
-        print("got lost on input at line " + source.line + " and column " + source.column); 
+      console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length);
+      if(numberOfTokens === source.tokens.length)
+        getError(source, "got lost on input at line " + source.line + " and column " + source.column);
+      
       break;
     }
   }
@@ -547,15 +624,115 @@ module.exports = lexer;
 var expect = require('chai').expect;
 console.log("this is from the test file");
 
+
 describe("testing the adjustString", function(){
   it("giving it no input", function(done){
-    
     var input = {text:"1234567890", column:0}
     adjustString(input, 0);
     expect(input).to.have.property("text", "1234567890")
     expect(input).to.have.property("column", 0)
     done();
   })
+});
+
+describe("testing the ");
+
+describe("going to test directives", function(){
+  it("basic simple p directive", function(done){
+    var resultArr = lexer("p");
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(1);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    done();
+  })
+})
+
+describe("testing the for loop", function(){
+  it("testing basic for statement", function(done){
+    // get the lexed object
+    var resultArr = lexer("for (var i = 0; i < 100; i++)");
+
+    // run the tests
+    expect(resultArr)
+    .to.be.a('array')
+    .to.have.length(1);
+
+    var result = resultArr[0];
+    expect(result).to.have.property("type", "for");
+    expect(result).to.have.property("declaration", "var i = 0");
+    expect(result).to.have.property("condition", "i < 100");
+    expect(result).to.have.property("iteration", "i++");
+    done();
+  });
+
+
+    it("testing basic for statement", function(done){
+        // get the lexed object
+        var resultArr = lexer("for (var i = 0; i < 100; i++)");
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
+
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+        });
+
+
+    it("testing basic for statement without brackets", function(done){
+        // get the lexed object
+        var resultArr = lexer("for var i = 0; i < 100; i++");
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
+
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+        });
+
+
+    it("for statement - brackets, +indents", function(done){
+        // get the lexed object
+        var resultArr = lexer("    for var i = 0; i < 100; i++");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(2);
+
+        var indentToken = resultArr[0];
+        expect(indentToken).to.have.property("type", "indent");
+        expect(indentToken).to.have.property("level", 4);
+        expect(indentToken).to.have.property("indents", 1);
+
+
+        var result = resultArr[1];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+
+        done();
+    });
 })
 
 console.log("after the describe part");
@@ -566,9 +743,6 @@ console.log("after the describe part");
  */
 function test(){
   var result = "";
-  /* result = {"text":"original"}; */
-  /* adjustString(result, 4); */
-  /* if(result.text != "inal"){ print("did not get the proper result for test 1, got: " + result.text + " expected inal"); return; } */
 
   /* var source = {"text":"var numberOfApples = 10", "tokens":[], "level":0}; */
   /* result = nextToken(source); */
@@ -610,8 +784,8 @@ function test(){
   /* result = lexer("for(var i = 0; i < 10; i++)\n  p.\n    this is the $i div"); */
 
 
-  result = lexer('div(num = "10")');
-  print("result: " + JSON.stringify(result));
+  /* result = lexer('div(num = 10)'); */
+  /* print("result: " + JSON.stringify(result, null, 2)); */
 }
 function expectedTypeOrder(actual, expected){
   if(expected.length != actual.length)
@@ -626,3 +800,51 @@ test();
 
 
 
+
+
+/**
+
+start
+
+the ones i will use 
+'if'
+'else'
+'else-if'
+'conditional'
+'block'
+'conditional'
+'directive'
+'start attribute block'
+'end attribute block'
+'attribute'
+'text'
+'new line'
+'start pipeless text'
+'end pipeless text'
+
+
+done
+'for'
+'eos'
+'indent'
+'outdent'
+
+
+
+
+
+i dont know what it is
+'append' 
+'prepend' 
+'yield'
+'interpolation' 
+'colon'
+'slash'
+
+the ones i may use
+'case' 
+'each'
+'while'
+'code'
+
+**/

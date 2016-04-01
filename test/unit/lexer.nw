@@ -6,15 +6,115 @@ this is the part that will test the lexer file
 var expect = require('chai').expect;
 console.log("this is from the test file");
 
+
 describe("testing the adjustString", function(){
   it("giving it no input", function(done){
-    
     var input = {text:"1234567890", column:0}
     adjustString(input, 0);
     expect(input).to.have.property("text", "1234567890")
     expect(input).to.have.property("column", 0)
     done();
   })
+});
+
+describe("testing the ");
+
+describe("going to test directives", function(){
+  it("basic simple p directive", function(done){
+    var resultArr = lexer("p");
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(1);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    done();
+  })
+})
+
+describe("testing the for loop", function(){
+  it("testing basic for statement", function(done){
+    // get the lexed object
+    var resultArr = lexer("for (var i = 0; i < 100; i++)");
+
+    // run the tests
+    expect(resultArr)
+    .to.be.a('array')
+    .to.have.length(1);
+
+    var result = resultArr[0];
+    expect(result).to.have.property("type", "for");
+    expect(result).to.have.property("declaration", "var i = 0");
+    expect(result).to.have.property("condition", "i < 100");
+    expect(result).to.have.property("iteration", "i++");
+    done();
+  });
+
+
+    it("testing basic for statement", function(done){
+        // get the lexed object
+        var resultArr = lexer("for (var i = 0; i < 100; i++)");
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
+
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+        });
+
+
+    it("testing basic for statement without brackets", function(done){
+        // get the lexed object
+        var resultArr = lexer("for var i = 0; i < 100; i++");
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
+
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+        });
+
+
+    it("for statement - brackets, +indents", function(done){
+        // get the lexed object
+        var resultArr = lexer("    for var i = 0; i < 100; i++");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(2);
+
+        var indentToken = resultArr[0];
+        expect(indentToken).to.have.property("type", "indent");
+        expect(indentToken).to.have.property("level", 4);
+        expect(indentToken).to.have.property("indents", 1);
+
+
+        var result = resultArr[1];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+
+        done();
+    });
 })
 
 console.log("after the describe part");
@@ -25,9 +125,6 @@ console.log("after the describe part");
  */
 function test(){
   var result = "";
-  /* result = {"text":"original"}; */
-  /* adjustString(result, 4); */
-  /* if(result.text != "inal"){ print("did not get the proper result for test 1, got: " + result.text + " expected inal"); return; } */
 
   /* var source = {"text":"var numberOfApples = 10", "tokens":[], "level":0}; */
   /* result = nextToken(source); */
@@ -69,8 +166,8 @@ function test(){
   /* result = lexer("for(var i = 0; i < 10; i++)\n  p.\n    this is the $i div"); */
 
 
-  result = lexer('div(num = "10")');
-  print("result: " + JSON.stringify(result));
+  /* result = lexer('div(num = 10)'); */
+  /* print("result: " + JSON.stringify(result, null, 2)); */
 }
 function expectedTypeOrder(actual, expected){
   if(expected.length != actual.length)
@@ -82,5 +179,7 @@ function expectedTypeOrder(actual, expected){
   }
 }
 test();
+
+
 
 
