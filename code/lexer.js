@@ -135,13 +135,9 @@ function getTokenVerticalBar(source){
   var value = result[0].trim();
   adjustString(source, result[0].length);
 
-  var token = {
-    type : "vertical bar",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  source.tokens.push(token);
+  var token = { type : "vertical bar", level: source.level, value: value, text : result[0] };
+  // decided not to put the vertical bar token in the tokens list
+  /* source.tokens.push(token); */
   getTokenText(source);
   // found the variable, actually start converting it
   return true;
@@ -231,9 +227,6 @@ function getTokenVariable(source){
 /* indent + outdent */
 function getTokenDent(source){
   var currentLevel = source.level;
-  console.log("inside the get token dent");
-  console.log("source");
-  console.log(source);
   // source.level = current number of spaces in the last token
   // source.indentTokensStack = all the indent tokens and the number of spaces for them
 
@@ -317,12 +310,12 @@ function getError(source, errorString){
 
 /**/
 function getTokenSimpleIf(source){
-  var result = /^if *(?/.exec(source.text); // this will get the name of the variable
+  var result = /^if *\(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
 
-  var result = /^[^)]*)?/.exec(source.text); // this will get the name of the variable
+  var result = /^[^)\n]*\)?/.exec(source.text); // this will get the name of the variable
   if(!result){ getError(source, "no condition specified for if statement"); return false;  };
   var condition = result[0];
   condition = condition.substr(0,condition.length).trim();
@@ -367,7 +360,6 @@ function getTokenFor(source){
   totalString = totalString + result[0];
   
   // if there is an end bracket, remove it
-  console.log("iteration: " + iteration + " length: " + iteration.length );
   if(iteration[iteration.length-1] == ")")
     iteration  = iteration.substring(0,iteration.length-1);// remove the semicolon
   adjustString(source, result[0].length);
@@ -525,7 +517,7 @@ function nextToken(source){
                           getTokenDot,
                           getTokenVerticalBar,
                           getTokenFor,
-                          /* getTokenSimpleIf, */
+                          getTokenSimpleIf,
                           getSimpleToken, // all the simple tokens, such as = (  ) . var else
                           getTokenDirective,
                           getTokenAttributes,
@@ -606,7 +598,6 @@ function lexer(sourceText){
       console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length);
       if(numberOfTokens === source.tokens.length)
         getError(source, "got lost on input at line " + source.line + " and column " + source.column);
-      
       break;
     }
   }
@@ -635,12 +626,39 @@ describe("testing the adjustString", function(){
   })
 });
 
-describe("testing the ");
+
+describe("testing text", function(){
+  it("going to test normal text with bar", function(done){
+    var result = lexer("|  this is some text");
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
+    expect(result).to.be.an("array").with.length(1);
+
+    /* var barToken = result[0]; */
+    /* expect(barToken).to.have.property("type","vertical bar"); */
+
+
+    var rawTextToken = result[0];
+    expect(rawTextToken).to.have.property("type", "rawText");
+    expect(rawTextToken).to.have.property("value", " this is some text");
+    done();
+  })
+});
+
+describe("testing the if statement", function(){
+  it("going to test a basic if statement", function(done){
+    var result = lexer("if 1 == 0");
+    /* console.log("result: " + JSON.stringify(result)); */
+    expect(result).to.be.an("array").with.length(1);
+    expect(result[0]).to.have.property("type","if");
+    expect(result[0]).to.have.property("condition","1 == 0");
+    done();
+  });
+});
 
 describe("going to test directives", function(){
   it("basic simple p directive", function(done){
     var resultArr = lexer("p");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(1);
@@ -652,6 +670,32 @@ describe("going to test directives", function(){
 
     done();
   })
+
+  it("bar text + if statement", function(done){
+    var resultArr = lexer("if 1 == 2\n  | this is also some text");
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(3);
+
+    var ifToken = resultArr[0];
+    expect(ifToken).to.be.a("object");
+    expect(ifToken).to.have.property("type", "if");
+    expect(ifToken).to.have.property("condition", "1 == 2");
+
+    var indent = resultArr[1];
+    expect(indent).to.be.an("object");
+    expect(indent).to.have.property("type", "indent");
+    expect(indent).to.have.property("level", 2);
+    expect(indent).to.have.property("indents", 1);
+
+    var rawText = resultArr[2];
+    expect(rawText).to.be.an("object");
+    expect(rawText).to.have.property("type", "rawText");
+    expect(rawText).to.have.property("value", "this is also some text");
+
+    done();
+  });
 })
 
 describe("testing the for loop", function(){
@@ -712,7 +756,7 @@ describe("testing the for loop", function(){
     it("for statement - brackets, +indents", function(done){
         // get the lexed object
         var resultArr = lexer("    for var i = 0; i < 100; i++");
-        console.log("result: " + JSON.stringify(resultArr, null, 2));
+        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
         // run the tests
         expect(resultArr)
