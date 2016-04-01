@@ -643,6 +643,46 @@ describe("testing the adjustString", function(){
     });
 
 
+describe("testing text with dot", function(){
+  it("basic p with dot text ", function(done){
+    
+    var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
+    console.log("text with dot result: " + JSON.stringify(result, null, 2));
+    
+    expect(resultArr).to.be.an("array").with.length(5);
+
+    var result = resultArr[0];
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+    expect(result).to.have.property("level", 0);
+
+    var result = resultArr[1];
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "dot");
+    expect(result).to.have.property("level", 0);
+
+    var result = resultArr[2];
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "indent");
+    expect(result).to.have.property("indents", 1);
+
+    var result = resultArr[3];
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "1. this is the first line");
+
+    var result = resultArr[4];
+    expect(result).to.be.an("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "2. this is the second line");
+
+    done();
+  });
+});
+
 describe("testing text", function(){
     it("going to test normal text with bar", function(done){
         var result = lexer("|  this is some text");
