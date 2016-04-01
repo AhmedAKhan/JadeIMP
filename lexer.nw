@@ -137,12 +137,13 @@ this is the part that will create stuff
 
 function getTokenEOL(source){
   var result = /^\n/.exec(source.text);
-  if(!result) return undefined;
+  if(!result) return false;
   adjustString(source, result[0].length);
   source.level = 0; // since a new line was added, the current level is 0
   source.column = 0;
   source.line += 1;
   /* findLevel(source); */
+  getTokenDent(source);
   source.lineBegin = true;
   print("inside the end of line reached, the lineBegin is " + source.lineBegin);
   return true;
@@ -186,6 +187,7 @@ function getTokenDirective(source){
 function getTokenVerticalBar(source){
   var sourceText = source.text;
   var result = /^\| /.exec(sourceText); // this will get the name of the variable
+  console.log("checking for the vertical bar, " + result);
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
@@ -193,7 +195,7 @@ function getTokenVerticalBar(source){
   var token = { type : "vertical bar", level: source.level, value: value, text : result[0] };
   // decided not to put the vertical bar token in the tokens list
   /* source.tokens.push(token); */
-  getTokenText(source);
+  getTokenText(source, false);
   // found the variable, actually start converting it
   return true;
 }
@@ -281,7 +283,6 @@ function getTokenVariable(source){
 }
 /* indent + outdent */
 function getTokenDent(source){
-  var currentLevel = source.level;
   // source.level = current number of spaces in the last token
   // source.indentTokensStack = all the indent tokens and the number of spaces for them
 
@@ -292,26 +293,30 @@ function getTokenDent(source){
   
   // check indent
   var currentLevel = 0;
-  if(currentLevel) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
+  var lastIndentTokenIndex = source.indentTokensStack.length-1;
+  if(lastIndentTokenIndex >= 0) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
+  console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel);
   if(numSpaces > currentLevel){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
-    return;
+    console.log("3.1");
+    return true;
   }
-  else if(numSpaces == currentLevel) return; // the next item is in the same div
+  else if(numSpaces == currentLevel) return false; // the next item is in the same div
 
+  console.log("3.2 inside the dent there is an outdent");
   // check the outdents
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
       getError("the number of spaces is mismatched at line " + source.line + " numberOfSpaces are " + numSpaces + " execpted to have " + source.indentTokensStack[i].level);
     
-    if(source.indentTokensStack[i].level == numSpaces) return;
+    if(source.indentTokensStack[i].level == numSpaces) return true;
     source.indentTokensStack.pop();
-    source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i+1, "text":""});
+    source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i, "text":""});
   }
 
-  if(numSpaces === 0) return;
+  if(numSpaces === 0) return true;
   
   // 
   getError("got the number of spaces as -1 for some reason");
@@ -468,6 +473,7 @@ function getTokenDot(source){
   // the raw text
   // TODO
   /* findLevel(source); */
+  getTokenDent(source);
   getTokenText(source);
 
   // found the variable, actually start converting it
@@ -478,45 +484,54 @@ function getTokenDot(source){
   @param1 {object source} = 
   @return {boolean} represents if it was successful getting the text or not
 */
-function getTokenText(source){
+function getTokenText(source, runContinously){
+  // if runContinously is true, then its a dot, else just convert this line to text
+  if(runContinously === undefined) runContinously = true;
   // get current level
   print("inside the getTokenText");
-  var currentLevel = source.level;
+  var currentLevel = source.indentTokensStack.length;
+  var gotResult = false;
   
-  while(true){
+  do{
     print("inside the token text: source.text: " + source.text);
-    var isNewLine = getTokenEOL(source);
+    /* getTokenDent(source); */
+    console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack));
     // if this is a new line and the indentation is lower then the begining then 
     // exit the function
-    if(isNewLine && source.level < currentLevel) return; 
-    if(source.text == "") return;
+    /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
+    if(source.indentTokensStack.length < currentLevel) return gotResult; 
+    if(source.text == "") return gotResult;
 
     // take everything from the begining and a $ symbol. (unless if its another $) or end of line
-    var result = /^[^\n$]+/.exec(source.text);
+    /* var result = /^[^\n$]+/.exec(source.text); */
+    // take everything in that line
+    var result = /^.+/.exec(source.text); 
     if(result){
       var textToken = {
         type:"rawText",
-        level:source.level,
+        level:source.indentTokensStack.length,
         value:result[0],
         text:result[0]
       };
       source.tokens.push(textToken);
       adjustString(source, result[0].length);
+      gotResult = true;
     }
 
     //check for the dollor sign
-    result = /^\$[^\s$][\S]*/.exec(source.text);
-    if(result){
-      var asgToken = {
-        type:"varCall",
-        level:source.level,
-        name:result[0].substr(1), // remove the $ from the variable name
-        text:result[0]
-      };
-      source.tokens.push(asgToken);
-      adjustString(source, result[0].length);
-    }
-  }
+    /*result = /^\$[^\s$][\S]*//*.exec(source.text);*/
+    /*if(result){*/
+      /*var asgToken = {*/
+        /*type:"varCall",*/
+        /*level:source.level,*/
+        /*name:result[0].substr(1), // remove the $ from the variable name*/
+        /*text:result[0]*/
+      /*};*/
+      /*source.tokens.push(asgToken);*/
+      /*adjustString(source, result[0].length);*/
+    /*}*/
+    var isNewLine = getTokenEOL(source);
+  }while(runContinously)
 }
 
 
@@ -594,7 +609,7 @@ this is the list of token validators
 <<list of token validator functions>>=
 [ 
   getTokenEOS,
-  getTokenDent,
+  /* getTokenDent, */
   getTokenDot,
   getTokenVerticalBar,
   getTokenFor,
@@ -635,6 +650,7 @@ function lexer(sourceText){
   };
   if(sourceText === undefined) throw("the given input string was undefined");
   source.text = sourceText.replace(/\t/, "    ");
+  getTokenDent(source);
   // start lexing the code
   while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
@@ -728,8 +744,6 @@ the ones i will use
 'else-if'
 'conditional'
 'block'
-'conditional'
-'directive'
 'start attribute block'
 'end attribute block'
 'attribute'
@@ -740,6 +754,7 @@ the ones i will use
 
 
 done
+'directive'
 'for'
 'eos'
 'indent'

@@ -8,104 +8,142 @@ console.log("this is from the test file");
 
 
 describe("testing the adjustString", function(){
-  it("giving it no input", function(done){
-    var input = {text:"1234567890", column:0}
-    adjustString(input, 0);
-    expect(input).to.have.property("text", "1234567890")
-    expect(input).to.have.property("column", 0)
-    done();
-  })
-});
+    it("giving it no input", function(done){
+        var input = {text:"1234567890", column:0}
+        adjustString(input, 0);
+        expect(input).to.have.property("text", "1234567890")
+        expect(input).to.have.property("column", 0)
+        done();
+        })
+    });
 
 
 describe("testing text", function(){
-  it("going to test normal text with bar", function(done){
-    var result = lexer("|  this is some text");
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
-    expect(result).to.be.an("array").with.length(1);
+    it("going to test normal text with bar", function(done){
+        var result = lexer("|  this is some text");
+        /* console.log("result: " + JSON.stringify(result, null, 2)); */
+        expect(result).to.be.an("array").with.length(1);
 
-    /* var barToken = result[0]; */
-    /* expect(barToken).to.have.property("type","vertical bar"); */
+        /* var barToken = result[0]; */
+        /* expect(barToken).to.have.property("type","vertical bar"); */
 
 
-    var rawTextToken = result[0];
-    expect(rawTextToken).to.have.property("type", "rawText");
-    expect(rawTextToken).to.have.property("value", " this is some text");
-    done();
-  })
-});
+        var rawTextToken = result[0];
+        expect(rawTextToken).to.have.property("type", "rawText");
+        expect(rawTextToken).to.have.property("value", " this is some text");
+        done();
+        })
+    });
 
 describe("testing the if statement", function(){
-  it("going to test a basic if statement", function(done){
-    var result = lexer("if 1 == 0");
-    /* console.log("result: " + JSON.stringify(result)); */
-    expect(result).to.be.an("array").with.length(1);
-    expect(result[0]).to.have.property("type","if");
-    expect(result[0]).to.have.property("condition","1 == 0");
-    done();
-  });
-});
+    it("going to test a basic if statement", function(done){
+        var result = lexer("if 1 == 0");
+        /* console.log("result: " + JSON.stringify(result)); */
+        expect(result).to.be.an("array").with.length(1);
+        expect(result[0]).to.have.property("type","if");
+        expect(result[0]).to.have.property("condition","1 == 0");
+        done();
+        });
+    });
 
 describe("going to test directives", function(){
-  it("basic simple p directive", function(done){
-    var resultArr = lexer("p");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+    it("basic simple p directive", function(done){
+        var resultArr = lexer("p");
+        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
-    expect(resultArr).to.be.a("array")
-    .to.have.length(1);
+        expect(resultArr).to.be.a("array")
+        .to.have.length(1);
 
-    var result = resultArr[0];
-    expect(result).to.be.a("object");
-    expect(result).to.have.property("type", "directive");
-    expect(result).to.have.property("name", "p");
+        var result = resultArr[0];
+        expect(result).to.be.a("object");
+        expect(result).to.have.property("type", "directive");
+        expect(result).to.have.property("name", "p");
 
-    done();
-  })
+        done();
+        })
 
-  it("bar text + if statement", function(done){
-    var resultArr = lexer("if 1 == 2\n  | this is also some text");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    it("bar text + if statement", function(done){
+        var resultArr = lexer("if 1 == 2\n  | this is also some text");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
 
-    expect(resultArr).to.be.a("array")
-    .to.have.length(3);
+        expect(resultArr).to.be.a("array")
+        .to.have.length(3);
 
-    var ifToken = resultArr[0];
-    expect(ifToken).to.be.a("object");
-    expect(ifToken).to.have.property("type", "if");
-    expect(ifToken).to.have.property("condition", "1 == 2");
+        var ifToken = resultArr[0];
+        expect(ifToken).to.be.a("object");
+        expect(ifToken).to.have.property("type", "if");
+        expect(ifToken).to.have.property("condition", "1 == 2");
 
-    var indent = resultArr[1];
-    expect(indent).to.be.an("object");
-    expect(indent).to.have.property("type", "indent");
-    expect(indent).to.have.property("level", 2);
-    expect(indent).to.have.property("indents", 1);
+        var indent = resultArr[1];
+        expect(indent).to.be.an("object");
+        expect(indent).to.have.property("type", "indent");
+        expect(indent).to.have.property("level", 2);
+        expect(indent).to.have.property("indents", 1);
 
-    var rawText = resultArr[2];
-    expect(rawText).to.be.an("object");
-    expect(rawText).to.have.property("type", "rawText");
-    expect(rawText).to.have.property("value", "this is also some text");
+        var rawText = resultArr[2];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is also some text");
 
-    done();
-  });
+        done();
+    });
+
+    it("bar text + if statement + outdent", function(done){
+        var resultArr = lexer("if 1 == 2\n  | this is also some text\n| this is some more text");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+        expect(resultArr).to.be.a("array")
+        .to.have.length(5);
+
+        var ifToken = resultArr[0];
+        expect(ifToken).to.be.a("object");
+        expect(ifToken).to.have.property("type", "if");
+        expect(ifToken).to.have.property("condition", "1 == 2");
+
+        var indent = resultArr[1];
+        expect(indent).to.be.an("object");
+        expect(indent).to.have.property("type", "indent");
+        expect(indent).to.have.property("level", 2);
+        expect(indent).to.have.property("indents", 1);
+
+        var rawText = resultArr[2];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is also some text");
+
+        var outdent = resultArr[3];
+        expect(outdent).to.be.an("object");
+        expect(outdent).to.have.property("type", "outdent");
+        expect(outdent).to.have.property("indents", 0);
+        expect(outdent).to.have.property("level", 0);
+
+
+        var rawText = resultArr[4];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is some more text");
+
+        done();
+    })
 })
 
 describe("testing the for loop", function(){
-  it("testing basic for statement", function(done){
-    // get the lexed object
-    var resultArr = lexer("for (var i = 0; i < 100; i++)");
+    it("testing basic for statement", function(done){
+        // get the lexed object
+        var resultArr = lexer("for (var i = 0; i < 100; i++)");
 
-    // run the tests
-    expect(resultArr)
-    .to.be.a('array')
-    .to.have.length(1);
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
 
-    var result = resultArr[0];
-    expect(result).to.have.property("type", "for");
-    expect(result).to.have.property("declaration", "var i = 0");
-    expect(result).to.have.property("condition", "i < 100");
-    expect(result).to.have.property("iteration", "i++");
-    done();
-  });
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+    });
 
 
     it("testing basic for statement", function(done){
@@ -123,7 +161,7 @@ describe("testing the for loop", function(){
         expect(result).to.have.property("condition", "i < 100");
         expect(result).to.have.property("iteration", "i++");
         done();
-        });
+    });
 
 
     it("testing basic for statement without brackets", function(done){
@@ -141,7 +179,7 @@ describe("testing the for loop", function(){
         expect(result).to.have.property("condition", "i < 100");
         expect(result).to.have.property("iteration", "i++");
         done();
-        });
+    });
 
 
     it("for statement - brackets, +indents", function(done){
@@ -169,6 +207,51 @@ describe("testing the for loop", function(){
         done();
     });
 })
+
+describe("checking for text with pipes", function(){
+  it("checking the line", function(done){
+    // get the lexed object
+    var resultArr = lexer("p\n  | 1. this is some text\n  | 2. this is the second text\n| 3. this is the third text");
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    // run the tests
+    expect(resultArr)
+    .to.be.a('array')
+    .to.have.length(6);
+
+    var indentToken = resultArr[0];
+    expect(indentToken).to.have.property("type", "directive");
+    expect(indentToken).to.have.property("level", 0);
+    expect(indentToken).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.have.property("type", "indent");
+    expect(result).to.have.property("indents", 1);
+    expect(result).to.have.property("level", 2);
+
+    var result = resultArr[2];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "1. this is some text");
+
+    var result = resultArr[3];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "2. this is the second text");
+
+    var result = resultArr[4];
+    expect(result).to.have.property("type", "outdent");
+    expect(result).to.have.property("level", 0);
+    expect(result).to.have.property("indents", 0);
+
+    var result = resultArr[5];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 0);
+    expect(result).to.have.property("value", "3. this is the third text");
+
+    done();
+  });
+});
 
 console.log("after the describe part");
 

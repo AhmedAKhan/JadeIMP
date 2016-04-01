@@ -82,12 +82,13 @@ function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(s
 
 function getTokenEOL(source){
   var result = /^\n/.exec(source.text);
-  if(!result) return undefined;
+  if(!result) return false;
   adjustString(source, result[0].length);
   source.level = 0; // since a new line was added, the current level is 0
   source.column = 0;
   source.line += 1;
   /* findLevel(source); */
+  getTokenDent(source);
   source.lineBegin = true;
   print("inside the end of line reached, the lineBegin is " + source.lineBegin);
   return true;
@@ -131,6 +132,7 @@ function getTokenDirective(source){
 function getTokenVerticalBar(source){
   var sourceText = source.text;
   var result = /^\| /.exec(sourceText); // this will get the name of the variable
+  console.log("checking for the vertical bar, " + result);
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
@@ -138,7 +140,7 @@ function getTokenVerticalBar(source){
   var token = { type : "vertical bar", level: source.level, value: value, text : result[0] };
   // decided not to put the vertical bar token in the tokens list
   /* source.tokens.push(token); */
-  getTokenText(source);
+  getTokenText(source, false);
   // found the variable, actually start converting it
   return true;
 }
@@ -226,7 +228,6 @@ function getTokenVariable(source){
 }
 /* indent + outdent */
 function getTokenDent(source){
-  var currentLevel = source.level;
   // source.level = current number of spaces in the last token
   // source.indentTokensStack = all the indent tokens and the number of spaces for them
 
@@ -237,26 +238,30 @@ function getTokenDent(source){
   
   // check indent
   var currentLevel = 0;
-  if(currentLevel) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
+  var lastIndentTokenIndex = source.indentTokensStack.length-1;
+  if(lastIndentTokenIndex >= 0) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
+  console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel);
   if(numSpaces > currentLevel){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
-    return;
+    console.log("3.1");
+    return true;
   }
-  else if(numSpaces == currentLevel) return; // the next item is in the same div
+  else if(numSpaces == currentLevel) return false; // the next item is in the same div
 
+  console.log("3.2 inside the dent there is an outdent");
   // check the outdents
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
       getError("the number of spaces is mismatched at line " + source.line + " numberOfSpaces are " + numSpaces + " execpted to have " + source.indentTokensStack[i].level);
     
-    if(source.indentTokensStack[i].level == numSpaces) return;
+    if(source.indentTokensStack[i].level == numSpaces) return true;
     source.indentTokensStack.pop();
-    source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i+1, "text":""});
+    source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i, "text":""});
   }
 
-  if(numSpaces === 0) return;
+  if(numSpaces === 0) return true;
   
   // 
   getError("got the number of spaces as -1 for some reason");
@@ -413,6 +418,7 @@ function getTokenDot(source){
   // the raw text
   // TODO
   /* findLevel(source); */
+  getTokenDent(source);
   getTokenText(source);
 
   // found the variable, actually start converting it
@@ -423,45 +429,54 @@ function getTokenDot(source){
   @param1 {object source} = 
   @return {boolean} represents if it was successful getting the text or not
 */
-function getTokenText(source){
+function getTokenText(source, runContinously){
+  // if runContinously is true, then its a dot, else just convert this line to text
+  if(runContinously === undefined) runContinously = true;
   // get current level
   print("inside the getTokenText");
-  var currentLevel = source.level;
+  var currentLevel = source.indentTokensStack.length;
+  var gotResult = false;
   
-  while(true){
+  do{
     print("inside the token text: source.text: " + source.text);
-    var isNewLine = getTokenEOL(source);
+    /* getTokenDent(source); */
+    console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack));
     // if this is a new line and the indentation is lower then the begining then 
     // exit the function
-    if(isNewLine && source.level < currentLevel) return; 
-    if(source.text == "") return;
+    /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
+    if(source.indentTokensStack.length < currentLevel) return gotResult; 
+    if(source.text == "") return gotResult;
 
     // take everything from the begining and a $ symbol. (unless if its another $) or end of line
-    var result = /^[^\n$]+/.exec(source.text);
+    /* var result = /^[^\n$]+/.exec(source.text); */
+    // take everything in that line
+    var result = /^.+/.exec(source.text); 
     if(result){
       var textToken = {
         type:"rawText",
-        level:source.level,
+        level:source.indentTokensStack.length,
         value:result[0],
         text:result[0]
       };
       source.tokens.push(textToken);
       adjustString(source, result[0].length);
+      gotResult = true;
     }
 
     //check for the dollor sign
-    result = /^\$[^\s$][\S]*/.exec(source.text);
-    if(result){
-      var asgToken = {
-        type:"varCall",
-        level:source.level,
-        name:result[0].substr(1), // remove the $ from the variable name
-        text:result[0]
-      };
-      source.tokens.push(asgToken);
-      adjustString(source, result[0].length);
-    }
-  }
+    /*result = /^\$[^\s$][\S]*//*.exec(source.text);*/
+    /*if(result){*/
+      /*var asgToken = {*/
+        /*type:"varCall",*/
+        /*level:source.level,*/
+        /*name:result[0].substr(1), // remove the $ from the variable name*/
+        /*text:result[0]*/
+      /*};*/
+      /*source.tokens.push(asgToken);*/
+      /*adjustString(source, result[0].length);*/
+    /*}*/
+    var isNewLine = getTokenEOL(source);
+  }while(runContinously)
 }
 
 
@@ -513,7 +528,7 @@ function nextToken(source){
   // this is a list of functions that the token will use
   var tokenValidators = [ 
                           getTokenEOS,
-                          getTokenDent,
+                          /* getTokenDent, */
                           getTokenDot,
                           getTokenVerticalBar,
                           getTokenFor,
@@ -590,6 +605,7 @@ function lexer(sourceText){
   };
   if(sourceText === undefined) throw("the given input string was undefined");
   source.text = sourceText.replace(/\t/, "    ");
+  getTokenDent(source);
   // start lexing the code
   while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
@@ -617,104 +633,142 @@ console.log("this is from the test file");
 
 
 describe("testing the adjustString", function(){
-  it("giving it no input", function(done){
-    var input = {text:"1234567890", column:0}
-    adjustString(input, 0);
-    expect(input).to.have.property("text", "1234567890")
-    expect(input).to.have.property("column", 0)
-    done();
-  })
-});
+    it("giving it no input", function(done){
+        var input = {text:"1234567890", column:0}
+        adjustString(input, 0);
+        expect(input).to.have.property("text", "1234567890")
+        expect(input).to.have.property("column", 0)
+        done();
+        })
+    });
 
 
 describe("testing text", function(){
-  it("going to test normal text with bar", function(done){
-    var result = lexer("|  this is some text");
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
-    expect(result).to.be.an("array").with.length(1);
+    it("going to test normal text with bar", function(done){
+        var result = lexer("|  this is some text");
+        /* console.log("result: " + JSON.stringify(result, null, 2)); */
+        expect(result).to.be.an("array").with.length(1);
 
-    /* var barToken = result[0]; */
-    /* expect(barToken).to.have.property("type","vertical bar"); */
+        /* var barToken = result[0]; */
+        /* expect(barToken).to.have.property("type","vertical bar"); */
 
 
-    var rawTextToken = result[0];
-    expect(rawTextToken).to.have.property("type", "rawText");
-    expect(rawTextToken).to.have.property("value", " this is some text");
-    done();
-  })
-});
+        var rawTextToken = result[0];
+        expect(rawTextToken).to.have.property("type", "rawText");
+        expect(rawTextToken).to.have.property("value", " this is some text");
+        done();
+        })
+    });
 
 describe("testing the if statement", function(){
-  it("going to test a basic if statement", function(done){
-    var result = lexer("if 1 == 0");
-    /* console.log("result: " + JSON.stringify(result)); */
-    expect(result).to.be.an("array").with.length(1);
-    expect(result[0]).to.have.property("type","if");
-    expect(result[0]).to.have.property("condition","1 == 0");
-    done();
-  });
-});
+    it("going to test a basic if statement", function(done){
+        var result = lexer("if 1 == 0");
+        /* console.log("result: " + JSON.stringify(result)); */
+        expect(result).to.be.an("array").with.length(1);
+        expect(result[0]).to.have.property("type","if");
+        expect(result[0]).to.have.property("condition","1 == 0");
+        done();
+        });
+    });
 
 describe("going to test directives", function(){
-  it("basic simple p directive", function(done){
-    var resultArr = lexer("p");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+    it("basic simple p directive", function(done){
+        var resultArr = lexer("p");
+        /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
-    expect(resultArr).to.be.a("array")
-    .to.have.length(1);
+        expect(resultArr).to.be.a("array")
+        .to.have.length(1);
 
-    var result = resultArr[0];
-    expect(result).to.be.a("object");
-    expect(result).to.have.property("type", "directive");
-    expect(result).to.have.property("name", "p");
+        var result = resultArr[0];
+        expect(result).to.be.a("object");
+        expect(result).to.have.property("type", "directive");
+        expect(result).to.have.property("name", "p");
 
-    done();
-  })
+        done();
+        })
 
-  it("bar text + if statement", function(done){
-    var resultArr = lexer("if 1 == 2\n  | this is also some text");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    it("bar text + if statement", function(done){
+        var resultArr = lexer("if 1 == 2\n  | this is also some text");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
 
-    expect(resultArr).to.be.a("array")
-    .to.have.length(3);
+        expect(resultArr).to.be.a("array")
+        .to.have.length(3);
 
-    var ifToken = resultArr[0];
-    expect(ifToken).to.be.a("object");
-    expect(ifToken).to.have.property("type", "if");
-    expect(ifToken).to.have.property("condition", "1 == 2");
+        var ifToken = resultArr[0];
+        expect(ifToken).to.be.a("object");
+        expect(ifToken).to.have.property("type", "if");
+        expect(ifToken).to.have.property("condition", "1 == 2");
 
-    var indent = resultArr[1];
-    expect(indent).to.be.an("object");
-    expect(indent).to.have.property("type", "indent");
-    expect(indent).to.have.property("level", 2);
-    expect(indent).to.have.property("indents", 1);
+        var indent = resultArr[1];
+        expect(indent).to.be.an("object");
+        expect(indent).to.have.property("type", "indent");
+        expect(indent).to.have.property("level", 2);
+        expect(indent).to.have.property("indents", 1);
 
-    var rawText = resultArr[2];
-    expect(rawText).to.be.an("object");
-    expect(rawText).to.have.property("type", "rawText");
-    expect(rawText).to.have.property("value", "this is also some text");
+        var rawText = resultArr[2];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is also some text");
 
-    done();
-  });
+        done();
+    });
+
+    it("bar text + if statement + outdent", function(done){
+        var resultArr = lexer("if 1 == 2\n  | this is also some text\n| this is some more text");
+        console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+        expect(resultArr).to.be.a("array")
+        .to.have.length(5);
+
+        var ifToken = resultArr[0];
+        expect(ifToken).to.be.a("object");
+        expect(ifToken).to.have.property("type", "if");
+        expect(ifToken).to.have.property("condition", "1 == 2");
+
+        var indent = resultArr[1];
+        expect(indent).to.be.an("object");
+        expect(indent).to.have.property("type", "indent");
+        expect(indent).to.have.property("level", 2);
+        expect(indent).to.have.property("indents", 1);
+
+        var rawText = resultArr[2];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is also some text");
+
+        var outdent = resultArr[3];
+        expect(outdent).to.be.an("object");
+        expect(outdent).to.have.property("type", "outdent");
+        expect(outdent).to.have.property("indents", 0);
+        expect(outdent).to.have.property("level", 0);
+
+
+        var rawText = resultArr[4];
+        expect(rawText).to.be.an("object");
+        expect(rawText).to.have.property("type", "rawText");
+        expect(rawText).to.have.property("value", "this is some more text");
+
+        done();
+    })
 })
 
 describe("testing the for loop", function(){
-  it("testing basic for statement", function(done){
-    // get the lexed object
-    var resultArr = lexer("for (var i = 0; i < 100; i++)");
+    it("testing basic for statement", function(done){
+        // get the lexed object
+        var resultArr = lexer("for (var i = 0; i < 100; i++)");
 
-    // run the tests
-    expect(resultArr)
-    .to.be.a('array')
-    .to.have.length(1);
+        // run the tests
+        expect(resultArr)
+        .to.be.a('array')
+        .to.have.length(1);
 
-    var result = resultArr[0];
-    expect(result).to.have.property("type", "for");
-    expect(result).to.have.property("declaration", "var i = 0");
-    expect(result).to.have.property("condition", "i < 100");
-    expect(result).to.have.property("iteration", "i++");
-    done();
-  });
+        var result = resultArr[0];
+        expect(result).to.have.property("type", "for");
+        expect(result).to.have.property("declaration", "var i = 0");
+        expect(result).to.have.property("condition", "i < 100");
+        expect(result).to.have.property("iteration", "i++");
+        done();
+    });
 
 
     it("testing basic for statement", function(done){
@@ -732,7 +786,7 @@ describe("testing the for loop", function(){
         expect(result).to.have.property("condition", "i < 100");
         expect(result).to.have.property("iteration", "i++");
         done();
-        });
+    });
 
 
     it("testing basic for statement without brackets", function(done){
@@ -750,7 +804,7 @@ describe("testing the for loop", function(){
         expect(result).to.have.property("condition", "i < 100");
         expect(result).to.have.property("iteration", "i++");
         done();
-        });
+    });
 
 
     it("for statement - brackets, +indents", function(done){
@@ -778,6 +832,51 @@ describe("testing the for loop", function(){
         done();
     });
 })
+
+describe("checking for text with pipes", function(){
+  it("checking the line", function(done){
+    // get the lexed object
+    var resultArr = lexer("p\n  | 1. this is some text\n  | 2. this is the second text\n| 3. this is the third text");
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    // run the tests
+    expect(resultArr)
+    .to.be.a('array')
+    .to.have.length(6);
+
+    var indentToken = resultArr[0];
+    expect(indentToken).to.have.property("type", "directive");
+    expect(indentToken).to.have.property("level", 0);
+    expect(indentToken).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.have.property("type", "indent");
+    expect(result).to.have.property("indents", 1);
+    expect(result).to.have.property("level", 2);
+
+    var result = resultArr[2];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "1. this is some text");
+
+    var result = resultArr[3];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 1);
+    expect(result).to.have.property("value", "2. this is the second text");
+
+    var result = resultArr[4];
+    expect(result).to.have.property("type", "outdent");
+    expect(result).to.have.property("level", 0);
+    expect(result).to.have.property("indents", 0);
+
+    var result = resultArr[5];
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("level", 0);
+    expect(result).to.have.property("value", "3. this is the third text");
+
+    done();
+  });
+});
 
 console.log("after the describe part");
 
@@ -856,8 +955,6 @@ the ones i will use
 'else-if'
 'conditional'
 'block'
-'conditional'
-'directive'
 'start attribute block'
 'end attribute block'
 'attribute'
@@ -868,6 +965,7 @@ the ones i will use
 
 
 done
+'directive'
 'for'
 'eos'
 'indent'
