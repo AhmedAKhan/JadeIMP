@@ -32,8 +32,17 @@ function contextualAnalysis(syntaxTree){
   @param1 sourceText = the source text which would be the jadeimp code as a string
   @return = this will be the abstract syntax tree with contextual analysis
 */
-function parse(sourceText){
-  return contextualAnalysis(syntacticAnalysis(lexicalAnalysis(sourceText)));
+function parse(sourceText, debug){
+  console.log("inside the parse with the debug value of " + debug);
+  var tokensList= lexicalAnalysis(sourceText);
+  if(debug){
+   console.log("tokensList: " + JSON.stringify(tokensList));
+  }
+  var ast = syntacticAnalysis(tokensList);
+  if(debug){
+   console.log("tree: " + JSON.stringify(ast));
+  }
+  return contextualAnalysis(ast);
 }
 
 

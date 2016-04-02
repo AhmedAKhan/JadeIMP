@@ -467,8 +467,9 @@ function getTokenDot(source){
     value: value,
     text : result[0]
   };
-  source.tokens.push(token);
-  source.level = 0; // because a new line was created by the dot
+  /// decided to remove the dot 
+  /* source.tokens.push(token); */ 
+  /* source.level = 0; // because a new line was created by the dot */
   
   // the raw text
   // TODO

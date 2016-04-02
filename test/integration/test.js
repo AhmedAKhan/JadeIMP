@@ -70,7 +70,10 @@ describe("testing the checkEqual function that is inside the tester", function()
 // function to test one test case
 function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
-
+  if(testname === "") return; // if the file name is empty return it
+  var debug = false;
+  if(testname === "basic_directive1") debug = true;
+  console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){
     var jadeCode;
@@ -89,9 +92,15 @@ function testFile(filename){
 
     // conver the file to a tree
     it("converting the file to tree", function(done){
-      var actualJsonResponse = jadeimp.parse(jadeCode);
-      // checkEqual(expectedJson, actualJsonResponse);
-      checkEqual(expectedJson, expectedJson); // just for testing
+      console.log("going to pass debug: " + debug);
+      var actualJsonResponse = jadeimp.parse(jadeCode, debug);
+      if(debug){
+        console.log("jadeCode: " + jadeCode);
+        console.log("actualJsonResponse: " + JSON.stringify(actualJsonResponse, null, 2));
+        console.log("expectedJson: " + JSON.stringify(expectedJson,null,2));
+      }
+      checkEqual(expectedJson, actualJsonResponse);
+      // checkEqual(expectedJson, expectedJson); // just for testing
       done();
     })
 

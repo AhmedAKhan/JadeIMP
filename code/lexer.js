@@ -412,8 +412,9 @@ function getTokenDot(source){
     value: value,
     text : result[0]
   };
-  source.tokens.push(token);
-  source.level = 0; // because a new line was created by the dot
+  /// decided to remove the dot 
+  /* source.tokens.push(token); */ 
+  /* source.level = 0; // because a new line was created by the dot */
   
   // the raw text
   // TODO
@@ -648,7 +649,7 @@ describe("testing text with dot", function(){
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
     /* console.log("text with dot result: " + JSON.stringify(result, null, 2)); */
     
-    expect(resultArr).to.be.an("array").with.length(5);
+    expect(resultArr).to.be.an("array").with.length(4);
 
     var result = resultArr[0];
     expect(result).to.be.an("object");
@@ -656,23 +657,23 @@ describe("testing text with dot", function(){
     expect(result).to.have.property("name", "p");
     expect(result).to.have.property("level", 0);
 
-    var result = resultArr[1];
-    expect(result).to.be.an("object");
-    expect(result).to.have.property("type", "dot");
-    expect(result).to.have.property("level", 0);
+    /* var result = resultArr[1]; */
+    /* expect(result).to.be.an("object"); */
+    /* expect(result).to.have.property("type", "dot"); */
+    /* expect(result).to.have.property("level", 0); */
 
-    var result = resultArr[2];
+    var result = resultArr[1];
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "indent");
     expect(result).to.have.property("indents", 1);
 
-    var result = resultArr[3];
+    var result = resultArr[2];
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "rawText");
     expect(result).to.have.property("level", 1);
     expect(result).to.have.property("value", "1. this is the first line");
 
-    var result = resultArr[4];
+    var result = resultArr[3];
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "rawText");
     expect(result).to.have.property("level", 1);
@@ -789,6 +790,26 @@ describe("going to test directives", function(){
 
         done();
     })
+
+    it("directive with text inline and dot p. abc", function(done){
+      var resultArr = lexer("p. abc");
+      console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+      expect(resultArr).to.be.a("array")
+      .to.have.length(2);
+
+      var result = resultArr[0];
+      expect(result).to.be.a("object");
+      expect(result).to.have.property("type", "directive");
+      expect(result).to.have.property("name", "p");
+
+      var result = resultArr[1];
+      expect(result).to.be.a("object");
+      expect(result).to.have.property("type", "rawText");
+      expect(result).to.have.property("value", "abc");
+
+      done();
+    });
 })
 
 describe("testing the for loop", function(){

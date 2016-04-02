@@ -17,8 +17,9 @@ function render(jadeString, options){
   this function will take in the jade input and will return the parseTree
   also called analyzer
 */
-function parse(jadeString){
-  return analyzer.parse(jadeString);
+function parse(jadeString, paresDebug){
+  console.log("1. inside the index->parse debug = " + parseDebug);
+  return analyzer.parse(jadeString, parseDebug);
 }
 
 /*

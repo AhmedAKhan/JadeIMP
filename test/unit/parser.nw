@@ -18,7 +18,7 @@ describe("going to test the parser", function(){
       ]
 
     var result = parser(input);
-    console.log("result: " + JSON.stringify(result, null, 2));
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root")
 
@@ -46,7 +46,7 @@ describe("going to test directives", function(){
       ]
 
     var result = parser(input);
-    console.log("the result: " + JSON.stringify(result, null, 2));
+    /* console.log("the result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
     expect(result).to.have.property("content");
@@ -101,7 +101,7 @@ describe("going to test directives", function(){
 
 
     var result = parser(input);
-    console.log("result: " + JSON.stringify(result, null, 2));
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
 
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
@@ -112,7 +112,9 @@ describe("going to test directives", function(){
     expect(content[0]).to.be.an("object");
     expect(content[0]).to.have.property("type", "directive");
     expect(content[0]).to.have.property("name", "p");
-    expect(content[0]).to.have.property("attributes", []);
+    expect(content[0]).to.have.property("attributes");
+    expect(content[0].attributes).to.be.an("array");
+    expect(content[0].attributes).to.have.length(0);
     expect(content[0]).to.have.property("content");
 
     // content[0]
@@ -144,7 +146,7 @@ describe("going to test for text", function(){
       ]
 
     var result = parser(input);
-    console.log("result: " + JSON.stringify(result, null, 2));
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
 
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
