@@ -187,7 +187,7 @@ function getTokenDirective(source){
 function getTokenVerticalBar(source){
   var sourceText = source.text;
   var result = /^\| /.exec(sourceText); // this will get the name of the variable
-  console.log("checking for the vertical bar, " + result);
+  /* console.log("checking for the vertical bar, " + result); */
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
@@ -295,17 +295,17 @@ function getTokenDent(source){
   var currentLevel = 0;
   var lastIndentTokenIndex = source.indentTokensStack.length-1;
   if(lastIndentTokenIndex >= 0) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
-  console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel);
+  /* console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel); */
   if(numSpaces > currentLevel){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
-    console.log("3.1");
+    /* console.log("3.1"); */
     return true;
   }
   else if(numSpaces == currentLevel) return false; // the next item is in the same div
 
-  console.log("3.2 inside the dent there is an outdent");
+  /* console.log("3.2 inside the dent there is an outdent"); */
   // check the outdents
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
@@ -495,7 +495,7 @@ function getTokenText(source, runContinously){
   do{
     print("inside the token text: source.text: " + source.text);
     /* getTokenDent(source); */
-    console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack));
+    /* console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack)); */
     // if this is a new line and the indentation is lower then the begining then 
     // exit the function
     /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
@@ -649,14 +649,14 @@ function lexer(sourceText){
     "indentTokensStack":[]
   };
   if(sourceText === undefined) throw("the given input string was undefined");
-  source.text = sourceText.replace(/\t/, "    ");
+  source.text = sourceText.replace(/\t/g, "    ");
   getTokenDent(source);
   // start lexing the code
   while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
     var numberOfTokens = source.tokens.length;
     if(!nextToken(source)){
-      console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length);
+      /* console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
       if(numberOfTokens === source.tokens.length)
         getError(source, "got lost on input at line " + source.line + " and column " + source.column);
       break;
@@ -708,7 +708,7 @@ module.exports = lexer;
 @
 this is for all the debugging information
 <<debugging information>>=
-var DEBUG = true;
+var DEBUG = false;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }

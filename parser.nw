@@ -19,6 +19,14 @@ function handleDirective(tokenStream){
     "content":[],
     "text":"--"
   }
+  console.log("inside the directive: " + token.name + " nextTokenStream: " + tokenStream.peek());
+
+  if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
+    console.log("going to the handle block section");
+    token.content = handleBlock(tokenStream);
+    console.log("done the handle block section");
+  }
+
   return token;
 }
 function handleFor(tokenStream){
@@ -41,15 +49,18 @@ function handleRawText(tokenStream){
   return tokenStream.advance();
 }
 function handleEOS(tokenStream){}
-function handleIndent(tokenStream){}
+function handleIndent(tokenStream){
+  
+}
 function handleOutdent(tokenStream){}
 function handleIf(tokenStream){}
 
 function handleBlock(tokenStream){
+  console.log("inside the block section tokenStream.peek(): " + JSON.stringify(tokenStream));
   tokenStream.expect("indent");
-  var block = [];
-  
-  handleList(tokenStream);
+
+  console.log("-- inside the handle block");
+  var block = handleList(tokenStream);
 
   tokenStream.expect("outdent");
   return block;
@@ -59,6 +70,7 @@ function handleBlock(tokenStream){
 function handleList(tokenStream){
   console.log("the peek value is: " + JSON.stringify(tokenStream.peek()));
   var tokens = [];
+  console.log("starting handleList");
   while(!tokenStream.isEmpty()){
     switch(tokenStream.peek().type){
       case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
@@ -66,12 +78,14 @@ function handleList(tokenStream){
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
       case "eos"       : tokens.push(handleEOS(tokenStream))       ; break;
       case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
-      case "outdent"   : return ; //handleOutdent(tokenStream)   ; break;
+      case "outdent"   : return tokens; //handleOutdent(tokenStream)   ; break;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
       default:
         getError("got an unexpected token recieved" + tokenStream.peek().type);
+        return;
         break;
     }
+    console.log("added a token " + tokens[tokens.length-1]);
   }
   return tokens;
 }

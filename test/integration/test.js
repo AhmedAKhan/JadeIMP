@@ -79,9 +79,9 @@ function testFile(filename){
 
     beforeEach(function(){
       // load the files
-      var expectedJsonString = fs.readFileSync( path+ "tree/"+testname + ".json");
-      expectedHtml = fs.readFileSync(path + "html/"+testname+".html");
-      jadeCode     = fs.readFileSync(path + "jadeimp/"+testname+".jimp");
+      var expectedJsonString = fs.readFileSync( path+ "tree/"+testname + ".json", 'utf8');
+      expectedHtml = fs.readFileSync(path + "html/"+testname+".html", 'utf8');
+      jadeCode     = fs.readFileSync(path + "jadeimp/"+testname+".jimp", 'utf8');
 
       // parse the file
       expectedJson = JSON.parse(expectedJsonString);
