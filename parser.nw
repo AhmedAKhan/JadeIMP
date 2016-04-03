@@ -8,7 +8,7 @@ this is the part that will create stuff
 
 <<tree generator functions>>=
 /**/
-function getError(errString){ throw errString; }
+function getError(errString){ throw ("parser: " + errString); }
 
 function handleDirective(tokenStream){
   var tok = tokenStream.advance();
@@ -19,7 +19,7 @@ function handleDirective(tokenStream){
     "content":[],
     "text":"--"
   }
-  console.log("inside the directive: " + token.name + " nextTokenStream: " + tokenStream.peek());
+  console.log("inside the directive: " + token.name + " nextTokenStream: " + JSON.stringify(tokenStream.peek()));
 
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
     console.log("going to the handle block section");
@@ -46,9 +46,9 @@ function handleFor(tokenStream){
   return token;
 }
 function handleRawText(tokenStream){
+  console.log("returning the raw text");
   return tokenStream.advance();
 }
-function handleEOS(tokenStream){}
 function handleIndent(tokenStream){
   
 }
@@ -56,10 +56,10 @@ function handleOutdent(tokenStream){}
 function handleIf(tokenStream){}
 
 function handleBlock(tokenStream){
-  console.log("inside the block section tokenStream.peek(): " + JSON.stringify(tokenStream));
+  console.log("inside the block section tokenStream: " + JSON.stringify(tokenStream.tokens));
   tokenStream.expect("indent");
 
-  console.log("-- inside the handle block");
+  console.log("the handle block");
   var block = handleList(tokenStream);
 
   tokenStream.expect("outdent");
@@ -68,25 +68,24 @@ function handleBlock(tokenStream){
 
 <<handles the list>>=
 function handleList(tokenStream){
-  console.log("the peek value is: " + JSON.stringify(tokenStream.peek()));
+  console.log("started handling list the peek value is: " + JSON.stringify(tokenStream.peek()));
   var tokens = [];
-  console.log("starting handleList");
   while(!tokenStream.isEmpty()){
     switch(tokenStream.peek().type){
       case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
       case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
-      case "eos"       : tokens.push(handleEOS(tokenStream))       ; break;
+      case "eos"       : return tokens; 
       case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
-      case "outdent"   : return tokens; //handleOutdent(tokenStream)   ; break;
+      case "outdent"   : console.log("got an outdent, returning"); return tokens; //handleOutdent(tokenStream)   ; break;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
       default:
         getError("got an unexpected token recieved" + tokenStream.peek().type);
         return;
         break;
     }
-    console.log("added a token " + tokens[tokens.length-1]);
-    if(tokens[tokens.length-1] === undefined) throw ("got a horrible error, the last token is undefined");
+    console.log("added a token " + JSON.stringify(tokens[tokens.length-1], null, 2));
+    if(tokens[tokens.length-1] === undefined) getError("got a horrible error, the last token is undefined");
   }
   return tokens;
 }
@@ -105,7 +104,7 @@ function parser(tokensList){
   source.tokens = tokensList;
   source.peek = function(){ return this.tokens.slice(-1).pop(); }
   source.accept = function(type){ if(this.peek().type === type) return this.advance(); }
-  source.advance = function(type){ if(this.peek().type === type) return this.advance(); }
+  /* source.advance = function(type){ if(this.peek().type === type) return this.advance(); } */
 
   source.advance = function(type){ return this.tokens.pop(); };
   source.expect = function(type){
@@ -113,14 +112,15 @@ function parser(tokensList){
     else getError("expected to have " + type + " but got " + this.peek().type);
   }
   source.isEmpty = function(type){ return (this.tokens.length === 0);  }
-
+  
+  print("starting the parser");
   var tree = {
    "type":"root",
    "content":handleList(source),
    "text":""
   }
 
-  console.log("going to print result: " + JSON.stringify(tree));
+/*   console.log("going to print result: " + JSON.stringify(tree)); */
   return tree;
 }
 

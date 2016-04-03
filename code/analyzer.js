@@ -25,6 +25,10 @@ function syntacticAnalysis(tokens_list){
   needed for the variables. More information is available at --REF--.
 */
 function contextualAnalysis(syntaxTree){
+  // finds variables and puts the ids in a list
+  // and used variables in a list
+
+  // and injects the class names
   return syntaxTree;
 }
 

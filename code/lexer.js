@@ -9,77 +9,6 @@ function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(s
 
 
 
-/**/
-/* function getTokenAttribute(source){ */
-  /* // it is only a directive if its the first thing in the line */
-
-  /* // get ident */
-  /* if(!getTokenIdent(source)) throw("got an error in attributes "); */
-  
-
-  /* /1* var result = /^[\w_-] *= *"?[\w_ -]"? *2/.exec(source.text); // this will get the name of the variable *1/ */
-  /* var result = /^= *1/.exec(source.text); // this will get the name of the variable */
-  /* if(!result) return false; */
-  /* var value = result[0].trim(); */
-  /* adjustString(source, result[0].length); */
-
-  /* var equalToken = { type : "=", level: source.level, value: value, text : result[0] }; */
-  /* source.tokens.push(equalToken); */
-
-  /* // get ident */
-  /* if(!getTokenIdent(source)) throw("got an error in attributes");; */
-
-
-
-  /* // get equals */
-  /* // get ident */
-
-  /* /1* /2* var result = /^[\w_-] *= *"?[\w_ -]"? *3/.exec(source.text); // this will get the name of the variable *2/ *1/ */
-  /* /1* if(!result) return false; *1/ */
-  /* /1* var value = result[0].trim(); *1/ */
-  /* /1* adjustString(source, result[0].length); *1/ */
-
-  /* /1* var token = { *1/ */
-  /* /1*   type : "directive", *1/ */
-  /* /1*   level: source.level, *1/ */
-  /* /1*   value: value, *1/ */
-  /* /1*   text : result[0] *1/ */
-  /* /1* }; *1/ */
-  /* /1* source.tokens.push(token); *1/ */
-  /* /1* // found the variable, actually start converting it *1/ */
-  /* /1* return true; *1/ */
-/* } */
-
-// div(id=10, bind=403)
-/**/
-/* function getTokenAttributes(source, directive){ */
-  /* // it is only a directive if its the first thing in the line */
-  /* if('(' !== source.text.charAt(0)) return; */
-
-  /* /1* var result = /^ *2/.exec(source.text); // this will get the name of the variable *1/ */
-  /* /1* if(!result) return false; *1/ */
-  /* /1* var value = result[0].trim(); *1/ */
-  /* /1* adjustString(source, result[0].length); *1/ */
-
-  /* /1* var token = { *1/ */
-  /* /1*   type : "directive", *1/ */
-  /* /1*   level: source.level, *1/ */
-  /* /1*   value: value, *1/ */
-  /* /1*   text : result[0] *1/ */
-  /* /1* }; *1/ */
-  /* /1* source.tokens.push(token); *1/ */
-  /* /1* // found the variable, actually start converting it *1/ */
-  /* /1* return true; *1/ */
-
-  /* directive.attr = []; // make a new directive */
-  /* var currentAttr = getTokenAttribute(source); // find the first attribute */
-  /* while(currentAttr != null){ */
-  /*   // while there are attributes then continue */
-  /*   directive.attr.push(currentAttr); */
-  /*   currentAttr = getTokenAttribute(source); */
-  /* } */
-/* } */
-
 function getTokenEOL(source){
   var result = /^\n/.exec(source.text);
   if(!result) return false;
@@ -94,6 +23,49 @@ function getTokenEOL(source){
   return true;
 }
 
+/*
+  this function will be called after a directive, and will 
+*/
+
+function getTokenDot(source){
+  // check if there is a dot
+  var result = /^\. */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  adjustString(source, result[0].length);
+
+  var result = /^.*/.exec(source.text); // this will get the name of the variable
+  if(result[0] !== ""){
+    var currentRawText = result[0];
+    var currentRawToken = { "type":"rawText", "value":result[0], "text":result[0]  };
+    adjustString(source, result[0].length);
+
+    // if the next one is an indent, place this raw text after this
+    // this is the next rawtext
+    var curPosition = source.tokens.length; // current index of the token
+
+    // check if there is an indent
+    getTokenEOL(source);
+    
+    // if at curPosition there is a indent, the place it at position curPosition+1
+    if(source.tokens.length > curPosition){
+      if(source.tokens[curPosition].type === "indent") source.tokens.splice(curPosition+1, 0, currentRawToken);
+      else{
+        source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
+        source.tokens.push(currentRawToken);
+        source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+      }
+    }else{
+      // that was the last thing in the string
+      source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
+      source.tokens.push(currentRawToken);
+      source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+    }
+  }
+   
+  getTokenText(source, true);
+  return true;
+  /* source.tokens.splice() */
+}
 
 /*
  * this function will find the level of the current line. It will be called after end of line and the will set the level depending on the level of the first character
@@ -125,6 +97,14 @@ function getTokenDirective(source){
     text : result[0]
   };
   source.tokens.push(token);
+
+  // check for attributes
+  console.log("going inside the attributes function");
+  getTokenAttributes(source);
+  
+  //if there is a dot next, take the input string
+  /* checkInlineText(source); */
+
   print("just added the directive from the getTokenDirective");
   // found the variable, actually start converting it
   return true;
@@ -145,9 +125,74 @@ function getTokenVerticalBar(source){
   // found the variable, actually start converting it
   return true;
 }
+
+/**/
+function getAttributeValue(source){
+  var ident = /^([\w_-]+|"[^"\n]*") */.exec(source.text); // this will get the name of the variable
+  if(!ident) return undefined;
+  var value = ident[0].trim();
+  adjustString(source, ident[0].length);
+  value = value.replace(/"/g, '');
+  return value;
+}
+/**/
+function getTokenAttribute(source){
+  var comma= /^, */.exec(source.text); // this will get the name of the variable
+  if(comma) adjustString(source, comma[0].length);
+  
+  console.log("inside the get single attribute ");
+  var attribute = getTokenIdent(source);
+  console.log("attribute: " + attribute);
+  if(attribute === undefined) return false;
+  
+  // get the equal sign
+  var equalSign= /^= */.exec(source.text); // this will get the name of the variable
+  if(!equalSign){ getError("found no equal sign in attribute");  };
+  /* var equalSign = ident[0].trim(); */
+  adjustString(source, equalSign[0].length);
+
+  var value = getAttributeValue(source);
+  if(value === undefined){
+    getError("directive attribute has attribute but no value attribute: " + attribute);
+  }
+  
+  // make the token and return it
+  var token = {
+    "type":"attribute",
+    "attribute":attribute,
+    "value":value,
+    "text":attribute + " = " + value
+  }
+  source.tokens.push(token);
+  console.log("end single attribute function, added the token " + JSON.stringify(token)  );
+  return true;
+}
 /**/
 function getTokenAttributes(source){
+  // if attributes exist then create a attribute started token
+  var result = /^\( */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  source.tokens.push({"type":"start-attributes", "text":""});
   
+  /* var token = { type : "vertical bar", level: source.level, value: value, text : result[0] }; */
+  /* // decided not to put the vertical bar token in the tokens list */
+  /* source.tokens.push(token); */
+
+  // keep getting the attribute until it returns false
+  while(getTokenAttribute(source)); 
+  
+  var result = /^\) */.exec(source.text); // this will get the name of the variable
+  if(!result){
+    getError("no end bracket for attributes for directive at line " + source.line + " and collumn " + source.column);
+    return ;
+  }
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  source.tokens.push({"type":"end-attributes", "text":""});
+  // found the variable, actually start converting it
+  return true;
 }
 /**/
 function getTokenExpression(source){
@@ -241,18 +286,15 @@ function getTokenDent(source){
   var currentLevel = 0;
   var lastIndentTokenIndex = source.indentTokensStack.length-1;
   if(lastIndentTokenIndex >= 0) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
-  /* console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel); */
   if(numSpaces > currentLevel){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
     print("adding the token indent inside the getTokenDent function");
-    /* console.log("3.1"); */
     return true;
   }
   else if(numSpaces == currentLevel) return false; // the next item is in the same div
 
-  /* console.log("3.2 inside the dent there is an outdent"); */
   // check the outdents
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
@@ -312,7 +354,7 @@ function getSimpleToken(source){
 }
 
 function getError(source, errorString){
-  throw errorString;
+  throw ("lexer: " + errorString);
 }
 
 /**/
@@ -401,32 +443,32 @@ function getTokenSimpleVar(source){
   return true;
 }
 /**/
-function getTokenDot(source){
-  var result = /^\. */.exec(source.text); // this will get the name of the variable
-  /* var result = /^\. *\n/.exec(source.text); // this will get the name of the variable */
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
+/* function getTokenDot(source){ */
+  /* var result = /^\. *1/.exec(source.text); // this will get the name of the variable */
+  /* /1* var result = /^\. *\n/.exec(source.text); // this will get the name of the variable *1/ */
+  /* if(!result) return false; */
+  /* var value = result[0].trim(); */
+  /* adjustString(source, result[0].length); */
 
-  var token = {
-    type : "dot",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  /// decided to remove the dot 
-  /* source.tokens.push(token); */ 
-  /* source.level = 0; // because a new line was created by the dot */
+  /* var token = { */
+  /*   type : "dot", */
+  /*   level: source.level, */
+  /*   value: value, */
+  /*   text : result[0] */
+  /* }; */
+  /* /// decided to remove the dot */ 
+  /* /1* source.tokens.push(token); *1/ */ 
+  /* /1* source.level = 0; // because a new line was created by the dot *1/ */
   
-  // the raw text
-  // TODO
-  /* findLevel(source); */
-  getTokenDent(source);
-  getTokenText(source);
+  /* // the raw text */
+  /* // TODO */
+  /* /1* findLevel(source); *1/ */
+  /* getTokenDent(source); */
+  /* /1* getTokenText(source); *1/ */
 
-  // found the variable, actually start converting it
-  return true;
-}
+  /* // found the variable, actually start converting it */
+  /* return true; */
+/* } */
 
 /*
   @param1 {object source} = 
@@ -496,19 +538,11 @@ function getTokenText(source, runContinously){
  */
 function getTokenIdent(source){
   var ident = /^[\w_-]+ */.exec(source.text); // this will get the name of the variable
-  if(!ident) return false;
+  if(!ident) return undefined;
   var value = ident[0].trim();
   adjustString(source, ident[0].length);
 
-  var token = {
-    type : "ident",
-    level: source.level,
-    value: value,
-    text : ident[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
+  return value;
 }
 
 /* end of string */
@@ -516,7 +550,7 @@ function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
   
   // add the proper amount of out tokens
-  console.log("going to add the outdents ");
+  /* console.log("going to add the outdents "); */
   for(var i = 0; i < source.indentTokensStack.length; i++){
     source.indentTokensStack.pop();
     source.tokens.push({"type":"outdent", "text":"", "indents":source.indentTokensStack.length});
@@ -544,12 +578,11 @@ function nextToken(source){
                           getSimpleToken, // all the simple tokens, such as = (  ) . var else
                           /* getTokenNumber, */ // not needed
                           getTokenDirective,
-                          getTokenAttributes, /// TODO
+                          /* getTokenAttributes, */
                           /* getTokenVariable, */
                           /* getTokenExpression, */
                           /* getTokenRawText, */
                           /* getTokenBlock, */
-                          /* getTokenIdent, */
                           getTokenEOL
                         ];
 
@@ -621,9 +654,10 @@ function lexer(sourceText){
   while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
     var numberOfTokens = source.tokens.length;
+    var beforeString = source.text;
     if(!nextToken(source)){
       /* console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
-
+      print("the before string is '" + beforeString + "' and after is '" + source.text + "' before token length is " + numberOfTokens + " after is " + source.tokens.length);
       print("ended the lexical analysis, the rest of the string is " + source.text);
       if(numberOfTokens === source.tokens.length)
         getError(source, "got lost on input at line " + source.line + " and column " + source.column);
@@ -649,6 +683,50 @@ var expect = require('chai').expect;
 console.log("this is from the test file");
 
 
+describe("trying inline with dot text", function(){
+  it("trying inline with dot text", function(done){
+    var result = lexer("p. 1. first line\n  2. second line");
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
+    expect(result).to.be.an("array").with.length(6);
+
+    /* var barToken = result[0]; */
+    /* expect(barToken).to.have.property("type","vertical bar"); */
+
+
+    var rawTextToken = result[0];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "directive");
+    expect(rawTextToken).to.have.property("name", "p");
+
+    var rawTextToken = result[1];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "indent");
+    expect(rawTextToken).to.have.property("level", 2);
+    expect(rawTextToken).to.have.property("indents", 1);
+
+    var rawTextToken = result[2];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "rawText");
+    expect(rawTextToken).to.have.property("value", "1. first line");
+
+    var rawTextToken = result[3];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "rawText");
+    expect(rawTextToken).to.have.property("value", "2. second line");
+
+    var rawTextToken = result[4];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "outdent");
+    expect(rawTextToken).to.have.property("indents", 0);
+
+    var rawTextToken = result[5];
+    expect(rawTextToken).to.have.property("type", "eos");
+
+    done();
+  });
+})
+
+
 describe("testing the adjustString", function(){
     it("giving it no input", function(done){
         var input = {text:"1234567890", column:0}
@@ -662,9 +740,8 @@ describe("testing the adjustString", function(){
 
 describe("testing text with dot", function(){
   it("basic p with dot text ", function(done){
-    console.log("started the basic p with dot text");
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
-    console.log("===== result====: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
     
     expect(resultArr).to.be.an("array").with.length(6);
 
@@ -749,7 +826,7 @@ describe("testing the if statement", function(){
 describe("going to test directives", function(){
   it("basic simple p directive", function(done){
     var resultArr = lexer("p");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(2);
@@ -848,10 +925,10 @@ describe("going to test directives", function(){
 
   it("directive with text inline and dot p. abc", function(done){
     var resultArr = lexer("p. abc");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
-    .to.have.length(3);
+    .to.have.length(5);
 
     var result = resultArr[0];
     expect(result).to.be.a("object");
@@ -860,11 +937,18 @@ describe("going to test directives", function(){
 
     var result = resultArr[1];
     expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
     expect(result).to.have.property("type", "rawText");
     expect(result).to.have.property("value", "abc");
 
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
 
-    var result = resultArr[2];
+    var result = resultArr[4];
     expect(result).to.be.a("object");
     expect(result).to.have.property("type", "eos");
 
@@ -872,9 +956,89 @@ describe("going to test directives", function(){
   });
   
 
+  it("directive with text inline and dot and inline text with indent text", function(done){
+    var resultArr = lexer("p. abc\n  def");
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(6);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "abc");
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "def");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
+
+
+  it("directive with text inline and dot and inline text with indent text and outdent text", function(done){
+    var resultArr = lexer("p. abc\n  def\n| last line");
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(7);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "abc");
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "def");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "last line");
+
+    var result = resultArr[6];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
+
   it("directive test with multiple div statements", function(done){
     var resultArr = lexer("div \n  | abc \ndiv \n| def");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(7);
@@ -919,13 +1083,61 @@ describe("going to test directives", function(){
 
     done();
   });
+
+
+  it("directive with attribute", function(done){
+    var resultArr = lexer('div(id="main",class="zxc asd oi", value = 12)');
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(7);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "div");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "start-attributes");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "id");
+    expect(result).to.have.property("value", "main");
+
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "class");
+    expect(result).to.have.property("value", "zxc asd oi");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "value");
+    expect(result).to.have.property("value", "12");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "end-attributes");
+
+
+    var result = resultArr[6];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
 })
 
 describe("testing the for loop", function(){
   it("testing basic for statement", function(done){
     // get the lexed object
     var resultArr = lexer("for (var i = 0; i < 100; i++)");
-    console.log("text with dot result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("text with dot result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr).to.be.a('array');
@@ -969,7 +1181,7 @@ describe("testing the for loop", function(){
   it("for statement - brackets, +indents", function(done){
     // get the lexed object
     var resultArr = lexer("    for var i = 0; i < 100; i++");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)
@@ -1006,7 +1218,7 @@ describe("checking for text with pipes", function(){
   it("checking the line", function(done){
     // get the lexed object
     var resultArr = lexer("p\n  | 1. this is some text\n  | 2. this is the second text\n| 3. this is the third text");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)

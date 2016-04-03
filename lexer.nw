@@ -6,135 +6,9 @@ var RegExp = require("regex");
 
 @
 
-the grammer for the program is this
-
-directive
-
-<parameter> '=' <expression>
-attributes = {
-  type = '',
-  text = '',
-  parameter = '--',
-  value = '--'
-}
-
-'var' <name> '=' <expression>
-variable
-
-'if' '(' <condition>  ')' \n <statements> \n 'else' \n <statements>
-if 
-
-'for (' <condition>  '):' \n <statements>
-forloop 
-
-
-
-<expression> <bool operator> <expression> // example 4 != 5
-<inline bool> <expression> // example: !false
-condition
-
-[<statements>]
-statements 
-
-<variable assignment>
-statement 
-
-
-name 
-
-(<number> | <ident>) ' = ' (<number>|<ident>)(<operator> (<number>|<ident>))*
-expression 
-
-<stuff>
-rawText 
-
-'create' 'block' <ident> \n <statements>
-Block creation
-
-'block' <ident>
-using a block 
-
-number = '-?[0-9]*'
-ident = '\w+'
-
-'  ' <-- just adds one
-indent
-
-@
 this is the part that will create stuff
 
 <<create the token specific functions>>=
-/**/
-/* function getTokenAttribute(source){ */
-  /* // it is only a directive if its the first thing in the line */
-
-  /* // get ident */
-  /* if(!getTokenIdent(source)) throw("got an error in attributes "); */
-  
-
-  /* /1* var result = /^[\w_-] *= *"?[\w_ -]"? *2/.exec(source.text); // this will get the name of the variable *1/ */
-  /* var result = /^= *1/.exec(source.text); // this will get the name of the variable */
-  /* if(!result) return false; */
-  /* var value = result[0].trim(); */
-  /* adjustString(source, result[0].length); */
-
-  /* var equalToken = { type : "=", level: source.level, value: value, text : result[0] }; */
-  /* source.tokens.push(equalToken); */
-
-  /* // get ident */
-  /* if(!getTokenIdent(source)) throw("got an error in attributes");; */
-
-
-
-  /* // get equals */
-  /* // get ident */
-
-  /* /1* /2* var result = /^[\w_-] *= *"?[\w_ -]"? *3/.exec(source.text); // this will get the name of the variable *2/ *1/ */
-  /* /1* if(!result) return false; *1/ */
-  /* /1* var value = result[0].trim(); *1/ */
-  /* /1* adjustString(source, result[0].length); *1/ */
-
-  /* /1* var token = { *1/ */
-  /* /1*   type : "directive", *1/ */
-  /* /1*   level: source.level, *1/ */
-  /* /1*   value: value, *1/ */
-  /* /1*   text : result[0] *1/ */
-  /* /1* }; *1/ */
-  /* /1* source.tokens.push(token); *1/ */
-  /* /1* // found the variable, actually start converting it *1/ */
-  /* /1* return true; *1/ */
-/* } */
-
-// div(id=10, bind=403)
-/**/
-/* function getTokenAttributes(source, directive){ */
-  /* // it is only a directive if its the first thing in the line */
-  /* if('(' !== source.text.charAt(0)) return; */
-
-  /* /1* var result = /^ *2/.exec(source.text); // this will get the name of the variable *1/ */
-  /* /1* if(!result) return false; *1/ */
-  /* /1* var value = result[0].trim(); *1/ */
-  /* /1* adjustString(source, result[0].length); *1/ */
-
-  /* /1* var token = { *1/ */
-  /* /1*   type : "directive", *1/ */
-  /* /1*   level: source.level, *1/ */
-  /* /1*   value: value, *1/ */
-  /* /1*   text : result[0] *1/ */
-  /* /1* }; *1/ */
-  /* /1* source.tokens.push(token); *1/ */
-  /* /1* // found the variable, actually start converting it *1/ */
-  /* /1* return true; *1/ */
-
-  /* directive.attr = []; // make a new directive */
-  /* var currentAttr = getTokenAttribute(source); // find the first attribute */
-  /* while(currentAttr != null){ */
-  /*   // while there are attributes then continue */
-  /*   directive.attr.push(currentAttr); */
-  /*   currentAttr = getTokenAttribute(source); */
-  /* } */
-/* } */
-
 function getTokenEOL(source){
   var result = /^\n/.exec(source.text);
   if(!result) return false;
@@ -149,6 +23,49 @@ function getTokenEOL(source){
   return true;
 }
 
+/*
+  this function will be called after a directive, and will 
+*/
+
+function getTokenDot(source){
+  // check if there is a dot
+  var result = /^\. */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  adjustString(source, result[0].length);
+
+  var result = /^.*/.exec(source.text); // this will get the name of the variable
+  if(result[0] !== ""){
+    var currentRawText = result[0];
+    var currentRawToken = { "type":"rawText", "value":result[0], "text":result[0]  };
+    adjustString(source, result[0].length);
+
+    // if the next one is an indent, place this raw text after this
+    // this is the next rawtext
+    var curPosition = source.tokens.length; // current index of the token
+
+    // check if there is an indent
+    getTokenEOL(source);
+    
+    // if at curPosition there is a indent, the place it at position curPosition+1
+    if(source.tokens.length > curPosition){
+      if(source.tokens[curPosition].type === "indent") source.tokens.splice(curPosition+1, 0, currentRawToken);
+      else{
+        source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
+        source.tokens.push(currentRawToken);
+        source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+      }
+    }else{
+      // that was the last thing in the string
+      source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
+      source.tokens.push(currentRawToken);
+      source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+    }
+  }
+   
+  getTokenText(source, true);
+  return true;
+  /* source.tokens.splice() */
+}
 
 /*
  * this function will find the level of the current line. It will be called after end of line and the will set the level depending on the level of the first character
@@ -180,6 +97,14 @@ function getTokenDirective(source){
     text : result[0]
   };
   source.tokens.push(token);
+
+  // check for attributes
+  console.log("going inside the attributes function");
+  getTokenAttributes(source);
+  
+  //if there is a dot next, take the input string
+  /* checkInlineText(source); */
+
   print("just added the directive from the getTokenDirective");
   // found the variable, actually start converting it
   return true;
@@ -200,9 +125,74 @@ function getTokenVerticalBar(source){
   // found the variable, actually start converting it
   return true;
 }
+
+/**/
+function getAttributeValue(source){
+  var ident = /^([\w_-]+|"[^"\n]*") */.exec(source.text); // this will get the name of the variable
+  if(!ident) return undefined;
+  var value = ident[0].trim();
+  adjustString(source, ident[0].length);
+  value = value.replace(/"/g, '');
+  return value;
+}
+/**/
+function getTokenAttribute(source){
+  var comma= /^, */.exec(source.text); // this will get the name of the variable
+  if(comma) adjustString(source, comma[0].length);
+  
+  console.log("inside the get single attribute ");
+  var attribute = getTokenIdent(source);
+  console.log("attribute: " + attribute);
+  if(attribute === undefined) return false;
+  
+  // get the equal sign
+  var equalSign= /^= */.exec(source.text); // this will get the name of the variable
+  if(!equalSign){ getError("found no equal sign in attribute");  };
+  /* var equalSign = ident[0].trim(); */
+  adjustString(source, equalSign[0].length);
+
+  var value = getAttributeValue(source);
+  if(value === undefined){
+    getError("directive attribute has attribute but no value attribute: " + attribute);
+  }
+  
+  // make the token and return it
+  var token = {
+    "type":"attribute",
+    "attribute":attribute,
+    "value":value,
+    "text":attribute + " = " + value
+  }
+  source.tokens.push(token);
+  console.log("end single attribute function, added the token " + JSON.stringify(token)  );
+  return true;
+}
 /**/
 function getTokenAttributes(source){
+  // if attributes exist then create a attribute started token
+  var result = /^\( */.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  source.tokens.push({"type":"start-attributes", "text":""});
   
+  /* var token = { type : "vertical bar", level: source.level, value: value, text : result[0] }; */
+  /* // decided not to put the vertical bar token in the tokens list */
+  /* source.tokens.push(token); */
+
+  // keep getting the attribute until it returns false
+  while(getTokenAttribute(source)); 
+  
+  var result = /^\) */.exec(source.text); // this will get the name of the variable
+  if(!result){
+    getError("no end bracket for attributes for directive at line " + source.line + " and collumn " + source.column);
+    return ;
+  }
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  source.tokens.push({"type":"end-attributes", "text":""});
+  // found the variable, actually start converting it
+  return true;
 }
 /**/
 function getTokenExpression(source){
@@ -296,18 +286,15 @@ function getTokenDent(source){
   var currentLevel = 0;
   var lastIndentTokenIndex = source.indentTokensStack.length-1;
   if(lastIndentTokenIndex >= 0) currentLevel = source.indentTokensStack[source.indentTokensStack.length-1].level
-  /* console.log("2. updating token dents, numSpaces: " + numSpaces + " currentLevel: " + currentLevel); */
   if(numSpaces > currentLevel){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
     print("adding the token indent inside the getTokenDent function");
-    /* console.log("3.1"); */
     return true;
   }
   else if(numSpaces == currentLevel) return false; // the next item is in the same div
 
-  /* console.log("3.2 inside the dent there is an outdent"); */
   // check the outdents
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
@@ -367,7 +354,7 @@ function getSimpleToken(source){
 }
 
 function getError(source, errorString){
-  throw errorString;
+  throw ("lexer: " + errorString);
 }
 
 /**/
@@ -456,32 +443,32 @@ function getTokenSimpleVar(source){
   return true;
 }
 /**/
-function getTokenDot(source){
-  var result = /^\. */.exec(source.text); // this will get the name of the variable
-  /* var result = /^\. *\n/.exec(source.text); // this will get the name of the variable */
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
+/* function getTokenDot(source){ */
+  /* var result = /^\. *1/.exec(source.text); // this will get the name of the variable */
+  /* /1* var result = /^\. *\n/.exec(source.text); // this will get the name of the variable *1/ */
+  /* if(!result) return false; */
+  /* var value = result[0].trim(); */
+  /* adjustString(source, result[0].length); */
 
-  var token = {
-    type : "dot",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  /// decided to remove the dot 
-  /* source.tokens.push(token); */ 
-  /* source.level = 0; // because a new line was created by the dot */
+  /* var token = { */
+  /*   type : "dot", */
+  /*   level: source.level, */
+  /*   value: value, */
+  /*   text : result[0] */
+  /* }; */
+  /* /// decided to remove the dot */ 
+  /* /1* source.tokens.push(token); *1/ */ 
+  /* /1* source.level = 0; // because a new line was created by the dot *1/ */
   
-  // the raw text
-  // TODO
-  /* findLevel(source); */
-  getTokenDent(source);
-  getTokenText(source);
+  /* // the raw text */
+  /* // TODO */
+  /* /1* findLevel(source); *1/ */
+  /* getTokenDent(source); */
+  /* /1* getTokenText(source); *1/ */
 
-  // found the variable, actually start converting it
-  return true;
-}
+  /* // found the variable, actually start converting it */
+  /* return true; */
+/* } */
 
 /*
   @param1 {object source} = 
@@ -551,19 +538,11 @@ function getTokenText(source, runContinously){
  */
 function getTokenIdent(source){
   var ident = /^[\w_-]+ */.exec(source.text); // this will get the name of the variable
-  if(!ident) return false;
+  if(!ident) return undefined;
   var value = ident[0].trim();
   adjustString(source, ident[0].length);
 
-  var token = {
-    type : "ident",
-    level: source.level,
-    value: value,
-    text : ident[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
+  return value;
 }
 
 /* end of string */
@@ -571,7 +550,7 @@ function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
   
   // add the proper amount of out tokens
-  console.log("going to add the outdents ");
+  /* console.log("going to add the outdents "); */
   for(var i = 0; i < source.indentTokensStack.length; i++){
     source.indentTokensStack.pop();
     source.tokens.push({"type":"outdent", "text":"", "indents":source.indentTokensStack.length});
@@ -625,12 +604,11 @@ this is the list of token validators
   getSimpleToken, // all the simple tokens, such as = (  ) . var else
   /* getTokenNumber, */ // not needed
   getTokenDirective,
-  getTokenAttributes, /// TODO
+  /* getTokenAttributes, */
   /* getTokenVariable, */
   /* getTokenExpression, */
   /* getTokenRawText, */
   /* getTokenBlock, */
-  /* getTokenIdent, */
   getTokenEOL
 ];
 
@@ -663,9 +641,10 @@ function lexer(sourceText){
   while(source.text.length > 0){
     // ok so if the next token returns false meaning error, stop everything
     var numberOfTokens = source.tokens.length;
+    var beforeString = source.text;
     if(!nextToken(source)){
       /* console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
-
+      print("the before string is '" + beforeString + "' and after is '" + source.text + "' before token length is " + numberOfTokens + " after is " + source.tokens.length);
       print("ended the lexical analysis, the rest of the string is " + source.text);
       if(numberOfTokens === source.tokens.length)
         getError(source, "got lost on input at line " + source.line + " and column " + source.column);

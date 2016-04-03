@@ -7,6 +7,50 @@ var expect = require('chai').expect;
 console.log("this is from the test file");
 
 
+describe("trying inline with dot text", function(){
+  it("trying inline with dot text", function(done){
+    var result = lexer("p. 1. first line\n  2. second line");
+    /* console.log("result: " + JSON.stringify(result, null, 2)); */
+    expect(result).to.be.an("array").with.length(6);
+
+    /* var barToken = result[0]; */
+    /* expect(barToken).to.have.property("type","vertical bar"); */
+
+
+    var rawTextToken = result[0];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "directive");
+    expect(rawTextToken).to.have.property("name", "p");
+
+    var rawTextToken = result[1];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "indent");
+    expect(rawTextToken).to.have.property("level", 2);
+    expect(rawTextToken).to.have.property("indents", 1);
+
+    var rawTextToken = result[2];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "rawText");
+    expect(rawTextToken).to.have.property("value", "1. first line");
+
+    var rawTextToken = result[3];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "rawText");
+    expect(rawTextToken).to.have.property("value", "2. second line");
+
+    var rawTextToken = result[4];
+    expect(rawTextToken).to.be.an("object");
+    expect(rawTextToken).to.have.property("type", "outdent");
+    expect(rawTextToken).to.have.property("indents", 0);
+
+    var rawTextToken = result[5];
+    expect(rawTextToken).to.have.property("type", "eos");
+
+    done();
+  });
+})
+
+
 describe("testing the adjustString", function(){
     it("giving it no input", function(done){
         var input = {text:"1234567890", column:0}
@@ -20,9 +64,8 @@ describe("testing the adjustString", function(){
 
 describe("testing text with dot", function(){
   it("basic p with dot text ", function(done){
-    console.log("started the basic p with dot text");
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
-    console.log("===== result====: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
     
     expect(resultArr).to.be.an("array").with.length(6);
 
@@ -107,7 +150,7 @@ describe("testing the if statement", function(){
 describe("going to test directives", function(){
   it("basic simple p directive", function(done){
     var resultArr = lexer("p");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(2);
@@ -206,10 +249,10 @@ describe("going to test directives", function(){
 
   it("directive with text inline and dot p. abc", function(done){
     var resultArr = lexer("p. abc");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
-    .to.have.length(3);
+    .to.have.length(5);
 
     var result = resultArr[0];
     expect(result).to.be.a("object");
@@ -218,11 +261,18 @@ describe("going to test directives", function(){
 
     var result = resultArr[1];
     expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
     expect(result).to.have.property("type", "rawText");
     expect(result).to.have.property("value", "abc");
 
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
 
-    var result = resultArr[2];
+    var result = resultArr[4];
     expect(result).to.be.a("object");
     expect(result).to.have.property("type", "eos");
 
@@ -230,9 +280,89 @@ describe("going to test directives", function(){
   });
   
 
+  it("directive with text inline and dot and inline text with indent text", function(done){
+    var resultArr = lexer("p. abc\n  def");
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(6);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "abc");
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "def");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
+
+
+  it("directive with text inline and dot and inline text with indent text and outdent text", function(done){
+    var resultArr = lexer("p. abc\n  def\n| last line");
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(7);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "p");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "indent");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "abc");
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "def");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "outdent");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "rawText");
+    expect(result).to.have.property("value", "last line");
+
+    var result = resultArr[6];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
+
   it("directive test with multiple div statements", function(done){
     var resultArr = lexer("div \n  | abc \ndiv \n| def");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(7);
@@ -277,13 +407,61 @@ describe("going to test directives", function(){
 
     done();
   });
+
+
+  it("directive with attribute", function(done){
+    var resultArr = lexer('div(id="main",class="zxc asd oi", value = 12)');
+    console.log("result: " + JSON.stringify(resultArr, null, 2));
+
+    expect(resultArr).to.be.a("array")
+    .to.have.length(7);
+
+    var result = resultArr[0];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "directive");
+    expect(result).to.have.property("name", "div");
+
+    var result = resultArr[1];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "start-attributes");
+
+    var result = resultArr[2];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "id");
+    expect(result).to.have.property("value", "main");
+
+
+    var result = resultArr[3];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "class");
+    expect(result).to.have.property("value", "zxc asd oi");
+
+    var result = resultArr[4];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "attribute");
+    expect(result).to.have.property("attribute", "value");
+    expect(result).to.have.property("value", "12");
+
+    var result = resultArr[5];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "end-attributes");
+
+
+    var result = resultArr[6];
+    expect(result).to.be.a("object");
+    expect(result).to.have.property("type", "eos");
+
+    done();
+  });
 })
 
 describe("testing the for loop", function(){
   it("testing basic for statement", function(done){
     // get the lexed object
     var resultArr = lexer("for (var i = 0; i < 100; i++)");
-    console.log("text with dot result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("text with dot result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr).to.be.a('array');
@@ -327,7 +505,7 @@ describe("testing the for loop", function(){
   it("for statement - brackets, +indents", function(done){
     // get the lexed object
     var resultArr = lexer("    for var i = 0; i < 100; i++");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)
@@ -364,7 +542,7 @@ describe("checking for text with pipes", function(){
   it("checking the line", function(done){
     // get the lexed object
     var resultArr = lexer("p\n  | 1. this is some text\n  | 2. this is the second text\n| 3. this is the third text");
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
+    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)
