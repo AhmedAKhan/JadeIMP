@@ -1,0 +1,86 @@
+% ===> this file was generated automatically by noweave --- better not edit it
+\nwfilename{synthesizer.nw}\nwbegincode{1}\sublabel{NW3sRxMN-8Tkd7-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-8Tkd7-1}}}\moddef{intermediate code generation~{\nwtagstyle{}\subpageref{NW3sRxMN-8Tkd7-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-3sRxMN-1}}\nwenddeflinemarkup
+/*
+  @param1 syntaxTree = this will be the syntax tree
+  @return = this will return the intermediate code, currently that is the html
+*/
+function intCodeGen(syntaxTree)\{
+  return "";
+\}
+
+
+\nwused{\\{NW3sRxMN-3sRxMN-1}}\nwendcode{}\nwbegindocs{2}\nwdocspar
+this is the code optimization part
+
+\nwenddocs{}\nwbegincode{3}\sublabel{NW3sRxMN-3NoakI-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-3NoakI-1}}}\moddef{code optimization~{\nwtagstyle{}\subpageref{NW3sRxMN-3NoakI-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-3sRxMN-1}}\nwenddeflinemarkup
+/*
+  @param1 intermediateCode = this will be the intermediate code that is generated from the intermediate code generation part 
+  return = this will be the optimized html
+*/
+function codeOptimization(intermediateCode)\{ return intermediateCode; \}
+
+
+\nwused{\\{NW3sRxMN-3sRxMN-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
+this is the part of the code that will actually generate the code. It is one of the phases
+for compilation. For our purposes we do not need this phase because our intermediate code 
+will be the same as our output code. The reason this part is still here is because if we 
+decided to add a semi state for the code to be, we would not have to change the structure 
+of the code.
+
+\nwenddocs{}\nwbegincode{5}\sublabel{NW3sRxMN-4YJ2SU-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-4YJ2SU-1}}}\moddef{code generation~{\nwtagstyle{}\subpageref{NW3sRxMN-4YJ2SU-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-3sRxMN-1}}\nwenddeflinemarkup
+/*
+  @param1 intermediateCode = This is the intermediate code
+  return = the final html code that is needed after the compilation
+  
+  currently the intermediate code is the same as the final code, this function is still here
+  to ensure that if we wanted to add a state for the code before html we could with ease
+*/
+function codeGeneration(intermediateCode)\{ return intermediateCode; \}
+
+\nwused{\\{NW3sRxMN-3sRxMN-1}}\nwendcode{}\nwbegindocs{6}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{7}\sublabel{NW3sRxMN-2X3YKB-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-2X3YKB-1}}}\moddef{convert~{\nwtagstyle{}\subpageref{NW3sRxMN-2X3YKB-1}}}\endmoddef\let\nwnotused=\nwoutput{}\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-3sRxMN-1}}\nwenddeflinemarkup
+/*
+
+*/
+function convert(syntaxTree)\{
+  var intermediateCode = intCodeGen(syntaxTree);
+  intermediateCode = codeOptimization(intermediateCode);
+  return codeGeneration(intermediateCode);
+\}
+
+
+\nwused{\\{NW3sRxMN-3sRxMN-1}}\nwendcode{}\nwbegindocs{8}\nwdocspar
+this is the part of the code that will be public. For the purposes of our code we made 
+the convert, the only function that will be public. The reason we chose this is because 
+the other functions are not needed from any other file.
+
+\nwenddocs{}\nwbegincode{9}\sublabel{NW3sRxMN-4OJsc8-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-4OJsc8-1}}}\moddef{api~{\nwtagstyle{}\subpageref{NW3sRxMN-4OJsc8-1}}}\endmoddef\let\nwnotused=\nwoutput{}\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-3sRxMN-1}}\nwenddeflinemarkup
+module.exports.convert = convert;
+
+
+\nwused{\\{NW3sRxMN-3sRxMN-1}}\nwendcode{}\nwbegindocs{10}\nwdocspar
+this is the output of the program, The makefile works in a manor where the filename is root
+of the project. So when this part of the code gets compiled, it will creater the proper code
+
+\nwenddocs{}\nwbegincode{11}\sublabel{NW3sRxMN-3sRxMN-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-3sRxMN-1}}}\moddef{synthesizer.nw~{\nwtagstyle{}\subpageref{NW3sRxMN-3sRxMN-1}}}\endmoddef\let\nwnotused=\nwoutput{}\nwstartdeflinemarkup\nwusesondefline{\\{NW3sRxMN-cLvBF-1}}\nwenddeflinemarkup
+\LA{}intermediate code generation~{\nwtagstyle{}\subpageref{NW3sRxMN-8Tkd7-1}}\RA{}
+\LA{}code optimization~{\nwtagstyle{}\subpageref{NW3sRxMN-3NoakI-1}}\RA{}
+\LA{}code generation~{\nwtagstyle{}\subpageref{NW3sRxMN-4YJ2SU-1}}\RA{}
+\LA{}convert~{\nwtagstyle{}\subpageref{NW3sRxMN-2X3YKB-1}}\RA{}
+\LA{}api~{\nwtagstyle{}\subpageref{NW3sRxMN-4OJsc8-1}}\RA{}
+
+\nwused{\\{NW3sRxMN-cLvBF-1}}\nwendcode{}
+
+\nwixlogsorted{c}{{api}{NW3sRxMN-4OJsc8-1}{\nwixd{NW3sRxMN-4OJsc8-1}\nwixu{NW3sRxMN-3sRxMN-1}}}%
+\nwixlogsorted{c}{{code generation}{NW3sRxMN-4YJ2SU-1}{\nwixd{NW3sRxMN-4YJ2SU-1}\nwixu{NW3sRxMN-3sRxMN-1}}}%
+\nwixlogsorted{c}{{code optimization}{NW3sRxMN-3NoakI-1}{\nwixd{NW3sRxMN-3NoakI-1}\nwixu{NW3sRxMN-3sRxMN-1}}}%
+\nwixlogsorted{c}{{convert}{NW3sRxMN-2X3YKB-1}{\nwixd{NW3sRxMN-2X3YKB-1}\nwixu{NW3sRxMN-3sRxMN-1}}}%
+\nwixlogsorted{c}{{intermediate code generation}{NW3sRxMN-8Tkd7-1}{\nwixd{NW3sRxMN-8Tkd7-1}\nwixu{NW3sRxMN-3sRxMN-1}}}%
+\nwixlogsorted{c}{{synthesizer.nw}{NW3sRxMN-3sRxMN-1}{\nwixd{NW3sRxMN-3sRxMN-1}\nwixu{NW3sRxMN-cLvBF-1}}}%
+\nwixlogsorted{c}{{synthesizer.test.nw}{NW3sRxMN-cLvBF-1}{\nwixd{NW3sRxMN-cLvBF-1}}}%
+\nwbegincode{12}\sublabel{NW3sRxMN-cLvBF-1}\nwmargintag{{\nwtagstyle{}\subpageref{NW3sRxMN-cLvBF-1}}}\moddef{synthesizer.test.nw~{\nwtagstyle{}\subpageref{NW3sRxMN-cLvBF-1}}}\endmoddef\let\nwnotused=\nwoutput{}\nwstartdeflinemarkup\nwenddeflinemarkup
+\LA{}synthesizer.nw~{\nwtagstyle{}\subpageref{NW3sRxMN-3sRxMN-1}}\RA{}
+
+\nwnotused{synthesizer.test.nw}\nwendcode{}

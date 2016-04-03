@@ -4,3 +4,6 @@ intDoc/
 doc/
 latexDoc/
 .DS_Store
+run.sh
+testTree.json
+testScope.json
