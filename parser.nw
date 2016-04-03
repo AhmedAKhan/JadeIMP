@@ -86,6 +86,7 @@ function handleList(tokenStream){
         break;
     }
     console.log("added a token " + tokens[tokens.length-1]);
+    if(tokens[tokens.length-1] === undefined) throw ("got a horrible error, the last token is undefined");
   }
   return tokens;
 }

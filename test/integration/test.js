@@ -92,8 +92,9 @@ function testFile(filename){
 
     // conver the file to a tree
     it("converting the file to tree", function(done){
-      console.log("going to pass debug: " + debug);
+      console.log("test: 0. going to run this with the debug value of: " + debug);
       var actualJsonResponse = jadeimp.parse(jadeCode, debug);
+      console.log("test: 0.3. got the response from the parser");
       if(debug){
         console.log("jadeCode: " + jadeCode);
         console.log("actualJsonResponse: " + JSON.stringify(actualJsonResponse, null, 2));

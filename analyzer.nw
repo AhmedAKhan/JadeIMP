@@ -30,7 +30,7 @@ this is the part that will conver the syntactic analysis to a syntax tree
   @return = This function will return the abstract syntax tree that is produced from the tokens list
 */
 function syntacticAnalysis(tokens_list){
-  return [];
+  return parser(tokens_list);
 }
 
 @
@@ -57,9 +57,9 @@ this is the parse function
 */
 function parse(sourceText, debug){
   console.log("inside the parse (analyzer.nw) with the debug value of " + debug);
-  var tokensList= lexicalAnalysis(sourceText);
+  var tokensList = lexicalAnalysis(sourceText);
   if(debug){
-   console.log("tokensList: " + JSON.stringify(tokensList));
+   console.log("got passed the lexical analysis tokensList: " + JSON.stringify(tokensList,null,2) + " \n\n");
   }
   var ast = syntacticAnalysis(tokensList);
   if(debug){

@@ -142,10 +142,10 @@ function getTokenEOL(source){
   source.level = 0; // since a new line was added, the current level is 0
   source.column = 0;
   source.line += 1;
-  /* findLevel(source); */
-  getTokenDent(source);
   source.lineBegin = true;
   print("inside the end of line reached, the lineBegin is " + source.lineBegin);
+  /* findLevel(source); */
+  getTokenDent(source);
   return true;
 }
 
@@ -166,7 +166,7 @@ function getTokenEOL(source){
  */
 function getTokenDirective(source){
   // it is only a directive if its the first thing in the line
-  if(!source.lineBegin) return;
+  /* if(!source.lineBegin) return; */
 
   var result = /^[\w_-]+ */.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -180,6 +180,7 @@ function getTokenDirective(source){
     text : result[0]
   };
   source.tokens.push(token);
+  print("just added the directive from the getTokenDirective");
   // found the variable, actually start converting it
   return true;
 }
@@ -300,6 +301,7 @@ function getTokenDent(source){
     var indentTokens = {"type":"indent", "level":numSpaces, "indents":source.indentTokensStack.length+1};
     source.tokens.push(indentTokens);
     source.indentTokensStack.push(indentTokens);
+    print("adding the token indent inside the getTokenDent function");
     /* console.log("3.1"); */
     return true;
   }
@@ -532,7 +534,11 @@ function getTokenText(source, runContinously){
       /*adjustString(source, result[0].length);*/
     /*}*/
     var isNewLine = getTokenEOL(source);
+    print("textToken: 5. isnew line : " + isNewLine);
   }while(runContinously)
+
+  print("inside text function going to return " + gotResult);
+  return gotResult;
 }
 
 
@@ -565,8 +571,10 @@ function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
   
   // add the proper amount of out tokens
-  for(var i = 0; i < source.level; i++){
-    source.tokens.push({"type":"outindent", "text":""});
+  console.log("going to add the outdents ");
+  for(var i = 0; i < source.indentTokensStack.length; i++){
+    source.indentTokensStack.pop();
+    source.tokens.push({"type":"outdent", "text":"", "indents":source.indentTokensStack.length});
   }
 
   // add the token and end the function
@@ -609,20 +617,19 @@ this is the list of token validators
 
 <<list of token validator functions>>=
 [ 
-  getTokenEOS,
   /* getTokenDent, */
   getTokenDot,
   getTokenVerticalBar,
   getTokenFor,
   getTokenSimpleIf,
   getSimpleToken, // all the simple tokens, such as = (  ) . var else
+  /* getTokenNumber, */ // not needed
   getTokenDirective,
-  getTokenAttributes,
-  getTokenVariable,
-  getTokenExpression,
-  getTokenRawText,
-  getTokenBlock,
-  getTokenNumber,
+  getTokenAttributes, /// TODO
+  /* getTokenVariable, */
+  /* getTokenExpression, */
+  /* getTokenRawText, */
+  /* getTokenBlock, */
   /* getTokenIdent, */
   getTokenEOL
 ];
@@ -658,11 +665,17 @@ function lexer(sourceText){
     var numberOfTokens = source.tokens.length;
     if(!nextToken(source)){
       /* console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
+
+      print("ended the lexical analysis, the rest of the string is " + source.text);
       if(numberOfTokens === source.tokens.length)
         getError(source, "got lost on input at line " + source.line + " and column " + source.column);
       break;
     }
   }
+
+  print("lexer going to get the end of string token tokens.length: " + source.tokens.length);
+  getTokenEOS(source);
+  print("tokens.length: " + source.tokens.length);
   return source.tokens;
 }
 
@@ -677,14 +690,17 @@ this is the part of the code that will find the next token
  * @return {boolean} = returns if it was able to get the next token
  */
 function nextToken(source){
-  print("the source text is '" + source.text + "'");
+  print("nextToken 0. '" + source.text + "'");
   // this is a list of functions that the token will use
   var tokenValidators = <<list of token validator functions>>
   var gotToken = false;
   var oldLineBegin = source.lineBegin;
   for(var i = 0; i < tokenValidators.length; i++){
-    /* print("going to try out tokenValidators[i]: " + tokenValidators[i].name); */
-    if(tokenValidators[i](source)){ gotToken = true; break; }
+    print("going to try out tokenValidators[i]: " + tokenValidators[i].name);
+    if(tokenValidators[i](source)){
+      gotToken = true;
+      break;
+    }
   }
 
   // if it was false before and true now, then keep it true. or else make it false
@@ -709,7 +725,7 @@ module.exports = lexer;
 @
 this is for all the debugging information
 <<debugging information>>=
-var DEBUG = false;
+var DEBUG = true;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }

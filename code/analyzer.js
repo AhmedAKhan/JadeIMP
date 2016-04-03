@@ -16,7 +16,7 @@ function lexicalAnalysis(sourceText){
   @return = This function will return the abstract syntax tree that is produced from the tokens list
 */
 function syntacticAnalysis(tokens_list){
-  return [];
+  return parser(tokens_list);
 }
 
 /*
@@ -33,10 +33,10 @@ function contextualAnalysis(syntaxTree){
   @return = this will be the abstract syntax tree with contextual analysis
 */
 function parse(sourceText, debug){
-  console.log("inside the parse with the debug value of " + debug);
-  var tokensList= lexicalAnalysis(sourceText);
+  console.log("inside the parse (analyzer.nw) with the debug value of " + debug);
+  var tokensList = lexicalAnalysis(sourceText);
   if(debug){
-   console.log("tokensList: " + JSON.stringify(tokensList));
+   console.log("got passed the lexical analysis tokensList: " + JSON.stringify(tokensList,null,2) + " \n\n");
   }
   var ast = syntacticAnalysis(tokensList);
   if(debug){
