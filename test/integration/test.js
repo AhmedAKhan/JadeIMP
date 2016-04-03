@@ -73,7 +73,6 @@ function testFile(filename){
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
   if(testname === "if_statement3") debug = true;
-  if(testname === "blockTest") debug = true;
   console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){

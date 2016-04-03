@@ -167,7 +167,7 @@ function handleList(tokenStream){
       case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
       case "eos"       : return tokens;
-      case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
+      /* case "indent"    : tokens.push(handleIndent(tokenStream))    ; break; */
       case "outdent"   : console.log("got an outdent, returning"); return tokens;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
       case "createBlock": createBlock(tokenStream); break;

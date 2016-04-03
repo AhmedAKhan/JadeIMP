@@ -347,8 +347,6 @@ function createBlock(source){
     "text":"--"
   }
   
-  getTokenBlock(source);
-  
   source.tokens.push(token);
   return true;
 }
@@ -406,6 +404,7 @@ function getTokenSimpleIf(source){
   if(!result){ getError(source, "no condition specified for if statement"); return false;  };
   var condition = result[0];
   condition = condition.substr(0,condition.length).trim();
+  if(condition[condition.length-1] === ")") condition = condition.substr(0, condition.length-1);
   adjustString(source, result[0].length);
 
   var token = {
