@@ -48,20 +48,27 @@ function getTokenDot(source){
     
     // if at curPosition there is a indent, the place it at position curPosition+1
     if(source.tokens.length > curPosition){
-      if(source.tokens[curPosition].type === "indent") source.tokens.splice(curPosition+1, 0, currentRawToken);
-      else{
+      if(source.tokens[curPosition].type === "indent"){
+        console.log("lexer - getTokenDot : 1. first one");
+        source.tokens.splice(curPosition+1, 0, currentRawToken);
+      }else{
+        console.log("lexer - getTokenDot : 2. inside the first else");
         source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
         source.tokens.push(currentRawToken);
         source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+        return true;
       }
     }else{
+      console.log("lexer - getTokenDot : 3. inside the second else");
       // that was the last thing in the string
       source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
       source.tokens.push(currentRawToken);
       source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+      return true;
     }
   }
    
+  console.log("lexer - getTokenDot: 4. last, ");
   getTokenText(source, true);
   return true;
   /* source.tokens.splice() */
@@ -311,11 +318,6 @@ function getTokenDent(source){
   getError("got the number of spaces as -1 for some reason");
 }
 
-/**/
-function getTokenRawText(source){}
-/**/
-function getTokenBlock(source){}
-
 function getTokenNumber(source){
   var number = /^[0-9]+ */.exec(source.text);
   if(!number) return undefined;
@@ -372,6 +374,7 @@ function callBlock(source){
 */
 function getSimpleToken(source){
   var result = /^(=|\(|\)|var|else|;) */.exec(source.text); // this will get the name of the variable
+  /* console.log("------------ getSimpleToken-------- result = " + result + " source: " + source); */
   if(!result) return false;
   var value = result[0].trim();
   var token = {};
@@ -487,8 +490,8 @@ function getTokenText(source, runContinously){
   // if runContinously is true, then its a dot, else just convert this line to text
   if(runContinously === undefined) runContinously = true;
   // get current level
-  print("inside the getTokenText");
   var currentLevel = source.indentTokensStack.length;
+  print("inside the getTokenText currentLevel: " + currentLevel);
   var gotResult = false;
   
   do{
@@ -498,6 +501,7 @@ function getTokenText(source, runContinously){
     // if this is a new line and the indentation is lower then the begining then 
     // exit the function
     /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
+    console.log("source.indentTokensStack.length: " + source.indentTokensStack.length + " currentLevel: " + currentLevel + " (source.indentTokensStack.length < currentLevel): " + (source.indentTokensStack.length < currentLevel));
     if(source.indentTokensStack.length < currentLevel) return gotResult; 
     if(source.text == "") return gotResult;
 
@@ -605,13 +609,13 @@ this is the list of token validators
 
 <<list of token validator functions>>=
 [ 
+  getSimpleToken, // all the simple tokens, such as = (  ) . var else
   createBlock,
   callBlock,
   getTokenDot,
   getTokenVerticalBar,
   getTokenFor,
   getTokenSimpleIf,
-  getSimpleToken, // all the simple tokens, such as = (  ) . var else
   getTokenDirective,
   getTokenEOL
 ];

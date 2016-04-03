@@ -24,7 +24,7 @@ function getTokenEOL(source){
 }
 
 /*
-  this function will be called after a directive, and will 
+  this function will be called after a directive, and will
 */
 
 function getTokenDot(source){
@@ -45,23 +45,30 @@ function getTokenDot(source){
 
     // check if there is an indent
     getTokenEOL(source);
-    
+
     // if at curPosition there is a indent, the place it at position curPosition+1
     if(source.tokens.length > curPosition){
-      if(source.tokens[curPosition].type === "indent") source.tokens.splice(curPosition+1, 0, currentRawToken);
-      else{
+      if(source.tokens[curPosition].type === "indent"){
+        console.log("lexer - getTokenDot : 1. first one");
+        source.tokens.splice(curPosition+1, 0, currentRawToken);
+      }else{
+        console.log("lexer - getTokenDot : 2. inside the first else");
         source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
         source.tokens.push(currentRawToken);
         source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+        return true;
       }
     }else{
+      console.log("lexer - getTokenDot : 3. inside the second else");
       // that was the last thing in the string
       source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
       source.tokens.push(currentRawToken);
       source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+      return true;
     }
   }
-   
+
+  console.log("lexer - getTokenDot: 4. last, ");
   getTokenText(source, true);
   return true;
   /* source.tokens.splice() */
@@ -101,7 +108,7 @@ function getTokenDirective(source){
   // check for attributes
   console.log("going inside the attributes function");
   getTokenAttributes(source);
-  
+
   //if there is a dot next, take the input string
   /* checkInlineText(source); */
 
@@ -139,12 +146,12 @@ function getAttributeValue(source){
 function getTokenAttribute(source){
   var comma= /^, */.exec(source.text); // this will get the name of the variable
   if(comma) adjustString(source, comma[0].length);
-  
+
   console.log("inside the get single attribute ");
   var attribute = getTokenIdent(source);
   console.log("attribute: " + attribute);
   if(attribute === undefined) return false;
-  
+
   // get the equal sign
   var equalSign= /^= */.exec(source.text); // this will get the name of the variable
   if(!equalSign){ getError("found no equal sign in attribute");  };
@@ -155,7 +162,7 @@ function getTokenAttribute(source){
   if(value === undefined){
     getError("directive attribute has attribute but no value attribute: " + attribute);
   }
-  
+
   // make the token and return it
   var token = {
     "type":"attribute",
@@ -175,14 +182,14 @@ function getTokenAttributes(source){
   var value = result[0].trim();
   adjustString(source, result[0].length);
   source.tokens.push({"type":"start-attributes", "text":""});
-  
+
   /* var token = { type : "vertical bar", level: source.level, value: value, text : result[0] }; */
   /* // decided not to put the vertical bar token in the tokens list */
   /* source.tokens.push(token); */
 
   // keep getting the attribute until it returns false
-  while(getTokenAttribute(source)); 
-  
+  while(getTokenAttribute(source));
+
   var result = /^\) */.exec(source.text); // this will get the name of the variable
   if(!result){
     getError("no end bracket for attributes for directive at line " + source.line + " and collumn " + source.column);
@@ -281,7 +288,7 @@ function getTokenDent(source){
   var result = /^ */.exec(source.text);
   adjustString(source, result[0].length);
   var numSpaces = result[0].length // number of spaces
-  
+
   // check indent
   var currentLevel = 0;
   var lastIndentTokenIndex = source.indentTokensStack.length-1;
@@ -299,22 +306,17 @@ function getTokenDent(source){
   for(var i = source.indentTokensStack.length-1; i >= 0 ;  i--){
     if(source.indentTokensStack[i].level < numSpaces)
       getError("the number of spaces is mismatched at line " + source.line + " numberOfSpaces are " + numSpaces + " execpted to have " + source.indentTokensStack[i].level);
-    
+
     if(source.indentTokensStack[i].level == numSpaces) return true;
     source.indentTokensStack.pop();
     source.tokens.push({"type":"outdent", "level":numSpaces, "indents":i, "text":""});
   }
 
   if(numSpaces === 0) return true;
-  
-  // 
+
+  //
   getError("got the number of spaces as -1 for some reason");
 }
-
-/**/
-function getTokenRawText(source){}
-/**/
-function getTokenBlock(source){}
 
 function getTokenNumber(source){
   var number = /^[0-9]+ */.exec(source.text);
@@ -336,7 +338,7 @@ function createBlock(source){
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
-  
+
   var blockName = getTokenIdent(source);
 
   var token = {
@@ -344,9 +346,7 @@ function createBlock(source){
     "name": blockName,
     "text":"--"
   }
-  
-  getTokenBlock(source);
-  
+
   source.tokens.push(token);
   return true;
 }
@@ -355,7 +355,7 @@ function callBlock(source){
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
-  
+
   var blockName = getTokenIdent(source);
   var token = {
     "type":"block",
@@ -372,6 +372,7 @@ function callBlock(source){
 */
 function getSimpleToken(source){
   var result = /^(=|\(|\)|var|else|;) */.exec(source.text); // this will get the name of the variable
+  /* console.log("------------ getSimpleToken-------- result = " + result + " source: " + source); */
   if(!result) return false;
   var value = result[0].trim();
   var token = {};
@@ -442,7 +443,7 @@ function getTokenFor(source){
   result = /^[^)\n]*\)?/.exec(source.text); // this will get the name of the variable
   var iteration = result[0].trim(); // get the value
   totalString = totalString + result[0];
-  
+
   // if there is an end bracket, remove it
   if(iteration[iteration.length-1] == ")")
     iteration  = iteration.substring(0,iteration.length-1);// remove the semicolon
@@ -480,31 +481,32 @@ function getTokenSimpleVar(source){
 /**/
 
 /*
-  @param1 {object source} = 
+  @param1 {object source} =
   @return {boolean} represents if it was successful getting the text or not
 */
 function getTokenText(source, runContinously){
   // if runContinously is true, then its a dot, else just convert this line to text
   if(runContinously === undefined) runContinously = true;
   // get current level
-  print("inside the getTokenText");
   var currentLevel = source.indentTokensStack.length;
+  print("inside the getTokenText currentLevel: " + currentLevel);
   var gotResult = false;
-  
+
   do{
     print("inside the token text: source.text: " + source.text);
     /* getTokenDent(source); */
     /* console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack)); */
-    // if this is a new line and the indentation is lower then the begining then 
+    // if this is a new line and the indentation is lower then the begining then
     // exit the function
     /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
-    if(source.indentTokensStack.length < currentLevel) return gotResult; 
+    console.log("source.indentTokensStack.length: " + source.indentTokensStack.length + " currentLevel: " + currentLevel + " (source.indentTokensStack.length < currentLevel): " + (source.indentTokensStack.length < currentLevel));
+    if(source.indentTokensStack.length < currentLevel) return gotResult;
     if(source.text == "") return gotResult;
 
     // take everything from the begining and a $ symbol. (unless if its another $) or end of line
     /* var result = /^[^\n$]+/.exec(source.text); */
     // take everything in that line
-    var result = /^.+/.exec(source.text); 
+    var result = /^.+/.exec(source.text);
     if(result){
       var textToken = {
         type:"rawText",
@@ -541,7 +543,7 @@ function getTokenText(source, runContinously){
 /*
  * this function will convert the next sequence of characters to the token
  * ident, which means variable names, or just names in general
- * 
+ *
  * @param1 {String} sourceText = the current jadeimp code
  * return {Token} an object that will hold the next token
  */
@@ -557,7 +559,7 @@ function getTokenIdent(source){
 /* end of string */
 function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
-  
+
   // add the proper amount of out tokens
   /* console.log("going to add the outdents "); */
   for(var i = 0; i < source.indentTokensStack.length; i++){
@@ -578,14 +580,14 @@ function getTokenEOS(source){
 function nextToken(source){
   print("nextToken 0. '" + source.text + "'");
   // this is a list of functions that the token will use
-  var tokenValidators = [ 
+  var tokenValidators = [
+                          getSimpleToken, // all the simple tokens, such as = (  ) . var else
                           createBlock,
                           callBlock,
                           getTokenDot,
                           getTokenVerticalBar,
                           getTokenFor,
                           getTokenSimpleIf,
-                          getSimpleToken, // all the simple tokens, such as = (  ) . var else
                           getTokenDirective,
                           getTokenEOL
                         ];
@@ -616,7 +618,7 @@ function adjustString(source, num){
   source.text = source.text.substr(num);
 }
 /*
- * this function is for creating simple tokens, for example vertical bar, | or var, 
+ * this function is for creating simple tokens, for example vertical bar, | or var,
 
  * /// not really used so far
  * @param1 {object}
@@ -746,7 +748,7 @@ describe("testing text with dot", function(){
   it("basic p with dot text ", function(done){
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
     /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
-    
+
     expect(resultArr).to.be.an("array").with.length(6);
 
     var result = resultArr[0];
@@ -958,7 +960,7 @@ describe("going to test directives", function(){
 
     done();
   });
-  
+
 
   it("directive with text inline and dot and inline text with indent text", function(done){
     var resultArr = lexer("p. abc\n  def");
@@ -1296,7 +1298,7 @@ function test(){
   /* result = lexer("div \n  abc \ndiv  \n  | inside the second div"); */
 
   /*
-     div 
+     div
      asd
      asdasd
      zcasd
@@ -1337,7 +1339,7 @@ test();
 
 start
 
-the ones i will use 
+the ones i will use
 'else-if'
 'conditional'
 'block'
@@ -1365,15 +1367,15 @@ done
 
 
 i dont know what it is
-'append' 
-'prepend' 
+'append'
+'prepend'
 'yield'
-'interpolation' 
+'interpolation'
 'colon'
 'slash'
 
 the ones i may use
-'case' 
+'case'
 'each'
 'while'
 'code'

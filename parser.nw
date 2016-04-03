@@ -83,7 +83,33 @@ function handleRawText(tokenStream){
   console.log("returning the raw text");
   return tokenStream.advance();
 }
-function handleIf(tokenStream){}
+function handleIf(tokenStream){
+  console.log("inside the for function");
+  var tok = tokenStream.accept("if");
+  if(tok === undefined) return undefined;
+  var token = {
+    "type":"if",
+    "condition":tok.condition,
+    "statement":[],
+    "else":[],
+    "text":""
+  }
+
+
+  // get the inner content
+  /* if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){ */
+  if(tokenStream.isNext("indent")){
+    token.content = handleBlock(tokenStream);
+  }
+
+  // if else is next then get the block for else
+  if(tokenStream.accept("else")){
+    token["else"] = handleBlock(tokenStream);
+  }
+  
+  console.log("going to return the token: " + token);
+  return token;
+}
 
 function handleBlock(tokenStream){
   console.log("starting the handle block");
@@ -140,7 +166,7 @@ function handleList(tokenStream){
       case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
       case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
-      case "eos"       : return tokens; 
+      case "eos"       : return tokens;
       case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
       case "outdent"   : console.log("got an outdent, returning"); return tokens;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
@@ -170,7 +196,8 @@ function parser(tokensList){
   var source = {};
   source.tokens = tokensList;
   source.peek = function(){ return this.tokens.slice(-1).pop(); }
-  source.accept = function(type){ if(this.peek().type === type) return this.advance(); }
+  source.accept = function(type){ if(this.peek() !== undefined && this.peek().type === type) return this.advance(); }
+  source.isNext = function(type){ if(this.peek() !== undefined && this.peek().type === type) return true; }
   /* source.advance = function(type){ if(this.peek().type === type) return this.advance(); } */
 
   source.advance = function(type){ return this.tokens.pop(); };
