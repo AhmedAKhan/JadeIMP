@@ -10,8 +10,30 @@ this is the part that will create stuff
 /**/
 function getError(errString){ throw ("parser: " + errString); }
 
+/**/
+function getAttributes(tokenStream){
+  var hasAttributes = tokenStream.accept("start-attributes");
+  if(hasAttributes === undefined) return [];
+  
+  var tokens = [];
+  /* while(tokenStream.accept("end-attributes") === undefined){ */
+  while(tokenStream.peek() !== undefined && tokenStream.peek().type !== "end-attributes"){
+    var curAttributeToken = tokenStream.advance();
+    if(curAttributeToken === undefined) break;
+    if(curAttributeToken.type !== "attribute"){
+      getError("the tokens in between the start-attributes and end-attributes is not an attribute");
+    }
+    tokens.push(curAttributeToken);
+  }
+  
+  tokenStream.expect("end-attributes");
+  return tokens;
+}
+/**/
 function handleDirective(tokenStream){
+  console.log("started handle Directive");
   var tok = tokenStream.advance();
+  
   var token = {
     "type":"directive",
     "name":tok.name,
@@ -20,6 +42,11 @@ function handleDirective(tokenStream){
     "text":"--"
   }
   console.log("inside the directive: " + token.name + " nextTokenStream: " + JSON.stringify(tokenStream.peek()));
+  
+  // get the attributes
+  if(tokenStream.peek() !== undefined && tokenStream.peek().type === "start-attributes"){
+    token.attributes = getAttributes(tokenStream);
+  }
 
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
     console.log("going to the handle block section");
@@ -27,6 +54,7 @@ function handleDirective(tokenStream){
     console.log("done the handle block section");
   }
 
+  console.log("ended the Directive");
   return token;
 }
 function handleFor(tokenStream){
@@ -41,6 +69,12 @@ function handleFor(tokenStream){
     "else":[],
     "text":""
   }
+
+
+  // get the inner content
+  if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
+    token.content = handleBlock(tokenStream);
+  }
   
   console.log("going to return the token: " + token);
   return token;
@@ -49,43 +83,76 @@ function handleRawText(tokenStream){
   console.log("returning the raw text");
   return tokenStream.advance();
 }
-function handleIndent(tokenStream){
-  
-}
-function handleOutdent(tokenStream){}
 function handleIf(tokenStream){}
 
 function handleBlock(tokenStream){
-  console.log("inside the block section tokenStream: " + JSON.stringify(tokenStream.tokens));
+  console.log("starting the handle block");
   tokenStream.expect("indent");
 
   console.log("the handle block");
   var block = handleList(tokenStream);
 
+  console.log("done the block, expecting outdent, then leaving block");
   tokenStream.expect("outdent");
   return block;
 }
 
+function createBlock(tokenStream){
+  var createBlockToken = tokenStream.accept("createBlock");
+  if(createBlockToken === undefined) return false;
+
+  // create the token
+  var token = {
+    "type":"createBlock",
+    "name":createBlockToken.name,
+    "content":[],
+    "text":"--"
+  }
+  
+  // get the inner content
+  if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
+    token.content = handleBlock(tokenStream);
+  }
+  
+  // add that to the scope
+  tokenStream.scope[createBlockToken.name] = token;
+  return true;
+}
+
+function callBlock(tokenStream){
+  var blockToken = tokenStream.accept("block");
+  var token = {
+    "type":"block",
+    "name":blockToken.name,
+    "text":"--"
+  }
+  return token;
+}
+
 <<handles the list>>=
 function handleList(tokenStream){
-  console.log("started handling list the peek value is: " + JSON.stringify(tokenStream.peek()));
+  console.log("1. started handling list the peek value is: " + JSON.stringify(tokenStream.peek()));
   var tokens = [];
   while(!tokenStream.isEmpty()){
+    console.log("2. parser, handleList: peek: " + JSON.stringify(tokenStream.peek()));
+    var currentToken = tokenStream.peek();
     switch(tokenStream.peek().type){
       case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
       case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
       case "eos"       : return tokens; 
       case "indent"    : tokens.push(handleIndent(tokenStream))    ; break;
-      case "outdent"   : console.log("got an outdent, returning"); return tokens; //handleOutdent(tokenStream)   ; break;
+      case "outdent"   : console.log("got an outdent, returning"); return tokens;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
+      case "createBlock": createBlock(tokenStream); break;
+      case "block"    : tokens.push(callBlock(tokenStream)); break;
       default:
-        getError("got an unexpected token recieved" + tokenStream.peek().type);
+        getError("got an unexpected token recieved " + tokenStream.peek().type);
         return;
         break;
     }
-    console.log("added a token " + JSON.stringify(tokens[tokens.length-1], null, 2));
-    if(tokens[tokens.length-1] === undefined) getError("got a horrible error, the last token is undefined");
+    console.log("3. added a token " + JSON.stringify(tokens[tokens.length-1], null, 2) + " at token: " + JSON.stringify(currentToken, null, 2));
+    if( tokens.length > 0 && tokens[tokens.length-1] === undefined) getError("got a horrible error, the last token is undefined, the stream peak is " + tokenStream.peek().type + " the last token is " + currentToken.type);
   }
   return tokens;
 }
@@ -112,15 +179,17 @@ function parser(tokensList){
     else getError("expected to have " + type + " but got " + this.peek().type);
   }
   source.isEmpty = function(type){ return (this.tokens.length === 0);  }
+  source.scope = {};
   
   print("starting the parser");
   var tree = {
    "type":"root",
    "content":handleList(source),
+   /* "scope":source.scope, */
    "text":""
   }
 
-/*   console.log("going to print result: " + JSON.stringify(tree)); */
+  /* console.log("going to print result: " + JSON.stringify(tree)); */
   return tree;
 }
 
@@ -138,7 +207,7 @@ module.exports = parser;
 @
 this is for all the debugging information
 <<debugging information>>=
-var DEBUG = true;
+var DEBUG = false;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }

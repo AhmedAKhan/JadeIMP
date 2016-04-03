@@ -331,12 +331,47 @@ function getTokenNumber(source){
   return true;
 }
 
+function createBlock(source){
+  var result = /^create *block *\(?/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  
+  var blockName = getTokenIdent(source);
+
+  var token = {
+    "type":"createBlock",
+    "name": blockName,
+    "text":"--"
+  }
+  
+  getTokenBlock(source);
+  
+  source.tokens.push(token);
+  return true;
+}
+function callBlock(source){
+  var result = /^block *\(?/.exec(source.text); // this will get the name of the variable
+  if(!result) return false;
+  var value = result[0].trim();
+  adjustString(source, result[0].length);
+  
+  var blockName = getTokenIdent(source);
+  var token = {
+    "type":"block",
+    "name":blockName,
+    "text":"block " + blockName
+  }
+  source.tokens.push(token);
+  return true;
+}
+
 /// simple tokens
 /*
   = () var else block create | .
 */
 function getSimpleToken(source){
-  var result = /^(=|\(|\)|var|else|block|create|;) */.exec(source.text); // this will get the name of the variable
+  var result = /^(=|\(|\)|var|else|;) */.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
   var token = {};
@@ -443,32 +478,6 @@ function getTokenSimpleVar(source){
   return true;
 }
 /**/
-/* function getTokenDot(source){ */
-  /* var result = /^\. *1/.exec(source.text); // this will get the name of the variable */
-  /* /1* var result = /^\. *\n/.exec(source.text); // this will get the name of the variable *1/ */
-  /* if(!result) return false; */
-  /* var value = result[0].trim(); */
-  /* adjustString(source, result[0].length); */
-
-  /* var token = { */
-  /*   type : "dot", */
-  /*   level: source.level, */
-  /*   value: value, */
-  /*   text : result[0] */
-  /* }; */
-  /* /// decided to remove the dot */ 
-  /* /1* source.tokens.push(token); *1/ */ 
-  /* /1* source.level = 0; // because a new line was created by the dot *1/ */
-  
-  /* // the raw text */
-  /* // TODO */
-  /* /1* findLevel(source); *1/ */
-  /* getTokenDent(source); */
-  /* /1* getTokenText(source); *1/ */
-
-  /* // found the variable, actually start converting it */
-  /* return true; */
-/* } */
 
 /*
   @param1 {object source} = 
@@ -596,19 +605,14 @@ this is the list of token validators
 
 <<list of token validator functions>>=
 [ 
-  /* getTokenDent, */
+  createBlock,
+  callBlock,
   getTokenDot,
   getTokenVerticalBar,
   getTokenFor,
   getTokenSimpleIf,
   getSimpleToken, // all the simple tokens, such as = (  ) . var else
-  /* getTokenNumber, */ // not needed
   getTokenDirective,
-  /* getTokenAttributes, */
-  /* getTokenVariable, */
-  /* getTokenExpression, */
-  /* getTokenRawText, */
-  /* getTokenBlock, */
   getTokenEOL
 ];
 

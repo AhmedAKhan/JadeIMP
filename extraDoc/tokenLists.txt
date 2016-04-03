@@ -90,11 +90,9 @@ rawText = {
 
 'var' <name> '=' <expression>
 variable = {
-  type = 'variable',
-  name = 'name',
   variablesUsed = [],
   variablesCalled = [],
-  expression = {}
+  value = "";
 }
 
 

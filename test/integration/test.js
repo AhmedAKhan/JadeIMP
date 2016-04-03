@@ -72,7 +72,7 @@ function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
-  if(testname === "basic_directive4") debug = true;
+  if(testname === "directiveHierarchy1") debug = true;
   console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){
@@ -88,6 +88,7 @@ function testFile(filename){
 
       // parse the file
       expectedJson = JSON.parse(expectedJsonString);
+      if(Array.isArray(expectedJson)) expectedJson = expectedJson[0];
     });
 
     // conver the file to a tree

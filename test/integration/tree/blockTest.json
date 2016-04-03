@@ -1,6 +1,6 @@
-{
+[{
   "type":"root",
-  "children":[
+  "content":[
     {
       "type":"block",
       "name":"title",
@@ -8,16 +8,15 @@
     }
   ],
   "text":"--"
-}
+},
 {
   "type":"block",
   "name":"title",
-  "statements":[
-    {
+  "content":[
       {
         "type":"directive",
         "name":"h1",
-        "statements":[
+        "content":[
           {
              "type":"rawText",
              "value":"this is the title",
@@ -25,8 +24,7 @@
           }
         ],
         "text":"--"
-      }
     }
   ],
   "text":"--"
-}
+}]
