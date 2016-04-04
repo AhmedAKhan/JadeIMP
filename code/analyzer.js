@@ -41,8 +41,10 @@ function parse(sourceText, debug){
   var tokensList = lexicalAnalysis(sourceText);
   if(debug) console.log("got passed the lexical analysis tokensList: " + JSON.stringify(tokensList,null,2) + " \n\n");
   var ast = syntacticAnalysis(tokensList);
-  if(debug) console.log("tree: " + JSON.stringify(ast));
-  
+  if(debug){
+    console.log("tree: " + JSON.stringify(ast));
+    console.log("tree[scope]: " + ast["scope"]);
+  }
   return contextualAnalysis(ast);
 }
 

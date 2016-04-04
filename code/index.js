@@ -6,8 +6,9 @@ var synthesizer = require('./synthesizer');
  * function that will return the string, that represents the output
  */
 function render(jadeString, options){
-  syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
+  var syntaxTree = parse(jadeString);
+  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
+  var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 
@@ -24,8 +25,8 @@ function parse(jadeString, parseDebug){
 /*
   this function will take a
  */
-function synthesis(syntaxTree){
-  return synthesizer.convert(syntaxTree);
+function synthesis(syntaxTree, scope){
+  return synthesizer.convert(syntaxTree, scope);
 }
 
 
@@ -34,8 +35,9 @@ function synthesis(syntaxTree){
  * function that will return the string, that represents the output
  */
 function render(jadeString, options){
-  syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
+  var syntaxTree = parse(jadeString);
+  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
+  var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 

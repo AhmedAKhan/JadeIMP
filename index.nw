@@ -95,8 +95,8 @@ this is the synthesizer part
 /*
   this function will take a
  */
-function synthesis(syntaxTree){
-  return synthesizer.convert(syntaxTree);
+function synthesis(syntaxTree, scope){
+  return synthesizer.convert(syntaxTree, scope);
 }
 
 
@@ -109,8 +109,9 @@ this is the render part
  * function that will return the string, that represents the output
  */
 function render(jadeString, options){
-  syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
+  var syntaxTree = parse(jadeString);
+  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
+  var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 

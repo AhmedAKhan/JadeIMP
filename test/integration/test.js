@@ -72,6 +72,7 @@ function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
+  if(testname === "blockTest") debug = true;
   // console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){
@@ -105,7 +106,7 @@ function testFile(filename){
 
     // convert the tree to html
     it("converting the tree to html", function(done){
-      var actualHtml = jadeimp.synthesis(expectedJson);
+      var actualHtml = jadeimp.synthesis(expectedJson, expectedJson.scope);
       // checkHtml(expectedHtml, actualHtml);
       checkHtml(expectedHtml, expectedHtml);
       done();

@@ -17,9 +17,8 @@ var VARIABLE_REGEX = "[\\w-_]+";
 var bindingScript = "";
 var JQUERY_CDN = "<script src=\"https://code.jquery.com/jquery-2.2.2.min.js\" integrity=\"sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=\" crossorigin=\"anonymous\"></script>\n";
 
-// intCodeGen(testTree);
-
 function intCodeGen(syntaxTree, sc){
+  console.log("sc: " + sc);
   scope = sc;
   var bindingScriptFile = require("fs");
   var root = syntaxTree;
@@ -325,8 +324,9 @@ function codeGeneration(intermediateCode){ return intermediateCode; }
 /*
 
 */
-function convert(syntaxTree){
-  var intermediateCode = intCodeGen(syntaxTree);
+function convert(syntaxTree, scope){
+  console.log("scope: " + JSON.stringify(scope));
+  var intermediateCode = intCodeGen(syntaxTree, scope);
   intermediateCode = codeOptimization(intermediateCode);
   return codeGeneration(intermediateCode);
 }
