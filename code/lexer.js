@@ -2,6 +2,9 @@
 
 var RegExp = require("regex");
 
+
+
+
 /*
  * this is used for debugging the program, if debug is true then it will print all the information that is in the print function calls
  */
