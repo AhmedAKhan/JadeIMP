@@ -1,11 +1,9 @@
 @
-for the lexer libraries the only import statements that we would need is to import the regex module.
-It is used to help convert the string of the code to the lexed tokens
 
-<<import statements>>=
-var RegExp = require("regex");
+lexer.nw
+ 
+  This file does the lexical analysis, It will take in the jadeimp code and will output a sequence of symbols that is used for the syntactic analysis. This file has one public function which is just the module that it exports. That function will do the corresponding task. For more information go to the lexer.pdf
 
-@
 
 all these functions are the tokenizer functions, what they will do is convert the next sequences of characters to a token,
 These lexer tokens are different from the tokens present in the abstract syntax tree. 
@@ -54,6 +52,18 @@ for             = { "type":"for", "condition":String, "declaration":String, "ite
 
 
 for the schema, the type attribute tells the user the type of the object, the text is for debugging purposes, It should show the current text that token takes
+
+
+
+
+@
+for the lexer libraries the only import statements that we would need is to import the regex module.
+It is used to help convert the string of the code to the lexed tokens
+
+<<import statements>>=
+var RegExp = require("regex");
+
+
 
 
 <<create the token specific functions>>=
