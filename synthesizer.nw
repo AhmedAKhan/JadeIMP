@@ -101,6 +101,7 @@ function readContent(content) {
   var output = "";
   if (content.type == "directive") output += readDirective(content);
   else if (content.type == "rawText") output += readRawText(content);
+  else if (content.type == "if") output += readIf(content);
   return output;
 }
 
@@ -194,13 +195,13 @@ function readRawText(rawTextToken) {
   var actualValue = value;
 
   // Match with the given REGEX to get all the variables from the rawtext value
-  var variables = value.match(new RegExp(" \\$" + VARIABLE_REGEX, "g"));
+  var variables = value.match(new RegExp("(^| )\\$" + VARIABLE_REGEX, "g"));
 
   if (variables != null) {
     // Loop through all the variables, and replace each one of them with their values
     // NOTE: Each variable is put inside a <span> tag to make variable referencing easier in the double binding script
     for (var i = 0; i < variables.length; i++) {
-      var variableName = variables[i].substring(2,variables[i].length);
+      var variableName = variables[i].trim().substring(1,variables[i].length);
       var replaceValue = "<span class=\"variable_" + variableName + "\">" + scope[variableName] + "</span>";
       actualValue = actualValue.replace("$"+variableName, replaceValue);
     }
@@ -209,27 +210,6 @@ function readRawText(rawTextToken) {
   // Replace all the escaped dollar signs by a dollar sign string
   actualValue = actualValue.replace(/\\\$/g, "$");
 
-  // Put all the words in the value into an array
-  // var words = value.split(" ");
-  //
-  // for (var i = 0; i < words.length; i++) {
-  //   if (words[i].length == 0) continue;
-  //
-  //   // Check if the current word is a variable (starts with a "$"); if it is, then get the value of that variable from the scope
-  //   if (words[i][0] == "$") {
-  //     var variableName = words[i].substring(1,words[i].length);
-  //     actualValue += scope[variableName];
-  //   }
-  //   // If the "$" has a <backslash> before it, treat that word as a normal string instead of a variable
-  //   else if (words[i].length > 1 && words[i][0] == "\\" && words[i][1] == "$") {
-  //     actualValue += words[i].substring(1,words[i].length);
-  //   }
-  //   else actualValue += words[i];
-  //
-  //   // Add a space after each word
-  //   if (i < words.length-1) actualValue += " ";
-  // }
-
   // return the rawtext value indented based on its level in the tree
   return spaceRepeat(treeLevel*INDENTATION_VALUE) + actualValue + "\n";
 }
@@ -237,6 +217,43 @@ function readRawText(rawTextToken) {
 // Parses the readAttribute token
 function readAttribute(attributeToken) {
   return attributeToken.parameter + "=\"" + attributeToken.value + "\"";
+}
+
+// Parses the if_statement token
+function readIf(ifToken) {
+  var condition = makeEvalable(ifToken.condition);
+  var ifContent = ifToken.statements;
+  var elseContent = ifToken.else;
+  var output = "";
+
+  if (eval(condition)) {
+    for (var i = 0; i < ifContent.length; i++) {
+      output += readContent(ifContent[i]);
+    }
+  }
+  else {
+    for (var i = 0; i < ifContent.length; i++) {
+      output += readContent(elseContent[i]);
+    }
+  }
+
+  return output;
+}
+
+// HELPER FUNCTION: Evaluates a boolean condition given as a String
+function makeEvalable(conditionString) {
+  // Match with the given REGEX to get all the variables from the condition
+  var variables = conditionString.match(new RegExp("(^| )\\$" + VARIABLE_REGEX, "g"));
+
+  // Loop through all the variables found in the condition and replace each one with its value
+  for (var i = 0; i < variables.length; i++) {
+    var variableName = variables[i].trim().substring(1, variables[i].length);
+    var variableValue = scope[variableName];
+    // Surround the variable's value with quotations if it's of type string
+    if (typeof variableValue == "string") variableValue = "\"" + variableValue + "\"";
+    conditionString = conditionString.replace(variables[i], variableValue);
+  }
+  return conditionString;
 }
 
 
