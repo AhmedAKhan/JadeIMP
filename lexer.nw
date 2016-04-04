@@ -1,5 +1,6 @@
 @
-these are all the import statements
+for the lexer libraries the only import statements that we would need is to import the regex module.
+It is used to help convert the string of the code to the lexed tokens
 
 <<import statements>>=
 var RegExp = require("regex");
@@ -9,24 +10,37 @@ var RegExp = require("regex");
 this is the part that will create stuff
 
 <<create the token specific functions>>=
+/*
+  get token EOL = end of line
+  
+  @param1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+  @return {boolean} this value represents if it was able to find the corresponding token, in this case it would be end of line, so it would update the scope variables accordingly and figure out the indent level
+*/
 function getTokenEOL(source){
+  // check if there is a new line
   var result = /^\n/.exec(source.text);
-  if(!result) return false;
-  adjustString(source, result[0].length);
+  if(!result) return false; // if there is not return false
+
+  adjustString(source, result[0].length); // consume the necessary string
+
+  //update all the necessary variables
   source.level = 0; // since a new line was added, the current level is 0
   source.column = 0;
   source.line += 1;
   source.lineBegin = true;
   print("inside the end of line reached, the lineBegin is " + source.lineBegin);
-  /* findLevel(source); */
+
+  // figure out the new indentation levels and add the necessary indents or outdents
   getTokenDent(source);
-  return true;
+  return true; // return true because it found the tokens
 }
 
 /*
-  this function will be called after a directive, and will 
-*/
+  If there is a dot, then it will place all the text inline and in the indented region as a raw text
 
+  @param1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+  @return {boolean} this value represents if it was able to find the corresponding token
+*/
 function getTokenDot(source){
   // check if there is a dot
   var result = /^\. */.exec(source.text); // this will get the name of the variable
@@ -77,23 +91,13 @@ function getTokenDot(source){
 }
 
 /*
- * this function will find the level of the current line. It will be called after end of line and the will set the level depending on the level of the first character
- */
-/* function findLevel(source){ */
-/*   var result = /^ *1/.exec(source.text); // always match because an empty string is considered valid */
-/*   adjustString(source, result[0].length); */
-/*   source.level = result[0].length/2; // since a new line was added, the current level is 0 */
-/* } */
-/*
  * this function will convert the next sequence of characters to tokens
  *
- * @param1 {String} sourceText = the current jadeimp code
- * return {Token} an object that will hold the next token
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
  */
 function getTokenDirective(source){
   // it is only a directive if its the first thing in the line
-  /* if(!source.lineBegin) return; */
-
   var result = /^[\w_-]+ */.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
@@ -115,24 +119,31 @@ function getTokenDirective(source){
   // found the variable, actually start converting it
   return true;
 }
-/**/
+/*
+ * this function will convert a vertical bar to a lexed token, a vertical bar is used to add inline text
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+*/
 function getTokenVerticalBar(source){
-  var sourceText = source.text;
-  var result = /^\| /.exec(sourceText); // this will get the name of the variable
-  /* print("checking for the vertical bar, " + result); */
+  var result = /^\| /.exec(source.text); // this will get the name of the variable
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
 
   var token = { type : "vertical bar", level: source.level, value: value, text : result[0] };
   // decided not to put the vertical bar token in the tokens list
-  /* source.tokens.push(token); */
   getTokenText(source, false);
   // found the variable, actually start converting it
   return true;
 }
 
-/**/
+/*
+ * this function will take one attirbute from the string, and convert it to an attribute token
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {String} this will create the value for the attribute of the directive, could be a string in quotation, or number
+*/
 function getAttributeValue(source){
   var ident = /^([\w_-]+|"[^"\n]*") */.exec(source.text); // this will get the name of the variable
   if(!ident) return undefined;
@@ -141,7 +152,12 @@ function getAttributeValue(source){
   value = value.replace(/"/g, '');
   return value;
 }
-/**/
+/*
+ * this function will take one attirbute from the string, and convert it to an attribute token
+ * 
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+*/
 function getTokenAttribute(source){
   var comma= /^, */.exec(source.text); // this will get the name of the variable
   if(comma) adjustString(source, comma[0].length);
@@ -173,7 +189,12 @@ function getTokenAttribute(source){
   print("end single attribute function, added the token " + JSON.stringify(token)  );
   return true;
 }
-/**/
+/*
+ * This will create a start-attribute function if the current directive has an attribute, and an end-attribute after
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+*/
 function getTokenAttributes(source){
   // if attributes exist then create a attribute started token
   var result = /^\( */.exec(source.text); // this will get the name of the variable
@@ -200,89 +221,15 @@ function getTokenAttributes(source){
   // found the variable, actually start converting it
   return true;
 }
-/**/
-function getTokenExpression(source){
-  //
 
-  //
-}
-
-function handleCondition(source){
-  /* var result = /^ *1/.exec(source.text); // this will get the name of the variable */
-  /* if(!result) return false; */
-  /* var value = result[0].trim(); */
-  /* adjustString(source, result[0].length); */
-
-  /* var token = { */
-  /*   type : "if", */
-  /*   level: source.level, */
-  /*   value: value, */
-  /*   text : result[0] */
-  /* }; */
-  /* source.tokens.push(token); */
-  /* // found the variable, actually start converting it */
-  /* return true; */
-}
-
-/* probably not used */
-function operator(source){
-  var result = /^(\+|-|\*|\/)/.exec(source.text); // this will get the name of the variable
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
-
-  var token = {
-    type : "operator",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
-}
-
-/* probably not used */
-function boolOperator(source){
-  var result = /^(==|!==|>=?|<=?)\s*/.exec(source.text); // this will get the name of the variable
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
-
-  var token = {
-    type : "boolOperator",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
-}
-
-/**/
-function getTokenVariable(source){
-  var sourceText = source.text;
-  var result = /^\$[\w_-]+ */.exec(sourceText); // this will get the name of the variable
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
-
-  var token = {
-    type : "variable",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
-}
-/* indent + outdent */
+/*
+ * this function will take the number of spaces in the begining of the line and will create the proper number of indent
+ * and outdents appropiatly 
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+*/
 function getTokenDent(source){
-  // source.level = current number of spaces in the last token
-  // source.indentTokensStack = all the indent tokens and the number of spaces for them
-
   // always match because an empty string is considered valid
   var result = /^ */.exec(source.text);
   adjustString(source, result[0].length);
@@ -317,21 +264,13 @@ function getTokenDent(source){
   getError("got the number of spaces as -1 for some reason");
 }
 
-function getTokenNumber(source){
-  var number = /^[0-9]+ */.exec(source.text);
-  if(!number) return undefined;
-  var value = number[0].trim();
-  adjustString(source, number[0].length);
-  var token = {
-    type : "number",
-    level: source.level,
-    value: parseInt(value),
-    text : number[0]
-  };
-  source.tokens.push(token);
-  return true;
-}
-
+/*
+ * this function will create a block token, of type "createToken", it will be used a block and can be used later in the code
+ * and the compiler will replace it with this part
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+ */
 function createBlock(source){
   var result = /^create *block *\(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -349,6 +288,13 @@ function createBlock(source){
   source.tokens.push(token);
   return true;
 }
+/*
+ * this function is for calling the block, this will place the block with the respective name in place of the 
+ * block
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+ */
 function callBlock(source){
   var result = /^block *\(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -365,10 +311,13 @@ function callBlock(source){
   return true;
 }
 
-/// simple tokens
 /*
-  = () var else block create | .
-*/
+ * this is for simple tokens, the current tokens are = () var else block create | . 
+ * It will convert those symbols to tokens with those tokens
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+ */
 function getSimpleToken(source){
   var result = /^(=|\(|\)|var|else|;) */.exec(source.text); // this will get the name of the variable
   /* print("------------ getSimpleToken-------- result = " + result + " source: " + source); */
@@ -388,11 +337,24 @@ function getSimpleToken(source){
   return true;
 }
 
+/*
+ * this is an error function, used to throw an error and inform the user that invalid syntax was given
+ * 
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @param 2 {String} errorString = this will be a string that will be a description of the error
+ * @return {void} nohing
+ */
 function getError(source, errorString){
   throw ("lexer: " + errorString);
 }
 
-/**/
+/*
+ * this function will convert an if statement, to a token of an if statement
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+ */
 function getTokenSimpleIf(source){
   var result = /^if *\(?/.exec(source.text); // this will get the name of the variable
   if(!result) return false;
@@ -415,7 +377,13 @@ function getTokenSimpleIf(source){
   source.tokens.push(token);
   return true;
 }
-/**/
+
+/*
+ * this function will convert an if statement, to a token of a for statement
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {boolean} this value represents if it was able to find the corresponding token
+ */
 function getTokenFor(source){
   // get the for token
   var result = /^for *\(?/.exec(source.text); // this will get the name of the variable
@@ -460,30 +428,14 @@ function getTokenFor(source){
   source.tokens.push(token);
   // found the variable, actually start converting it
 }
-/**/
-function getTokenSimpleVar(source){
-  var sourceText = source.text;
-  var result = /^var */.exec(sourceText); // this will get the name of the variable
-  if(!result) return false;
-  var value = result[0].trim();
-  adjustString(source, result[0].length);
-
-  var token = {
-    type : "var",
-    level: source.level,
-    value: value,
-    text : result[0]
-  };
-  source.tokens.push(token);
-  // found the variable, actually start converting it
-  return true;
-}
-/**/
 
 /*
-  @param1 {object source} = 
-  @return {boolean} represents if it was successful getting the text or not
-*/
+ * this function will convert text to a token, each line will get converted as a single token
+ * 
+ * @param1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @param1 {boolean} runContinously = this is a boolean value that represents if there is a pipeless text in here, if it is false it will just convert that one line, or else it will parse everything in that line and everything inside an indent
+ * @return {boolean} represents if it was successful getting the text or not
+ */
 function getTokenText(source, runContinously){
   // if runContinously is true, then its a dot, else just convert this line to text
   if(runContinously === undefined) runContinously = true;
@@ -494,17 +446,12 @@ function getTokenText(source, runContinously){
   
   do{
     print("inside the token text: source.text: " + source.text);
-    /* getTokenDent(source); */
-    /* print("inside the getTokenDent " + JSON.stringify(source.indentTokensStack)); */
     // if this is a new line and the indentation is lower then the begining then 
-    // exit the function
-    /* print("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
     print("source.indentTokensStack.length: " + source.indentTokensStack.length + " currentLevel: " + currentLevel + " (source.indentTokensStack.length < currentLevel): " + (source.indentTokensStack.length < currentLevel));
     if(source.indentTokensStack.length < currentLevel) return gotResult; 
     if(source.text == "") return gotResult;
 
     // take everything from the begining and a $ symbol. (unless if its another $) or end of line
-    /* var result = /^[^\n$]+/.exec(source.text); */
     // take everything in that line
     var result = /^.+/.exec(source.text); 
     if(result){
@@ -519,18 +466,6 @@ function getTokenText(source, runContinously){
       gotResult = true;
     }
 
-    //check for the dollor sign
-    /*result = /^\$[^\s$][\S]*//*.exec(source.text);*/
-    /*if(result){*/
-      /*var asgToken = {*/
-        /*type:"varCall",*/
-        /*level:source.level,*/
-        /*name:result[0].substr(1), // remove the $ from the variable name*/
-        /*text:result[0]*/
-      /*};*/
-      /*source.tokens.push(asgToken);*/
-      /*adjustString(source, result[0].length);*/
-    /*}*/
     var isNewLine = getTokenEOL(source);
     print("textToken: 5. isnew line : " + isNewLine);
   }while(runContinously)
@@ -541,11 +476,10 @@ function getTokenText(source, runContinously){
 
 
 /*
- * this function will convert the next sequence of characters to the token
- * ident, which means variable names, or just names in general
+ * this will convert the next "word" to a ident, which is a sequence of characters used in things like directives, and so on
  * 
- * @param1 {String} sourceText = the current jadeimp code
- * return {Token} an object that will hold the next token
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {Token} an object that will hold the next token
  */
 function getTokenIdent(source){
   var ident = /^[\w_-]+ */.exec(source.text); // this will get the name of the variable
@@ -556,7 +490,13 @@ function getTokenIdent(source){
   return value;
 }
 
-/* end of string */
+/*
+ * this is a EOS token which means the string has ended, It only gets called once and it will add the apporpriate number 
+ * of outdents before ending
+ * 
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @return {Token} an object that will hold the next token
+ */
 function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
 
@@ -580,29 +520,18 @@ this is the consume function
 
 <<helper functions>>=
 /*
-*/
+ * this function will take the source.text and will remove the number of characters that is equal to the variable num, 
+ * this function will also update the source.column variable so that debugging information is available if an error has occured
+ *
+ * @param 1 {object source} source = this is the source, which is used throughout the program, which was declared in the lexed function, has informations such as tokens, strings, indents and so on
+ * @param 2 {number} num = this is a number that represents how much of the strings has been read
+ * @return {void} returns nothing
+ */
 function adjustString(source, num){
   source.column += num; // assumption, this function only gets called per line
   source.text = source.text.substr(num);
 }
-/*
- * this function is for creating simple tokens, for example vertical bar, | or var, 
 
- * /// not really used so far
- * @param1 {object}
- * @param2 {string}
- * @param3 {--} value
- * @return {Object token} this will be the newly created token
- */
-/* function createToken(source, type, val){ */
-  /* var token = { */
-  /*   type: name, */
-  /*   level: source.level, */
-  /*   text: type */
-  /* } */
-  /* if(val !== undefined){ token.val = val; token.text = val; } */
-  /* return token; */
-/* } */
 
 @
 this is the list of token validators
@@ -626,10 +555,12 @@ this is the part of the code that will convert the string to a list of tokens
 
 <<lexerFunction>>=
 /*
-  @param1 {String} sourceText = this function takes in the jadeimp code as string
-  @return {object} this function returns a list of tokens
-  @api public
-*/
+ * this function will take in the sourceText which will be the jadeimp code and will return the parsed lexed tokens as a list
+ * 
+ * @param1 {String} sourceText = this function takes in the jadeimp code as string
+ * @return {object} this function returns a list of tokens
+ * @api public
+ */
 function lexer(sourceText){
   // convert all the tabs to four spaces
   print("sourceText: " + sourceText);
@@ -651,7 +582,6 @@ function lexer(sourceText){
     var numberOfTokens = source.tokens.length;
     var beforeString = source.text;
     if(!nextToken(source)){
-      /* print("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
       print("the before string is '" + beforeString + "' and after is '" + source.text + "' before token length is " + numberOfTokens + " after is " + source.tokens.length);
       print("ended the lexical analysis, the rest of the string is " + source.text);
       if(numberOfTokens === source.tokens.length)
@@ -673,6 +603,9 @@ this is the part of the code that will find the next token
 
 <<next token function>>=
 /*
+ * This is a function that will get the next token from the source text, it will return a boolean number which represents 
+ * if it could find a token
+ *
  * @param1 {object} source = is an object used to tokenize the string
  * @return {boolean} = returns if it was able to get the next token
  */
@@ -712,11 +645,13 @@ module.exports = lexer;
 @
 this is for all the debugging information
 <<debugging information>>=
+/*
+ * this is used for debugging the program, if debug is true then it will print all the information that is in the print function calls
+ */
 var DEBUG = false;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }
-
 
 
 <<lexer.nw>>=
@@ -738,49 +673,3 @@ this is for the tester code
 <<lexer.nw>>
 <<test code>>
 
-/**
-
-start
-
-the ones i will use 
-'else-if'
-'conditional'
-'block'
-'start attribute block'
-'end attribute block'
-'attribute'
-'text'
-'new line'
-'start pipeless text'
-'end pipeless text'
-
-
-done
-'directive'
-'for'
-'eos'
-'indent'
-'outdent'
-'raw text'
-'if'
-'else'
-
-
-
-
-
-i dont know what it is
-'append' 
-'prepend' 
-'yield'
-'interpolation' 
-'colon'
-'slash'
-
-the ones i may use
-'case' 
-'each'
-'while'
-'code'
-
-**/
