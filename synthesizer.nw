@@ -13,6 +13,8 @@ var INDENTATION_VALUE = 2;
 var hasHeadTag = false;
 var headContent = "";
 
+var VARIABLE_REGEX = "[\\w-_]+";
+
 var bindingScript = "";
 var JQUERY_CDN = "<script src=\"https://code.jquery.com/jquery-2.2.2.min.js\" integrity=\"sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=\" crossorigin=\"anonymous\"></script>\n";
 
@@ -25,7 +27,48 @@ function spaceRepeat(val) {
   return output;
 }
 
+// HELPER FUNCTION: Parses the attributesString for value of given attribute (return null if attribute is not found in the attributesString)
+function getAttributeVal(attributesString, attribute) {
+  var attrString = attributesString.match(new RegExp(attribute+"=\"[^\"]*\""));
+  if (attrString == null) return null;
+  var attrValue = attrString[0].match(/\".*\"/g)[0].replace(/\"/g, "");
+  return attrValue;
+}
+
+// HELPER FUNCTION: Parses the attributesString for given attribute, if attribute already exists then overwrites existing value (unless overwrite == false; in that case it concatenates it with existing value). If attribute doesn't exist, it creates one and adds it to the output string. Returns entire attributesString with new information
+function setAttributeVal(attributesString, attribute, value, overwrite) {
+  var attrString = attributesString.match(new RegExp(attribute+"=\"[^\"]*\""));
+
+  // If the attribute doesn't exist, the defaults will be used in the final output
+  var newAttributesString = attributesString;
+  var attrValue = value;
+
+  // If attribute exists
+  if (attrString != null) {
+    // Save a copy of attributesString with current attribute data removed (the new data will be added after)
+    newAttributesString = delAttribute(attributesString, attribute);
+    // Parse the value of the attribute
+    attrValue = attrString[0].match(/\".*\"/g)[0].replace(/\"/g, "");
+
+    // Concatenate new value to existing value if overwrite is false
+    if (!overwrite) attrValue += " " + value;
+    // Replace existing value otherwise
+    else attrValue = value;
+  }
+
+  newAttributesString += " " + attribute + "=\"" + attrValue + "\"";
+
+  return newAttributesString;
+}
+
+// HELPER FUNCTION: Parses the attributesString for the given attribute and removes its data from the string
+function delAttribute(attributesString, attribute) {
+  var attrString = attributesString.match(new RegExp(attribute+"=\"[^\"]*\""));
+  return attributesString.replace(" " + attrString[0], "");
+}
+
 function intCodeGen(syntaxTree){
+  var bindingScriptFile = require("fs");
   var root = syntaxTree;
   var rootContent = root.content;
   var output = "";
@@ -41,15 +84,14 @@ function intCodeGen(syntaxTree){
   // Go back up a level once done parsing all the content
   if (rootContent.length > 0) treeLevel--;
 
+  // Surround the binding script with <script> tags (so the browser knows it's JS code)
+  bindingScript = "\n  <!-- This script is automatically generated to allow double binding -->\n" +
+  "  <script type=\"text/javascript\">\n" + bindingScript + "  </script>\n";
+
   // If no head tag is input by the user, create one and put the JQUERY_CDN inside it (so JQuery could be used inside the binding script)
   if (!hasHeadTag) headContent += "<head>\n" + spaceRepeat(INDENTATION_VALUE) + JQUERY_CDN + "</head>\n";
 
-  // If both head tag and body tag are missing, put the entire output inside a body tag
-  // if (!bodyTag && !headTag) body += "<body>\n" + output + "</body>\n";
-  // // If only the body tag is missing, concatenate the closing body tag string (the opening tag would be part of the output)
-  // else if (!bodyTag) body += output + "</body>\n";
-
-  output = "<html>\n" + headContent + "<body>\n" + output + "</body>\n" + "</html>";
+  output = "<html>\n" + headContent + "<body>\n" + output + bindingScript + "</body>\n" + "</html>";
   console.log(output);
   return "";
 }
@@ -88,12 +130,34 @@ function readDirective(directiveToken) {
 
   // If the directive is set not to have a closing tag (e.g. input directive), there's no need to check the content array (should be empty)
   if (directiveToken.isClosing == false) {
+    // If it's the input directive, check if it has been binded to some variable
     if (directiveToken.name == "input") {
-      // If the input directive has been binded to some variable, set the value attribute to the value of that variable
-      var variableName = attributes.match(/bind=\"[\w-_]+\"/g);
+      // Get the value of the bind attribute (i.e. variable name)
+      var variableName = getAttributeVal(attributes, "bind");
+      // If the bind attribute is present
       if (variableName != null) {
-        variableName = variableName[0].match(/\"[\w-_]+\"/g)[0].replace(/\"/g, "");
-        console.log(variableName);
+        var oldAttributesString = attributes;
+        // Set the value of the "value" attribute to the variable's value
+        attributes = setAttributeVal(attributes, "value", scope[variableName].value, true);
+
+        // Delete the bind attribute from the attributes
+        attributes = delAttribute(attributes, "bind");
+
+        // Add custom string inside of class attribute for binding script
+        attributes = setAttributeVal(attributes, "class", "variable_in_" + variableName, false);
+
+        // Update the attribute information inside the openingTag
+        openingTag = openingTag.replace(oldAttributesString, attributes);
+
+        var scriptToAdd = "" +
+        "    $(\".variable_in_" + variableName + "\").on(\"input\", function() {\n" +
+        "      var var_name = $(this).val();\n" +
+        "      $(\".variable_" + variableName +"\").text(var_name);\n" +
+        "      $(\".variable_in_" + variableName +"\").val(var_name);\n" +
+        "    });\n";
+
+        // In case of multiple input boxes binded to the same variable; the script only needs to be injected once
+        if (bindingScript.indexOf(scriptToAdd) < 0) bindingScript += scriptToAdd;
       }
     }
     return openingTag;
@@ -130,7 +194,7 @@ function readRawText(rawTextToken) {
   var actualValue = value;
 
   // Match with the given REGEX to get all the variables from the rawtext value
-  var variables = value.match(/ \$[\w-_]+/g);
+  var variables = value.match(new RegExp(" \\$" + VARIABLE_REGEX, "g"));
 
   if (variables != null) {
     // Loop through all the variables, and replace each one of them with their values
