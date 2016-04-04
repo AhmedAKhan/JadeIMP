@@ -1,0 +1,5 @@
+body
+    for (var i = 0; i < 10; i++)
+        div
+            p.
+                this has the div number of $i

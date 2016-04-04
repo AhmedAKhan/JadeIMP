@@ -49,7 +49,7 @@ code:
 	mkdir ./code
 	@echo "done inside the setup code"
 
-code/%.js: %.nw
+code/%.js: %.nw ./test/unit/%.nw
 	@echo "the < has the value of $<, the @ = $@ the gcflags=$(GCFlAGS)"
 	echo "$(debugPath)$*.nw"
 	$(GC) $(GCFlAGS)$*$(testname).nw $< $(debugPath)$*.nw > $@

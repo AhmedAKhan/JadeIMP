@@ -43,6 +43,7 @@ forloop = {
   content = [<statement>],
   text = ''
 }
+
 condition = {
   token = 'condition',
   text = '--'
@@ -91,11 +92,9 @@ rawText = {
 
 'var' <name> '=' <expression>
 variable = {
-  type = 'variable',
-  name = 'name',
   variablesUsed = [],
   variablesCalled = [],
-  expression = {}
+  value = "";
 }
 
 
@@ -117,7 +116,6 @@ Block = {
 
 root = {
   type = root,
-  level = 0,
   "children":[tokens]
   text = "--"
 }

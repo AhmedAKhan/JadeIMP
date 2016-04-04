@@ -6,7 +6,8 @@
       "type":"directive",
       "name":"body",
       "attributes":[],
-      "content":[
+      "content":
+      [
         {
           "type":"if",
           "condition":"1 == 1",
@@ -21,7 +22,7 @@
                 }
               ],
               "text":"--"
-            },
+            }
           ],
           "else":[
             {
@@ -35,14 +36,13 @@
                 }
               ],
               "text":"--"
-            },
+            }
           ],
           "text":"--"
         }
       ],
       "text":"--"
     }
-  ],
-  "text":""
+  ]
 }
 

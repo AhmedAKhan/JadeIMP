@@ -1,28 +1,38 @@
 {
-  "type":"directive",
-  "tag":"body",
-  "attributes":[],
+  "type":"root",
   "content":[
     {
       "type":"directive",
-      "name":"p",
+      "name":"body",
+      "attributes":[],
       "content":[
         {
-          "type":"b",
+          "type":"directive",
+          "name":"p",
+          "attributes":[],
           "content":[
             {
-               "type":"rawText",
-               "text":"hello"
+              "type":"directive",
+              "name":"b",
+              "attributes":[],
+              "content":[
+                {
+                   "type":"rawText",
+                   "text":"hello"
+                }
+              ],
+              "text":"--"
+            },{
+              "type":"rawText",
+              "text":"Ahmed"
             }
           ],
           "text":"--"
-        },{
-          "type":"rawText",
-          "text":"Ahmed"
         }
       ],
-      "text":"--"
+      "text":"---"
     }
   ],
-  "text":"---"
+  "text":""
 }
+
