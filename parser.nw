@@ -31,7 +31,6 @@ function getAttributes(tokenStream){
 }
 /**/
 function handleDirective(tokenStream){
-  console.log("started handle Directive");
   var tok = tokenStream.advance();
   
   var token = {
@@ -41,7 +40,6 @@ function handleDirective(tokenStream){
     "content":[],
     "text":"--"
   }
-  console.log("inside the directive: " + token.name + " nextTokenStream: " + JSON.stringify(tokenStream.peek()));
   
   // get the attributes
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "start-attributes"){
@@ -49,16 +47,12 @@ function handleDirective(tokenStream){
   }
 
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
-    console.log("going to the handle block section");
     token.content = handleBlock(tokenStream);
-    console.log("done the handle block section");
   }
 
-  console.log("ended the Directive");
   return token;
 }
 function handleFor(tokenStream){
-  console.log("inside the for function");
   var tok = tokenStream.advance();
   var token = {
     "type":"for",
@@ -76,15 +70,12 @@ function handleFor(tokenStream){
     token.content = handleBlock(tokenStream);
   }
   
-  console.log("going to return the token: " + token);
   return token;
 }
 function handleRawText(tokenStream){
-  console.log("returning the raw text");
   return tokenStream.advance();
 }
 function handleIf(tokenStream){
-  console.log("inside the for function");
   var tok = tokenStream.accept("if");
   if(tok === undefined) return undefined;
   var token = {
@@ -107,18 +98,14 @@ function handleIf(tokenStream){
     token["else"] = handleBlock(tokenStream);
   }
   
-  console.log("going to return the token: " + token);
   return token;
 }
 
 function handleBlock(tokenStream){
-  console.log("starting the handle block");
   tokenStream.expect("indent");
 
-  console.log("the handle block");
   var block = handleList(tokenStream);
 
-  console.log("done the block, expecting outdent, then leaving block");
   tokenStream.expect("outdent");
   return block;
 }
@@ -157,18 +144,16 @@ function callBlock(tokenStream){
 
 <<handles the list>>=
 function handleList(tokenStream){
-  console.log("1. started handling list the peek value is: " + JSON.stringify(tokenStream.peek()));
   var tokens = [];
   while(!tokenStream.isEmpty()){
-    console.log("2. parser, handleList: peek: " + JSON.stringify(tokenStream.peek()));
     var currentToken = tokenStream.peek();
     switch(tokenStream.peek().type){
       case "directive" : tokens.push(handleDirective(tokenStream)) ; break;
-      case "for"       : tokens.push(handleFor(tokenStream)); console.log("adding to the tokens list " + JSON.stringify(tokens));       ; break;
+      case "for"       : tokens.push(handleFor(tokenStream));      ; break;
       case "rawText"   : tokens.push(handleRawText(tokenStream))   ; break;
       case "eos"       : return tokens;
       /* case "indent"    : tokens.push(handleIndent(tokenStream))    ; break; */
-      case "outdent"   : console.log("got an outdent, returning"); return tokens;
+      case "outdent"   : return tokens;
       case "if"        : tokens.push(handleIf(tokenStream))        ; break;
       case "createBlock": createBlock(tokenStream); break;
       case "block"    : tokens.push(callBlock(tokenStream)); break;
@@ -177,7 +162,7 @@ function handleList(tokenStream){
         return;
         break;
     }
-    console.log("3. added a token " + JSON.stringify(tokens[tokens.length-1], null, 2) + " at token: " + JSON.stringify(currentToken, null, 2));
+    /* console.log("3. added a token " + JSON.stringify(tokens[tokens.length-1], null, 2) + " at token: " + JSON.stringify(currentToken, null, 2)); */
     if( tokens.length > 0 && tokens[tokens.length-1] === undefined) getError("got a horrible error, the last token is undefined, the stream peak is " + tokenStream.peek().type + " the last token is " + currentToken.type);
   }
   return tokens;
