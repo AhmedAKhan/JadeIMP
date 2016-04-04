@@ -7,7 +7,16 @@ var RegExp = require("regex");
 
 @
 
-this is the part that will create stuff
+all these functions are the tokenizer functions, what they will do is convert the next sequences of characters to a token,
+These lexer tokens are different from the tokens present in the abstract syntax tree. 
+
+These are all the token types for the lexical analyses phase
+if
+for
+indent
+outdent
+
+
 
 <<create the token specific functions>>=
 /*
