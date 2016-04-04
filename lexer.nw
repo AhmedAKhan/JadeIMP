@@ -10,12 +10,50 @@ var RegExp = require("regex");
 all these functions are the tokenizer functions, what they will do is convert the next sequences of characters to a token,
 These lexer tokens are different from the tokens present in the abstract syntax tree. 
 
-These are all the token types for the lexical analyses phase
-if
-for
-indent
-outdent
+These are all the token types for the lexical analyses phase and its schema
 
+eos             = { "type":"eos", "text":String }
+
+indent          = { "type":"indent", "text":String }
+
+outdent         = { "type":"outdent", "text":String }
+
+start-attribute = { "type":"start-attribute", "text":String }
+
+end-attribute   = { "type":"end-attribute", "text":String }
+
+rawText         = { "type":"rawText", "value":String, "text":String }
+
+else            = { "type":"else", "text":String }
+
+raw text        = { "type":"rawText", "value":String, "text":String }
+
+    In the raw text token, the value attribute is the string of the text token
+
+if              = { "type":"if", "condition":String, "text":String }
+    
+    In the if statement, the condition variable is the condition of the if statement
+
+createBlock     = { "type":"createBlock", "name":String, "text":String }
+
+    the name is the name of the current block
+
+block           = { "type":"block", "name":String, "text":String }
+
+    the name is the name of the current block
+
+attribute       = { "type":"attribute", "attribute":String, "value":String }
+
+    the attribute variable is the attribute name that is being changed, and value is the value that it is being asigned
+
+directive       = { "type":"directive", "name":String, "text":String  }
+
+for             = { "type":"for", "condition":String, "declaration":String, "iteration":String, "text":String }
+
+    For this token, the three variables declaration, condition, and iteration are strings that are in the 3 parts of the loop
+
+
+for the schema, the type attribute tells the user the type of the object, the text is for debugging purposes, It should show the current text that token takes
 
 
 <<create the token specific functions>>=
@@ -525,7 +563,8 @@ function getTokenEOS(source){
 
 
 @ 
-this is the consume function
+these are all the helper functions, For the purposes of this file the only was was adjustString, 
+adjust string is a function that will simply adjust the string of the source.text, 
 
 <<helper functions>>=
 /*
@@ -543,7 +582,17 @@ function adjustString(source, num){
 
 
 @
-this is the list of token validators
+this is the list of token validators and a short description
+
+getSimpleToken      - is a simple token which could be = (  )  . var else
+createBlock         - creates a block token
+callBlock           - creates a call block token
+getTokenDot         - creates a dot token which is used to have text without pipes
+getTokenVerticalBar - this is a token for making inline texts
+getTokenFor         - this is a token for the for statement
+getTokenSimpleIf    - this is a token for the if statement
+getTokenDirective   - this functions gets the tokens for directives, and then calls the attributes and block functions accordingly
+getTokenEOL         - this is a function that will get the end of line and will create the proper number of outdents
 
 <<list of token validator functions>>=
 [ 
@@ -560,7 +609,7 @@ this is the list of token validators
 
 @
 
-this is the part of the code that will convert the string to a list of tokens
+this is the part of the code that will convert the string to a list of tokens, this is the only public function in the file
 
 <<lexerFunction>>=
 /*
@@ -608,7 +657,8 @@ function lexer(sourceText){
 
 @
 
-this is the part of the code that will find the next token
+this is the part of the code that will find the next token, it will loop through the list that was formed above and call all those functions
+until it creates a new token
 
 <<next token function>>=
 /*
@@ -662,7 +712,6 @@ var THRESHOLD = 50; // represents the level of information that is being display
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }
 
-
 <<lexer.nw>>=
 'use strict'
 
@@ -681,4 +730,3 @@ this is for the tester code
 <<lexer.test.nw>>=
 <<lexer.nw>>
 <<test code>>
-
