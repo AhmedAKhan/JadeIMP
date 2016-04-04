@@ -52,10 +52,12 @@ function getTokenDot(source){
         console.log("lexer - getTokenDot : 1. first one");
         source.tokens.splice(curPosition+1, 0, currentRawToken);
       }else{
-        console.log("lexer - getTokenDot : 2. inside the first else");
-        source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
-        source.tokens.push(currentRawToken);
-        source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+        console.log("lexer - getTokenDot : 2. inside the first else, curPosition: " + curPosition + " currentRawToken: " + JSON.stringify(currentRawToken) + " source.tokens: " + JSON.stringify(source.tokens, null, 2));
+        // adding it backwards because its inserting in the middle it will be fine
+        source.tokens.splice(curPosition, 0, {"type":"outdent", "text":"", "indents":0, "level":source.level});
+        source.tokens.splice(curPosition, 0, currentRawToken);
+        source.tokens.splice(curPosition, 0, {"type":"indent", "text":"", "indents":1, "level":source.level+1});
+        console.log("lexer - getTokenDot : 2. AFTER inside the first else, " + curPosition + " currentRawToken: " + JSON.stringify(currentRawToken) + " source.tokens: " + JSON.stringify(source.tokens, null, 2));
         return true;
       }
     }else{
@@ -109,9 +111,6 @@ function getTokenDirective(source){
   console.log("going inside the attributes function");
   getTokenAttributes(source);
   
-  //if there is a dot next, take the input string
-  /* checkInlineText(source); */
-
   print("just added the directive from the getTokenDirective");
   // found the variable, actually start converting it
   return true;
