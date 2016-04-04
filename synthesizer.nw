@@ -12,6 +12,7 @@ var treeLevel = 0;
 var INDENTATION_VALUE = 2;
 var hasHeadTag = false;
 var headContent = "";
+var scope = {};
 
 var VARIABLE_REGEX = "[\\w-_]+";
 
@@ -20,7 +21,8 @@ var JQUERY_CDN = "<script src=\"https://code.jquery.com/jquery-2.2.2.min.js\" in
 
 // intCodeGen(testTree);
 
-function intCodeGen(syntaxTree, scope){
+function intCodeGen(syntaxTree, sc){
+  scope = sc;
   var bindingScriptFile = require("fs");
   var root = syntaxTree;
   var rootContent = root.content;
@@ -45,7 +47,7 @@ function intCodeGen(syntaxTree, scope){
   if (!hasHeadTag) headContent += "<head>\n" + spaceRepeat(INDENTATION_VALUE) + JQUERY_CDN + "</head>\n";
 
   output = "<html>\n" + headContent + "<body>\n" + output + bindingScript + "</body>\n" + "</html>";
-  console.log(output);
+  /* console.log(output); */
   return "";
 }
 

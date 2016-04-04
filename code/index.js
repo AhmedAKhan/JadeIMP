@@ -7,7 +7,7 @@ var synthesizer = require('./synthesizer');
  */
 function render(jadeString, options){
   syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree);
+  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 
@@ -35,7 +35,7 @@ function synthesis(syntaxTree){
  */
 function render(jadeString, options){
   syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree);
+  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 

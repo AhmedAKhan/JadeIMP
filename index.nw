@@ -110,7 +110,7 @@ this is the render part
  */
 function render(jadeString, options){
   syntaxTree = parse(jadeString);
-  outputHtml = synthesis(syntaxTree);
+  outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
 

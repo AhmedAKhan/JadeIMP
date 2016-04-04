@@ -196,7 +196,7 @@ function parser(tokensList){
   var tree = {
    "type":"root",
    "content":handleList(source),
-   /* "scope":source.scope, */
+   "scope":source.scope,
    "text":""
   }
 

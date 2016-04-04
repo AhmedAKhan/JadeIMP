@@ -3,22 +3,24 @@
   @return = this will return the intermediate code, currently that is the html
 */
 
-var testTree = require("../testTree.json");
-var scope = testTree.scope;
+// var testTree = require("../testTree.json");
+// var scope = testTree.scope;
 
 var treeLevel = 0;
 var INDENTATION_VALUE = 2;
 var hasHeadTag = false;
 var headContent = "";
+var scope = {};
 
 var VARIABLE_REGEX = "[\\w-_]+";
 
 var bindingScript = "";
 var JQUERY_CDN = "<script src=\"https://code.jquery.com/jquery-2.2.2.min.js\" integrity=\"sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=\" crossorigin=\"anonymous\"></script>\n";
 
-intCodeGen(testTree);
+// intCodeGen(testTree);
 
-function intCodeGen(syntaxTree){
+function intCodeGen(syntaxTree, sc){
+  scope = sc;
   var bindingScriptFile = require("fs");
   var root = syntaxTree;
   var rootContent = root.content;
@@ -43,7 +45,7 @@ function intCodeGen(syntaxTree){
   if (!hasHeadTag) headContent += "<head>\n" + spaceRepeat(INDENTATION_VALUE) + JQUERY_CDN + "</head>\n";
 
   output = "<html>\n" + headContent + "<body>\n" + output + bindingScript + "</body>\n" + "</html>";
-  console.log(output);
+  /* console.log(output); */
   return "";
 }
 

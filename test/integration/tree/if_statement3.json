@@ -1,6 +1,7 @@
 {
   "type":"root",
   "text":"---",
+  "scope":{},
   "content":[
     {
       "type":"if",
