@@ -54,6 +54,7 @@ function readContent(content) {
   else if (content.type == "rawText") output += readRawText(content);
   else if (content.type == "if") output += readIf(content);
   else if (content.type == "for") output += readFor(content);
+  else if (content.type == "block") output += readBlock(content);
   return output;
 }
 
@@ -104,9 +105,11 @@ function readDirective(directiveToken) {
 
         var scriptToAdd = "" +
         "    $(\".variable_in_" + variableName + "\").on(\"input\", function() {\n" +
-        "      var var_name = $(this).val();\n" +
-        "      $(\".variable_" + variableName +"\").text(var_name);\n" +
-        "      $(\".variable_in_" + variableName +"\").val(var_name);\n" +
+        "      $(this).removeClass(\"variable_in_" + variableName + "\");\n" +
+        "      var var_val = $(this).val();\n" +
+        "      $(\".variable_" + variableName +"\").text(var_val);\n" +
+        "      $(\".variable_in_" + variableName +"\").val(var_val);\n" +
+        "      $(this).addClass(\"variable_in_" + variableName + "\");\n" +
         "    });\n";
 
         // In case of multiple input boxes binded to the same variable; the script only needs to be injected once
@@ -208,22 +211,30 @@ function readFor(forToken) {
   // Add the variable to the scope (temporarily)
   scope[variableName] = variableValue;
 
-  console.log("D:" + declaration + "  C:" + condition + "  I:" + iteration);
-
   // Loop through all the contents N number of times, where N represents the number of iterations input by the user (via JadeIMP code)
   for (eval(declaration); eval(condition); eval(iteration)) {
     // Update the variable value in the scope based on the variable's value in the for loop
     scope[variableName] = eval(variableName);
-    console.log("I:" + i);
-    // console.log("Name:" + variableName + "  Value:" + scope[variableName]);
 
     for (var customVarI = 0; customVarI < forContent.length; customVarI++) {
       output += readContent(forContent[customVarI]);
     }
   }
-  // Delete the variable from the scope (b/c we want to treat it as a local variable)
+  // Delete the variable from the scope after loop finishes (b/c we want to treat it as a local variable)
   delete scope[variableName];
 
+  return output;
+}
+
+// Parses the block token
+function readBlock(blockToken) {
+  var blockName = blockToken.name;
+  var blockContent = scope[blockName].content;
+  var output = "";
+
+  for (var i = 0; i < blockContent.length; i++) {
+    output += readContent(blockContent[i]);
+  }
   return output;
 }
 
