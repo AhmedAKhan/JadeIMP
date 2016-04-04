@@ -136,7 +136,7 @@ function readDirective(directiveToken) {
       if (variableName != null) {
         var oldAttributesString = attributes;
         // Set the value of the "value" attribute to the variable's value
-        attributes = setAttributeVal(attributes, "value", scope[variableName].value, true);
+        attributes = setAttributeVal(attributes, "value", scope[variableName], true);
 
         // Delete the bind attribute from the attributes
         attributes = delAttribute(attributes, "bind");
@@ -199,7 +199,7 @@ function readRawText(rawTextToken) {
     // NOTE: Each variable is put inside a <span> tag to make variable referencing easier in the double binding script
     for (var i = 0; i < variables.length; i++) {
       var variableName = variables[i].substring(2,variables[i].length);
-      var replaceValue = "<span class=\"variable_" + variableName + "\">" + scope[variableName].value + "</span>";
+      var replaceValue = "<span class=\"variable_" + variableName + "\">" + scope[variableName] + "</span>";
       actualValue = actualValue.replace("$"+variableName, replaceValue);
     }
   }
