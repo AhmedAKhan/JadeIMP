@@ -36,16 +36,18 @@ if = {
 
 'for (' <condition>  '):' \n <statements>
 forloop = {
-  type: 'forloop',
+  type: 'for',
+  declaration: <string>,
   condition: 'condition',
-  statements = [<statement>],
+  iteration: <string>,
+  content = [<statement>],
   text = ''
 }
 condition = {
   token = 'condition',
   text = '--'
 }
-statements = { 
+statements = {
   token = 'statement',
   statements = [<statement>]
   text = '--'
@@ -73,7 +75,7 @@ expression = {
 text = {
   type = text,
   content:[
-  
+
   ]
   text = --
 }
