@@ -1,23 +1,25 @@
 {
   "type":"root",
   "scope":{
-    "type":"block",
-    "name":"title",
-    "content":[
-        {
-          "type":"directive",
-          "name":"h1",
-          "content":[
-            {
-               "type":"rawText",
-               "value":"this is the title",
-               "text":"--"
-            }
-          ],
-          "text":"--"
-      }
-    ],
-    "text":"--"
+    "title":{
+      "type":"block",
+      "name":"title",
+      "content":[
+          {
+            "type":"directive",
+            "name":"h1",
+            "content":[
+              {
+                 "type":"rawText",
+                 "value":"this is the title",
+                 "text":"--"
+              }
+            ],
+            "text":"--"
+        }
+      ],
+      "text":"--"
+    }
   },
   "content":[
     {

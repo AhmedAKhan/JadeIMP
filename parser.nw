@@ -129,6 +129,7 @@ function createBlock(tokenStream){
   
   // add that to the scope
   tokenStream.scope[createBlockToken.name] = token;
+  console.log("scope after adding it : " + JSON.stringify(tokenStream.scope,null,2));
   return true;
 }
 
@@ -196,9 +197,13 @@ function parser(tokensList){
   var tree = {
    "type":"root",
    "content":handleList(source),
-   "scope":source.scope,
+   "scope":{},
    "text":""
   }
+  console.log("scope when almost done" + JSON.stringify(source.scope,null,2));
+
+  tree.scope = source.scope;
+  console.log("tree when almost done" + JSON.stringify(tree.scope,null,2));
 
   return tree;
 }

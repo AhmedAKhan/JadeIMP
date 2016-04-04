@@ -72,7 +72,7 @@ function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
-  if(testname === "blockTest") debug = true;
+  // if(testname === "blockTest") debug = true;
   // console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){

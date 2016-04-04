@@ -230,6 +230,7 @@ function readFor(forToken) {
 // Parses the block token
 function readBlock(blockToken) {
   var blockName = blockToken.name;
+  console.log("scope: " + JSON.stringify(scope, null, 2));
   var blockContent = scope[blockName].content;
   var output = "";
 

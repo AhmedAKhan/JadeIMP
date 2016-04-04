@@ -7,7 +7,6 @@ var synthesizer = require('./synthesizer');
  */
 function render(jadeString, options){
   var syntaxTree = parse(jadeString);
-  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
   var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
@@ -36,7 +35,6 @@ function synthesis(syntaxTree, scope){
  */
 function render(jadeString, options){
   var syntaxTree = parse(jadeString);
-  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
   var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }

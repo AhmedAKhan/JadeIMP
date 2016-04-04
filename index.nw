@@ -110,7 +110,6 @@ this is the render part
  */
 function render(jadeString, options){
   var syntaxTree = parse(jadeString);
-  console.log("====== syntaxTree: " + JSON.stringify(syntaxTree));
   var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
   return outputHtml;
 }
