@@ -42,6 +42,7 @@ function getTokenDot(source){
     // if the next one is an indent, place this raw text after this
     // this is the next rawtext
     var curPosition = source.tokens.length; // current index of the token
+    var currentIndents = source.indentTokensStack.length;
 
     // check if there is an indent
     getTokenEOL(source);
@@ -49,28 +50,27 @@ function getTokenDot(source){
     // if at curPosition there is a indent, the place it at position curPosition+1
     if(source.tokens.length > curPosition){
       if(source.tokens[curPosition].type === "indent"){
-        console.log("lexer - getTokenDot : 1. first one");
+        print("lexer - getTokenDot : 1. first one");
         source.tokens.splice(curPosition+1, 0, currentRawToken);
       }else{
-        console.log("lexer - getTokenDot : 2. inside the first else, curPosition: " + curPosition + " currentRawToken: " + JSON.stringify(currentRawToken) + " source.tokens: " + JSON.stringify(source.tokens, null, 2));
+        print("lexer - getTokenDot : 2. inside the first else, curPosition: " + curPosition + " currentRawToken: " + JSON.stringify(currentRawToken) + " source.tokens: " + JSON.stringify(source.tokens, null, 2));
         // adding it backwards because its inserting in the middle it will be fine
-        source.tokens.splice(curPosition, 0, {"type":"outdent", "text":"", "indents":0, "level":source.level});
+        source.tokens.splice(curPosition, 0, {"type":"outdent", "text":"", "indents":currentIndents, "level":source.level});
         source.tokens.splice(curPosition, 0, currentRawToken);
-        source.tokens.splice(curPosition, 0, {"type":"indent", "text":"", "indents":1, "level":source.level+1});
-        console.log("lexer - getTokenDot : 2. AFTER inside the first else, " + curPosition + " currentRawToken: " + JSON.stringify(currentRawToken) + " source.tokens: " + JSON.stringify(source.tokens, null, 2));
+        source.tokens.splice(curPosition, 0, {"type":"indent", "text":"", "indents":currentIndents+1, "level":source.level+1});
         return true;
       }
     }else{
-      console.log("lexer - getTokenDot : 3. inside the second else");
+      print("lexer - getTokenDot : 3. inside the second else");
       // that was the last thing in the string
-      source.tokens.push({"type":"indent", "text":"", "indents":1, "level":source.level+1});
+      source.tokens.push({"type":"indent", "text":"", "indents":currentIndents+1, "level":source.level+1});
       source.tokens.push(currentRawToken);
-      source.tokens.push({"type":"outdent", "text":"", "indents":0, "level":source.level});
+      source.tokens.push({"type":"outdent", "text":"", "indents":currentIndents, "level":source.level, "asd":"asdasdasdasd"});
       return true;
     }
   }
    
-  console.log("lexer - getTokenDot: 4. last, ");
+  print("lexer - getTokenDot: 4. last, ");
   getTokenText(source, true);
   return true;
   /* source.tokens.splice() */
@@ -108,7 +108,7 @@ function getTokenDirective(source){
   source.tokens.push(token);
 
   // check for attributes
-  console.log("going inside the attributes function");
+  print("going inside the attributes function");
   getTokenAttributes(source);
   
   print("just added the directive from the getTokenDirective");
@@ -119,7 +119,7 @@ function getTokenDirective(source){
 function getTokenVerticalBar(source){
   var sourceText = source.text;
   var result = /^\| /.exec(sourceText); // this will get the name of the variable
-  /* console.log("checking for the vertical bar, " + result); */
+  /* print("checking for the vertical bar, " + result); */
   if(!result) return false;
   var value = result[0].trim();
   adjustString(source, result[0].length);
@@ -146,9 +146,9 @@ function getTokenAttribute(source){
   var comma= /^, */.exec(source.text); // this will get the name of the variable
   if(comma) adjustString(source, comma[0].length);
   
-  console.log("inside the get single attribute ");
+  print("inside the get single attribute ");
   var attribute = getTokenIdent(source);
-  console.log("attribute: " + attribute);
+  print("attribute: " + attribute);
   if(attribute === undefined) return false;
   
   // get the equal sign
@@ -170,7 +170,7 @@ function getTokenAttribute(source){
     "text":attribute + " = " + value
   }
   source.tokens.push(token);
-  console.log("end single attribute function, added the token " + JSON.stringify(token)  );
+  print("end single attribute function, added the token " + JSON.stringify(token)  );
   return true;
 }
 /**/
@@ -371,7 +371,7 @@ function callBlock(source){
 */
 function getSimpleToken(source){
   var result = /^(=|\(|\)|var|else|;) */.exec(source.text); // this will get the name of the variable
-  /* console.log("------------ getSimpleToken-------- result = " + result + " source: " + source); */
+  /* print("------------ getSimpleToken-------- result = " + result + " source: " + source); */
   if(!result) return false;
   var value = result[0].trim();
   var token = {};
@@ -495,11 +495,11 @@ function getTokenText(source, runContinously){
   do{
     print("inside the token text: source.text: " + source.text);
     /* getTokenDent(source); */
-    /* console.log("inside the getTokenDent " + JSON.stringify(source.indentTokensStack)); */
+    /* print("inside the getTokenDent " + JSON.stringify(source.indentTokensStack)); */
     // if this is a new line and the indentation is lower then the begining then 
     // exit the function
-    /* console.log("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
-    console.log("source.indentTokensStack.length: " + source.indentTokensStack.length + " currentLevel: " + currentLevel + " (source.indentTokensStack.length < currentLevel): " + (source.indentTokensStack.length < currentLevel));
+    /* print("isnewline: " + isNewLine + " source.level: " + source.indentTokensStack.length + " currentLevel: " + currentLevel); */
+    print("source.indentTokensStack.length: " + source.indentTokensStack.length + " currentLevel: " + currentLevel + " (source.indentTokensStack.length < currentLevel): " + (source.indentTokensStack.length < currentLevel));
     if(source.indentTokensStack.length < currentLevel) return gotResult; 
     if(source.text == "") return gotResult;
 
@@ -559,10 +559,12 @@ function getTokenIdent(source){
 /* end of string */
 function getTokenEOS(source){
   if(source.text.length > 0) return; // if the string is not empty then you have not reached end of string
-  
+
+  print("EOS: going to add this many outdents source.indentTokensStack.length: " + source.indentTokensStack.length);
+  print("lastToken: " + JSON.stringify(source.tokens[source.tokens.length-1]));
   // add the proper amount of out tokens
-  /* console.log("going to add the outdents "); */
-  for(var i = 0; i < source.indentTokensStack.length; i++){
+  var numberOfIndents = source.indentTokensStack.length;
+  for(var i = 0; i < numberOfIndents; i++){
     source.indentTokensStack.pop();
     source.tokens.push({"type":"outdent", "text":"", "indents":source.indentTokensStack.length});
   }
@@ -649,7 +651,7 @@ function lexer(sourceText){
     var numberOfTokens = source.tokens.length;
     var beforeString = source.text;
     if(!nextToken(source)){
-      /* console.log("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
+      /* print("numberOfTokens: " + numberOfTokens + " source.tokens.length: " + source.tokens.length); */
       print("the before string is '" + beforeString + "' and after is '" + source.text + "' before token length is " + numberOfTokens + " after is " + source.tokens.length);
       print("ended the lexical analysis, the rest of the string is " + source.text);
       if(numberOfTokens === source.tokens.length)
