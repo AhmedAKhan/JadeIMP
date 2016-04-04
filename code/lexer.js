@@ -2,7 +2,7 @@
 
 var RegExp = require("regex");
 
-var DEBUG = true;
+var DEBUG = false;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }
@@ -688,13 +688,11 @@ module.exports = lexer;
 
 
 var expect = require('chai').expect;
-console.log("this is from the test file");
 
 
 describe("trying inline with dot text", function(){
   it("trying inline with dot text", function(done){
     var result = lexer("p. 1. first line\n  2. second line");
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("array").with.length(6);
 
     /* var barToken = result[0]; */
@@ -749,7 +747,6 @@ describe("testing the adjustString", function(){
 describe("testing text with dot", function(){
   it("basic p with dot text ", function(done){
     var resultArr = lexer("p.  \n  1. this is the first line\n  2. this is the second line");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
     
     expect(resultArr).to.be.an("array").with.length(6);
 
@@ -798,7 +795,6 @@ describe("testing text with dot", function(){
 describe("testing text", function(){
   it("going to test normal text with bar", function(done){
     var result = lexer("|  this is some text");
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("array").with.length(2);
 
     /* var barToken = result[0]; */
@@ -819,7 +815,6 @@ describe("testing text", function(){
 describe("testing the if statement", function(){
   it("going to test a basic if statement", function(done){
     var result = lexer("if 1 == 0");
-    /* console.log("result: " + JSON.stringify(result)); */
     expect(result).to.be.an("array").with.length(2);
     expect(result[0]).to.have.property("type","if");
     expect(result[0]).to.have.property("condition","1 == 0");
@@ -834,7 +829,6 @@ describe("testing the if statement", function(){
 describe("going to test directives", function(){
   it("basic simple p directive", function(done){
     var resultArr = lexer("p");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(2);
@@ -854,7 +848,6 @@ describe("going to test directives", function(){
 
   it("bar text + if statement", function(done){
     var resultArr = lexer("if 1 == 2\n  | this is also some text");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(5);
@@ -890,7 +883,6 @@ describe("going to test directives", function(){
 
   it("bar text + if statement + outdent", function(done){
     var resultArr = lexer("if 1 == 2\n  | this is also some text\n| this is some more text");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(6);
@@ -933,7 +925,6 @@ describe("going to test directives", function(){
 
   it("directive with text inline and dot p. abc", function(done){
     var resultArr = lexer("p. abc");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(5);
@@ -966,7 +957,6 @@ describe("going to test directives", function(){
 
   it("directive with text inline and dot and inline text with indent text", function(done){
     var resultArr = lexer("p. abc\n  def");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(6);
@@ -1004,7 +994,6 @@ describe("going to test directives", function(){
 
   it("directive with text inline and dot and inline text with indent text and outdent text", function(done){
     var resultArr = lexer("p. abc\n  def\n| last line");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(7);
@@ -1046,7 +1035,6 @@ describe("going to test directives", function(){
 
   it("directive test with multiple div statements", function(done){
     var resultArr = lexer("div \n  | abc \ndiv \n| def");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     expect(resultArr).to.be.a("array")
     .to.have.length(7);
@@ -1095,7 +1083,6 @@ describe("going to test directives", function(){
 
   it("directive with attribute", function(done){
     var resultArr = lexer('div(id="main",class="zxc asd oi", value = 12)');
-    console.log("result: " + JSON.stringify(resultArr, null, 2));
 
     expect(resultArr).to.be.a("array")
     .to.have.length(7);
@@ -1145,7 +1132,6 @@ describe("testing the for loop", function(){
   it("testing basic for statement", function(done){
     // get the lexed object
     var resultArr = lexer("for (var i = 0; i < 100; i++)");
-    /* console.log("text with dot result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr).to.be.a('array');
@@ -1189,7 +1175,6 @@ describe("testing the for loop", function(){
   it("for statement - brackets, +indents", function(done){
     // get the lexed object
     var resultArr = lexer("    for var i = 0; i < 100; i++");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)
@@ -1226,7 +1211,6 @@ describe("checking for text with pipes", function(){
   it("checking the line", function(done){
     // get the lexed object
     var resultArr = lexer("p\n  | 1. this is some text\n  | 2. this is the second text\n| 3. this is the third text");
-    /* console.log("result: " + JSON.stringify(resultArr, null, 2)); */
 
     // run the tests
     expect(resultArr)
@@ -1270,7 +1254,6 @@ describe("checking for text with pipes", function(){
   });
 });
 
-console.log("after the describe part");
 
 
 /*
@@ -1326,7 +1309,6 @@ function expectedTypeOrder(actual, expected){
   if(expected.length != actual.length)
     throw("the length is not the same expected: " + JSON.stringify(expected) +" actual: " + JSON.stringify(actual));
   for(var i = 0; i < actual.length; i++){
-    /* console.log("i: " + i + " actual: " + actual[i]); */
     if(expected[i] !== actual[i].type)
       throw("i:  " + i + " expected type to be " + expected + " but got " + actual[i].type);
   }

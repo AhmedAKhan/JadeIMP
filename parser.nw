@@ -162,7 +162,6 @@ function handleList(tokenStream){
         return;
         break;
     }
-    /* console.log("3. added a token " + JSON.stringify(tokens[tokens.length-1], null, 2) + " at token: " + JSON.stringify(currentToken, null, 2)); */
     if( tokens.length > 0 && tokens[tokens.length-1] === undefined) getError("got a horrible error, the last token is undefined, the stream peak is " + tokenStream.peek().type + " the last token is " + currentToken.type);
   }
   return tokens;
@@ -201,7 +200,6 @@ function parser(tokensList){
    "text":""
   }
 
-  /* console.log("going to print result: " + JSON.stringify(tree)); */
   return tree;
 }
 

@@ -72,8 +72,7 @@ function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
-  if(testname === "if_statement4") debug = true;
-  console.log("test name: '" + testname + "'");
+  // console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){
     var jadeCode;
@@ -93,9 +92,7 @@ function testFile(filename){
 
     // conver the file to a tree
     it("converting the file to tree", function(done){
-      console.log("test: 0. going to run this with the debug value of: " + debug);
       var actualJsonResponse = jadeimp.parse(jadeCode, debug);
-      console.log("test: 0.3. got the response from the parser");
       if(debug){
         console.log("jadeCode: " + jadeCode);
         console.log("actualJsonResponse: " + JSON.stringify(actualJsonResponse, null, 2));

@@ -1,6 +1,6 @@
 {
   "type":"root",
-  "children":[
+  "content":[
     {
       "type":"for",
       "before":"var i = 0",

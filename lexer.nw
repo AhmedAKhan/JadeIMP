@@ -712,7 +712,7 @@ module.exports = lexer;
 @
 this is for all the debugging information
 <<debugging information>>=
-var DEBUG = true;
+var DEBUG = false;
 var THRESHOLD = 50; // represents the level of information that is being displayed, change it to show or less information
 function print(str){ printwp(str, 0); }
 function printwp(str, priority){ if(DEBUG && THRESHOLD > priority) console.log(str); }

@@ -18,7 +18,6 @@ function render(jadeString, options){
   also called analyzer
 */
 function parse(jadeString, parseDebug){
-  console.log("1. inside the index->parse debug = " + parseDebug);
   return analyzer.parse(jadeString, parseDebug);
 }
 

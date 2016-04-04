@@ -1,6 +1,6 @@
 {
   "type":"root",
-  "children":[
+  "content":[
     {
       "type":"for",
       "before":"var j = 10",
@@ -34,7 +34,7 @@
           ],
           "text":"--"
         }
-      ],
+      ]
     }
   ],
   "text":"--"

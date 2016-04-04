@@ -18,7 +18,6 @@ describe("going to test the parser", function(){
       ]
 
     var result = parser(input);
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root")
 
@@ -46,7 +45,6 @@ describe("going to test directives", function(){
       ]
 
     var result = parser(input);
-    /* console.log("the result: " + JSON.stringify(result, null, 2)); */
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
     expect(result).to.have.property("content");
@@ -101,7 +99,6 @@ describe("going to test directives", function(){
 
 
     var result = parser(input);
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
 
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
@@ -146,7 +143,6 @@ describe("going to test for text", function(){
       ]
 
     var result = parser(input);
-    /* console.log("result: " + JSON.stringify(result, null, 2)); */
 
     expect(result).to.be.an("object");
     expect(result).to.have.property("type", "root");
