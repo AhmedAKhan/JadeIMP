@@ -1,5 +1,24 @@
-[{
+{
   "type":"root",
+  "scope":{
+    "type":"block",
+    "name":"title",
+    "content":[
+        {
+          "type":"directive",
+          "name":"h1",
+          "content":[
+            {
+               "type":"rawText",
+               "value":"this is the title",
+               "text":"--"
+            }
+          ],
+          "text":"--"
+      }
+    ],
+    "text":"--"
+  },
   "content":[
     {
       "type":"block",
@@ -8,23 +27,4 @@
     }
   ],
   "text":"--"
-},
-{
-  "type":"block",
-  "name":"title",
-  "content":[
-      {
-        "type":"directive",
-        "name":"h1",
-        "content":[
-          {
-             "type":"rawText",
-             "value":"this is the title",
-             "text":"--"
-          }
-        ],
-        "text":"--"
-    }
-  ],
-  "text":"--"
-}]
+}
