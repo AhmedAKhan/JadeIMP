@@ -14,7 +14,7 @@ function getError(errString){ throw ("parser: " + errString); }
 function getAttributes(tokenStream){
   var hasAttributes = tokenStream.accept("start-attributes");
   if(hasAttributes === undefined) return [];
-  
+
   var tokens = [];
   /* while(tokenStream.accept("end-attributes") === undefined){ */
   while(tokenStream.peek() !== undefined && tokenStream.peek().type !== "end-attributes"){
@@ -25,14 +25,14 @@ function getAttributes(tokenStream){
     }
     tokens.push(curAttributeToken);
   }
-  
+
   tokenStream.expect("end-attributes");
   return tokens;
 }
 /**/
 function handleDirective(tokenStream){
   var tok = tokenStream.advance();
-  
+
   var token = {
     "type":"directive",
     "name":tok.name,
@@ -40,7 +40,7 @@ function handleDirective(tokenStream){
     "content":[],
     "text":"--"
   }
-  
+
   // get the attributes
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "start-attributes"){
     token.attributes = getAttributes(tokenStream);
@@ -69,7 +69,7 @@ function handleFor(tokenStream){
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
     token.content = handleBlock(tokenStream);
   }
-  
+
   return token;
 }
 function handleRawText(tokenStream){
@@ -90,14 +90,14 @@ function handleIf(tokenStream){
   // get the inner content
   /* if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){ */
   if(tokenStream.isNext("indent")){
-    token.content = handleBlock(tokenStream);
+    token.statements = handleBlock(tokenStream);
   }
 
   // if else is next then get the block for else
   if(tokenStream.accept("else")){
     token["else"] = handleBlock(tokenStream);
   }
-  
+
   return token;
 }
 
@@ -121,12 +121,12 @@ function createBlock(tokenStream){
     "content":[],
     "text":"--"
   }
-  
+
   // get the inner content
   if(tokenStream.peek() !== undefined && tokenStream.peek().type === "indent"){
     token.content = handleBlock(tokenStream);
   }
-  
+
   // add that to the scope
   tokenStream.scope[createBlockToken.name] = token;
   return true;
@@ -191,7 +191,7 @@ function parser(tokensList){
   }
   source.isEmpty = function(type){ return (this.tokens.length === 0);  }
   source.scope = {};
-  
+
   print("starting the parser");
   var tree = {
    "type":"root",
@@ -207,7 +207,7 @@ function parser(tokensList){
 
 
 @
-for this file, the part of the code that is visible to the outside files is just the lexer function. 
+for this file, the part of the code that is visible to the outside files is just the lexer function.
 
 
 <<api>>=
