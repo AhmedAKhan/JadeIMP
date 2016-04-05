@@ -42,12 +42,22 @@ this is the contextual analysis part
   @return = a syntax tree with contextual information, in this case it is adding the information
   needed for the variables. More information is available at --REF--.
 */
-function contextualAnalysis(syntaxTree){
+function contextualAnalysis(syntaxTree, scope){
   // finds variables and puts the ids in a list
   // and used variables in a list
 
   // and injects the class names
+  syntaxTree.scope = extend(scope, syntaxTree.scope);
   return syntaxTree;
+}
+function extend(target) {
+  var sources = [].slice.call(arguments, 1);
+  sources.forEach(function (source) {
+      for (var prop in source) {
+          target[prop] = source[prop];
+      }
+  });
+  return target;
 }
 
 @
@@ -59,7 +69,7 @@ this is the parse function
   @param1 sourceText = the source text which would be the jadeimp code as a string
   @return = this will be the abstract syntax tree with contextual analysis
 */
-function parse(sourceText, debug){
+function parse(sourceText, scope, debug){
   if(debug) console.log("inside the parse (analyzer.nw) with the debug value of " + debug);
   var tokensList = lexicalAnalysis(sourceText);
   if(debug) console.log("got passed the lexical analysis tokensList: " + JSON.stringify(tokensList,null,2) + " \n\n");
@@ -68,7 +78,7 @@ function parse(sourceText, debug){
     console.log("tree: " + JSON.stringify(ast));
     console.log("tree[scope]: " + ast["scope"]);
   }
-  return contextualAnalysis(ast);
+  return contextualAnalysis(ast, scope);
 }
 
 

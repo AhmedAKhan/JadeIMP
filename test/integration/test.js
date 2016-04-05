@@ -2,6 +2,7 @@
 //load the chai tester stuff
 var chai = require('chai');
 var should = chai.should();
+var fs = require("fs");
 var expect = chai.expect;
 
 // load all the files
@@ -72,7 +73,7 @@ function testFile(filename){
   var testname = filename.substr(0, filename.indexOf(".")); // remove the extension
   if(testname === "") return; // if the file name is empty return it
   var debug = false;
-  if(testname === "blockTest") debug = true;
+  // if(testname === "blockTest") debug = true;
   // console.log("test name: '" + testname + "'");
   // run the test case
   describe("going to test " + testname, function(){
@@ -108,8 +109,12 @@ function testFile(filename){
     it("converting the tree to html", function(done){
       var actualJsonResponse = jadeimp.parse(jadeCode, debug);
       var actualHtml = jadeimp.synthesis(actualJsonResponse, actualJsonResponse.scope);
+      // console.log("about to write the file name: " + "./actualHtml/" +testname+"html" + " actualHtml: " + actualHtml);
+      fs.writeFileSync("./test/integration/actualHtml/"+testname+".html", actualHtml);
+      // fs.writeFileSync("./asd.html", actualHtml, function(err){ console.log("=================done writing to file ====================" + error);  });
+      // fs.writeFileSync("./actualHtml/" +testname+".html", actualHtml, function(err){ console.log("=================done writing to file ====================" + error);  });
       // checkHtml(expectedHtml, actualHtml);
-      checkHtml(expectedHtml, expectedHtml);
+      // checkHtml(expectedHtml, expectedHtml);
       done();
     })
   })

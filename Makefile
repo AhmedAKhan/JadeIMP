@@ -18,8 +18,8 @@ codeFiles := $(foreach path,$(wildcard */*.nw *.nw), $(patsubst %, code/%, $(pat
 
 ## debugging stuff
 ## if you want to make debugging off, then make this an empty string
-debugPath=test/unit/
-testname=.test
+# debugPath=test/unit/
+# testname=.test
 
 main: generateCode # doc
 # main:

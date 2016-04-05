@@ -20,7 +20,6 @@ var bindingScript = "";
 var JQUERY_CDN = "<script src=\"https://code.jquery.com/jquery-2.2.2.min.js\" integrity=\"sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=\" crossorigin=\"anonymous\"></script>\n";
 
 function intCodeGen(syntaxTree, sc){
-  console.log("sc: " + sc);
   scope = sc;
   var bindingScriptFile = require("fs");
   var root = syntaxTree;
@@ -47,7 +46,7 @@ function intCodeGen(syntaxTree, sc){
 
   output = "<html>\n" + headContent + "<body>\n" + output + bindingScript + "</body>\n" + "</html>";
   /* console.log(output); */
-  return "";
+  return output;
 }
 
 // Reads a single element inside the "contents" array for any given token
@@ -343,7 +342,6 @@ function codeGeneration(intermediateCode){ return intermediateCode; }
 
 */
 function convert(syntaxTree, scope){
-  console.log("scope: " + JSON.stringify(scope));
   var intermediateCode = intCodeGen(syntaxTree, scope);
   intermediateCode = codeOptimization(intermediateCode);
   return codeGeneration(intermediateCode);
