@@ -50,7 +50,8 @@ function contextualAnalysis(syntaxTree, scope){
   // and used variables in a list
 
   // and injects the class names
-  syntaxTree.scope = extend(scope, syntaxTree.scope);
+  console.log("going to call extend, scope: " + JSON.stringify(scope) + " treescope: " + JSON.stringify(syntaxTree.scope));
+  syntaxTree.scope = extend({}, scope, syntaxTree.scope);
   return syntaxTree;
 }
 function extend(target) {
@@ -73,7 +74,8 @@ function contextualAnalysis(syntaxTree, scope){
   // and used variables in a list
 
   // and injects the class names
-  syntaxTree.scope = extend(scope, syntaxTree.scope);
+  console.log("going to call extend, scope: " + JSON.stringify(scope) + " treescope: " + JSON.stringify(syntaxTree.scope));
+  syntaxTree.scope = extend({}, scope, syntaxTree.scope);
   return syntaxTree;
 }
 function extend(target) {
@@ -183,7 +185,8 @@ function contextualAnalysis(syntaxTree, scope){
   // and used variables in a list
 
   // and injects the class names
-  syntaxTree.scope = extend(scope, syntaxTree.scope);
+  console.log("going to call extend, scope: " + JSON.stringify(scope) + " treescope: " + JSON.stringify(syntaxTree.scope));
+  syntaxTree.scope = extend({}, scope, syntaxTree.scope);
   return syntaxTree;
 }
 function extend(target) {
@@ -206,7 +209,8 @@ function contextualAnalysis(syntaxTree, scope){
   // and used variables in a list
 
   // and injects the class names
-  syntaxTree.scope = extend(scope, syntaxTree.scope);
+  console.log("going to call extend, scope: " + JSON.stringify(scope) + " treescope: " + JSON.stringify(syntaxTree.scope));
+  syntaxTree.scope = extend({}, scope, syntaxTree.scope);
   return syntaxTree;
 }
 function extend(target) {

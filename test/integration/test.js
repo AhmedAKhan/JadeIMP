@@ -107,12 +107,12 @@ function testFile(filename){
 
     // convert the tree to html
     it("converting the tree to html", function(done){
-      var actualJsonResponse = jadeimp.parse(jadeCode, debug);
-      var actualHtml = jadeimp.synthesis(actualJsonResponse, actualJsonResponse.scope);
-      // console.log("about to write the file name: " + "./actualHtml/" +testname+"html" + " actualHtml: " + actualHtml);
+      // var actualJsonResponse = jadeimp.parse(jadeCode, );
+      // var actualHtml = jadeimp.synthesis(actualJsonResponse, actualJsonResponse.scope);
+
+      console.log("calling the render function");
+      var actualHtml = jadeimp.render(jadeCode, {});
       fs.writeFileSync("./test/integration/actualHtml/"+testname+".html", actualHtml);
-      // fs.writeFileSync("./asd.html", actualHtml, function(err){ console.log("=================done writing to file ====================" + error);  });
-      // fs.writeFileSync("./actualHtml/" +testname+".html", actualHtml, function(err){ console.log("=================done writing to file ====================" + error);  });
       // checkHtml(expectedHtml, actualHtml);
       // checkHtml(expectedHtml, expectedHtml);
       done();
