@@ -20,7 +20,11 @@
     "chai": "^3.5.0"
   },
   "dependencies": {
+<<<<<<< HEAD
     "fs": "0.0.2",
+=======
+    "pug": "^0.1.0",
+>>>>>>> jadevsjadeimp
     "regex": "^0.1.1"
   }
 }

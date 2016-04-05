@@ -1,0 +1,12 @@
+doctype html
+html(lang="en")
+  head
+    title= "Jade vs JadeIMP"
+  body
+    - var lastname = "Malik"
+    h1 Jade
+      input(id="in" type="text" name='user[name]' value=name+" "+lastname)
+    p Your name is #{name} #{lastname}
+    div
+      | The generated HTML is completely static.
+      | There's no way to get the value of the text box and update the text (requires use of additional JavaScript code).
