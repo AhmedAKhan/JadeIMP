@@ -52,7 +52,8 @@ code:
 code/%.js: %.nw ./test/unit/%.nw
 	@echo "the < has the value of $<, the @ = $@ the gcflags=$(GCFlAGS)"
 	echo "$(debugPath)$*.nw"
-	$(GC) $(GCFlAGS)$*$(testname).nw $< $(debugPath)$*.nw > $@
+	# $(GC) $(GCFlAGS)$*$(testname).nw $< $(debugPath)$*.nw > $@
+	$(GC) $(GCFlAGS)$*$(testname).nw $(debugPath)$*.nw > $@
 
 
 
