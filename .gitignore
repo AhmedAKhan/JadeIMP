@@ -3,3 +3,7 @@ code/
 intDoc/
 doc/
 latexDoc/
+.DS_Store
+index.html
+run.sh
+testTree.json
