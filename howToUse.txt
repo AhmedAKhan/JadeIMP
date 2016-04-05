@@ -1,0 +1,58 @@
+
+INSTALL
+
+To install jadeimp do
+
+    git clone "https://github.com/AhmedAKhan/JadeIMP"
+    cd JadeIMP
+    npm install
+
+This code will install jade in th current folder, It is suggested that you install it in the node_module folder of the program.
+
+
+USAGE
+
+jadeimp.compile(source)
+
+- source   { String   } is the jadeimp code that you want to convert to html
+- scope    { object   } {optional} should have all the variables in the jade code that is defined
+- returns  { function } to generate the html from an object containing scope
+
+Compile some jade source to a function which can be rendered multiple times with different scope variables
+
+For example.
+
+var jadeimp = require('jadeimp'); 
+// if the module is stored in the node_modules folder or else place the path in the require
+
+// Compile a function, second parameter is optional
+var fn = jadeimp.compile('p. my name is $name');
+
+// Render the function
+var html = fn({"name":"ahmed"});
+// => '<p>my name is ahmed</p>'
+
+
+
+
+jadeimp.render(source, scope)
+- source   { String   } is the jadeimp code that you want to convert to html
+- scope    { object   } {optional} should have all the variables in the jade code that is defined
+- returns  { function } to generate the html from an object containing scope
+
+This function will take in the jadeimp code and return the string of the html
+
+Example
+
+var jadeimp = require('jadeimp'); 
+// if the module is stored in the node_modules folder or else place the path in the require
+
+// Compile a function, second parameter is optional
+var html = jadeimp.render('p. my name is $name', {"name":"ahmed"});
+// => '<p>my name is ahmed</p>'
+
+
+
+
+
+
