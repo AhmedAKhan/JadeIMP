@@ -15,6 +15,7 @@
           "statements":[
             {
               "type":"directive",
+              "attributes":[],
               "name":"p",
               "content":[
                 {
