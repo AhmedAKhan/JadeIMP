@@ -1,0 +1,102 @@
+
+Syntax Documentation
+
+vertical bar, to have text in jadeimp it can be followed by a vertical line. for example
+| hello my name is ahemd
+
+to make a directive would be as simple as the name of the directive
+p       --- will get converted to --->     <p>
+div     --- will get converted to --->     <div>
+h1      --- will get converted to --->     <ph1>
+
+combine text with directive 
+
+p
+    | hello my name is ahemd
+
+ <p>hello my name is ahmed</p>
+
+
+jadeimp also allows you to have variables in it. For example 
+
+p
+    | hello my name is $name
+
+now this name variable can be replaced in compile time with any name and the html will have the corresponding name.
+
+
+another way of having text in jade is like this
+
+p. hello my name is $name
+
+p.
+    hello my name is $name
+
+p. This is the first line
+    This is the second line
+    All the text after one indentation of the directive with a dot will be inside the directive
+
+
+
+Jadeimp lets you have if statements, like this
+
+p
+    | Hello User,
+    if $gender == "male"
+        | This survey is for women,
+        | could you help spread awareness for the problem by sharing this and sending it to your friends
+    else 
+        | I would like you to fill out this survay for women, It is to ....
+
+
+if the user is a male it will only print the top part of the if statement, if it is false it will display the bottom part of the text
+
+
+and lastly jadeimp allows you to have for loops, this is the syntax to do so
+
+for ( var i = 0; i < $users.length; i++ )
+    p. | $users.name
+
+this is a for loop that would generate the p directive the number of times that is inside the users arrays.
+for example if the scope is { "users":[{"name":"bob"}, {"name":"rob"}] }
+
+this would be the generated html
+
+<p>bob</p>
+<p>rob</p>
+
+
+
+
+
+
+
+
+
+
+
+
+the grammar
+
+i dont know how to like allow like n number of indents
+
+
+statement = for | directive | if | pipeText
+
+if = "("? [^;]* ";" [^;]* ";" [^;]* ")"? "\n" statement* ("else" "\n" )?
+for = "("? condition ")"? "\n" statement*
+directive = "directive" " "* + attributes? + "name" indent "\n" statement*
+
+attributes = ( "(" + attribute + "," + ")" )* attribute
+attribute  = indent " "* "=" " " ident
+
+pipeText = "| " [^\n]*
+
+pipelessText = .+
+
+indent = [\w-]+
+
+
+
+
+
