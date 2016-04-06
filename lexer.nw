@@ -165,6 +165,7 @@ function getTokenDirective(source){
   var token = {
     type : "directive",
     name: value,
+    isClosing:true,
     level: source.level,
     text : result[0]
   };
@@ -173,7 +174,15 @@ function getTokenDirective(source){
   // check for attributes
   print("going inside the attributes function");
   getTokenAttributes(source);
-  
+
+  result = /^!/.exec(source.text); // this will get the name of the variable
+  console.log("for directive " + value + " the result is " + result);
+  if(result){
+    console.log("inside the result");
+    token.isClosing = false;
+    adjustString(source, 1);
+  }
+
   print("just added the directive from the getTokenDirective");
   // found the variable, actually start converting it
   return true;
@@ -405,6 +414,7 @@ function getSimpleToken(source){
  * @return {void} nohing
  */
 function getError(source, errorString){
+  console.trace("got error, lexer: " + errorString);
   throw ("lexer: " + errorString);
 }
 

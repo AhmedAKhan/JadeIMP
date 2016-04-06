@@ -4,7 +4,7 @@ head
   h1.
     JadeIMP
   div
-    input(type="text", value="", bind="name")
+    input(type="text", value="", bind="name")!
   p.
     Your name is $name
   div.

@@ -43,10 +43,6 @@ this is the contextual analysis part
   needed for the variables. More information is available at --REF--.
 */
 function contextualAnalysis(syntaxTree, scope){
-  // finds variables and puts the ids in a list
-  // and used variables in a list
-
-  // and injects the class names
   syntaxTree.scope = extend({}, scope, syntaxTree.scope);
   return syntaxTree;
 }
@@ -76,7 +72,7 @@ function parse(sourceText, scope, debug){
   if(debug) console.log("got passed the lexical analysis tokensList: " + JSON.stringify(tokensList,null,2) + " \n\n");
   var ast = syntacticAnalysis(tokensList);
   if(debug){
-    console.log("tree: " + JSON.stringify(ast));
+    console.log("tree: " + JSON.stringify(ast, null, 2));
     console.log("tree[scope]: " + ast["scope"]);
   }
   return contextualAnalysis(ast, scope);
