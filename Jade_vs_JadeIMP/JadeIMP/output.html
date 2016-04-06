@@ -3,24 +3,31 @@
     <title>
       Jade vs JadeIMP
     </title>
-    <h1>
-      JadeIMP
-    </h1>
-    <div>
-      <input undefined="text" undefined="" undefined="name">
-    </div>
-    <p>
-      Your name is <span class="variable_name">Saim</span>
-    </p>
-    <div>
-      The generated HTML is still on the server side (same as Jade). But injecting certain scripts into the generated code allows the HTML to be manipulated on the client side.
-    </div>
     <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
 </head>
 <body>
+  <h1>
+    JadeIMP
+  </h1>
+  <div>
+    <input type="text" value="Saim" class="variable_in_name">
+  </div>
+  <p>
+    Your name is <span class="variable_name">Saim</span>
+  </p>
+  <div>
+    The HTML is generated on the server side (same as Jade). But injecting certain scripts into the generated code allows the HTML to be manipulated on the client side.
+  </div>
 
   <!-- This script is automatically generated to allow double binding -->
   <script type="text/javascript">
+    $(".variable_in_name").on("input", function() {
+      $(this).removeClass("variable_in_name");
+      var var_val = $(this).val();
+      $(".variable_name").text(var_val);
+      $(".variable_in_name").val(var_val);
+      $(this).addClass("variable_in_name");
+    });
   </script>
 </body>
 </html>

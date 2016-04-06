@@ -1,11 +1,11 @@
 head
   title.
     Jade vs JadeIMP
-  h1.
-    JadeIMP
-  div
-    input(type="text", value="", bind="name")!
-  p.
-    Your name is $name
-  div.
-    The generated HTML is still on the server side (same as Jade). But injecting certain scripts into the generated code allows the HTML to be manipulated on the client side.
+h1.
+  JadeIMP
+div
+  input(type="text", value="", bind="name")!
+p.
+  Your name is $name
+div.
+  The HTML is generated on the server side (same as Jade). But injecting certain scripts into the generated code allows the HTML to be manipulated on the client side.

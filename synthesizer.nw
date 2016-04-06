@@ -176,7 +176,7 @@ function readRawText(rawTextToken) {
 
 // Parses the readAttribute token
 function readAttribute(attributeToken) {
-  return attributeToken.parameter + "=\"" + attributeToken.value + "\"";
+  return attributeToken.attribute + "=\"" + attributeToken.value + "\"";
 }
 
 // Parses the if statement token
