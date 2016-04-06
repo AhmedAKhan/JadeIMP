@@ -9,3 +9,11 @@ p.
   Your name is $name
 div.
   The HTML is generated on the server side (same as Jade). But injecting certain scripts into the generated code allows the HTML to be manipulated on the client side.
+create block trueBlock
+  p.
+    TRUE TRUE TRUE
+create block falseBlock
+  p.
+    FALSE FALSE FALSE
+div.
+  block trueBlock
