@@ -3,8 +3,8 @@ head
     Jade vs JadeIMP
   h1.
     JadeIMP
-  div.
-    input(type="text" value="" bind="name")
+  div
+    input(type="text", value="", bind="name")
   p.
     Your name is $name
   div.
