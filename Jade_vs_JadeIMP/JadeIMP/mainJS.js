@@ -5,4 +5,5 @@ var scope = { "name":"Saim" };
 var fileContent = fs.readFileSync("./main.jadeimp", "utf8");
 var htmlResult = jadeimp.render(fileContent, scope);
 
-console.log(htmlResult);
+// console.log(htmlResult);
+fs.writeFileSync("./output.html", htmlResult);
