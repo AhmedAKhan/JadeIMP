@@ -139,6 +139,8 @@ function getTokenDot(source){
       source.tokens.push({"type":"outdent", "text":"", "indents":currentIndents, "level":source.level, "asd":"asdasdasdasd"});
       return true;
     }
+  }else{
+    getTokenEOL(source);
   }
    
   print("lexer - getTokenDot: 4. last, ");
@@ -498,7 +500,7 @@ function getTokenText(source, runContinously){
   if(runContinously === undefined) runContinously = true;
   // get current level
   var currentLevel = source.indentTokensStack.length;
-  print("inside the getTokenText currentLevel: " + currentLevel);
+  print("started the getTokenText currentLevel: " + currentLevel);
   var gotResult = false;
   
   do{
@@ -527,7 +529,7 @@ function getTokenText(source, runContinously){
     print("textToken: 5. isnew line : " + isNewLine);
   }while(runContinously)
 
-  print("inside text function going to return " + gotResult);
+  print("ended the get text function going to return " + gotResult);
   return gotResult;
 }
 
@@ -684,6 +686,7 @@ function nextToken(source){
   var tokenValidators = <<list of token validator functions>>
   var gotToken = false;
   var oldLineBegin = source.lineBegin;
+  print("nextToken: source.indentTokensStack.length = " + source.indentTokensStack.length + " text: " + source.text);
   for(var i = 0; i < tokenValidators.length; i++){
     print("going to try out tokenValidators[i]: " + tokenValidators[i].name);
     if(tokenValidators[i](source)){

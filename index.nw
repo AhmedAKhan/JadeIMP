@@ -116,9 +116,7 @@ this is the render part
  * @returns {function} to generate the html from an object containing scope
  */
 function render(jadeString, scope){
-  console.log("inside the render, going to call the jadeString");
   var syntaxTree = parse(jadeString);
-  console.log("calling extend, scope: " + JSON.stringify(scope) + " syntaxTree.scope: " + JSON.stringify(syntaxTree.scope));
   scope = extend({}, scope, syntaxTree.scope);
   var outputHtml = synthesis(syntaxTree, scope);
   return outputHtml;

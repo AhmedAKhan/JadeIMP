@@ -1,7 +1,8 @@
 var fs = require("fs");
-var jadeimp = require("../../code/index.js");
+var jadeimp = require("../../code/index");
 
 var scope = { "name":"Saim" };
-var htmlResult = jadeimp.render(fs.readFileSync("./main.jadeimp"), scope);
+var fileContent = fs.readFileSync("./main.jadeimp", "utf8");
+var htmlResult = jadeimp.render(fileContent, scope);
 
 console.log(htmlResult);

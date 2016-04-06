@@ -8,7 +8,10 @@ this is the part that will create stuff
 
 <<tree generator functions>>=
 /**/
-function getError(errString){ throw ("parser: " + errString); }
+function getError(errString){ 
+  console.trace("parser error: " + errString);
+  throw ("parser: " + errString); 
+}
 
 /**/
 function getAttributes(tokenStream){
