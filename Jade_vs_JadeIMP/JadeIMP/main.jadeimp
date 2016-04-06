@@ -15,5 +15,12 @@ create block trueBlock
 create block falseBlock
   p.
     FALSE FALSE FALSE
-div.
-  block trueBlock
+div
+  if ($name == "Ahmed")
+    block trueBlock
+  else
+    block falseBlock
+ul
+  for (var i = 0; i < 5; i++)
+    li.
+      $i
