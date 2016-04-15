@@ -1,20 +1,7 @@
 @
 
 
-What is Jade
-
-Jade is a high performance template engine heavily influenced by Haml and implemented with JavaScript for node and browsers. 
-
-
-Changes implemented to Jadeimp
-
-  
-
-Jadeimp vs Jade
-
-  
-
-Implementation
+\section{ Implementation}
 
 There are 6 phases of compilation. The six stages are lexical analysis, syntactic analysis, contextual analysis, intermediate code generation, code optimization and lastly code generation. The first three stages (lexical, syntactic, and contextual analyses) phases are called the analyzer, and the last three ( intermediate code generation, code optimization, and code generation ) are called the synthesis.
 
@@ -22,28 +9,34 @@ For the purposes of jadeimp, we are converting jadeimp code to html. For this ou
 
 This is a slight overview of what each file does in this project, to get additional information, go to the specefied file. 
 
-analyzer.nw 
+
+\subsection{ analyzer.nw}
   
   This file is responsible for handling the analysis phase for the compiler. The analyzer file takes in the jadeimp code and will output an abstract syntax tree representation of it. It does this by calling the lexer.nw and parser.nw files respectively. This file was created to help isolate the analysis portion of the code with the synthesizer. This will help keep the code abstract and if we decided to change the structure of how either of the files work we would have more control to do so because the only function the synthesizer can access about the analyzer is the parse function and the convert function. For more information go to the analyzer.pdf file.
 
-lexer.nw
+
+\subsection{ lexer.nw}
  
   This file does the lexical analysis, It will take in the jadeimp code and will output a sequence of symbols that is used for the syntactic analysis. This file has one public function which is just the module that it exports. That function will do the corresponding task. For more information go to the lexer.pdf
 
-parser.nw
+
+\subsection{ parser.nw}
 
   This file does the syntactic analysis phase for the compiler. This file has one public function which is just the module that it exports. This function will take in a sequence of symbols that are token in from the lexer file and will create an abstract syntax tree from those symbols. For more information please go to the parser.pdf
 
-synthesizer.nw
+
+\subsection{ synthesizer.nw}
   
   
 
-Testing
+\section{ Testing }
+
 
 For this project we had two types of testers, called integration testers and unit testers. 
 All the testing files were placed in a folder called test. Inside the test folder we have two folders called integration and unit tests for the appropriate testing. 
 
-Integration
+\section{ Integration }
+
 
 The integration test has a file called test.js and 3 folders called html, jadeimp, and tree. 
 Inside each folder we have sample files. the jadeimp folder has a set of files which have jadeimp code in them. In the tree folder we have files that have the abstract syntax tree representation of the jadeimp code. The html folder has the epected html output files from the given abstract syntax tree.
@@ -51,7 +44,8 @@ Inside each folder we have sample files. the jadeimp folder has a set of files w
 For example we have a file called basic\_directive1.jimp inside the jadeimp folder, basic\_directive1.json in the tree folder, and basic\_directive1.html in the html folder. We have a file called test.js. This javascript files takes all the files in the jadimp folder and runs the lexical analyzer on them to convert it to an abstract syntax tree. It will then compare the one formed from the code to the the one in the tree folder to check if it is the same. The next step will be to convert the abstract syntax tree to html by using the synthesizer. The test.js code will then compare the html that is generated from the synthesizer with the one inside the folder html and will throw an error if they are not the same.
 
 
-Unit
+\section{Unit}
+
 
 There is a folder called unit inside the test folder, inside the foldr we have noweb files with the extension nw. Those files are used as test files. Inside them we have a noweb tag called test. this allows us to properly test private functions without changing the structure of our code or making them public. In the makefile we have a variable called debug if it is equal to the string "test." It will compile the tag filename.test.nw, if the string is empty it will compile the tag filename.nw. This will allow the test cases to run when the debug flag is true, and will remove the test cases when they are false. 
 
@@ -79,7 +73,7 @@ var synthesizer = require('./synthesizer');
 
 @
 
-this i
+this part of the code will 
 
 <<parse>>=
 /*
