@@ -176,9 +176,7 @@ function getTokenDirective(source){
   getTokenAttributes(source);
 
   result = /^!/.exec(source.text); // this will get the name of the variable
-  console.log("for directive " + value + " the result is " + result);
   if(result){
-    console.log("inside the result");
     token.isClosing = false;
     adjustString(source, 1);
   }

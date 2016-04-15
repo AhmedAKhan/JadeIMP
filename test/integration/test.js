@@ -110,7 +110,6 @@ function testFile(filename){
       // var actualJsonResponse = jadeimp.parse(jadeCode, );
       // var actualHtml = jadeimp.synthesis(actualJsonResponse, actualJsonResponse.scope);
 
-      console.log("calling the render function");
       var actualHtml = jadeimp.render(jadeCode, {});
       fs.writeFileSync("./test/integration/actualHtml/"+testname+".html", actualHtml);
       // checkHtml(expectedHtml, actualHtml);
