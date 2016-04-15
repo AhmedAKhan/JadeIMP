@@ -1,6 +1,5 @@
 @
 
-
 \section{ Implementation}
 
 There are 6 phases of compilation. The six stages are lexical analysis, syntactic analysis, contextual analysis, intermediate code generation, code optimization and lastly code generation. The first three stages (lexical, syntactic, and contextual analyses) phases are called the analyzer, and the last three ( intermediate code generation, code optimization, and code generation ) are called the synthesis.
@@ -64,7 +63,7 @@ The API for jade
 
 @
 
-this has all the necessary import statements, For this we will need to import the analyzer and the synthesizer. 
+this has all the necessary import statements, For this we will need to import the analyzer and the synthesizer.
 
 <<import statements>>=
 var analyzer = require('./analyzer');
@@ -99,10 +98,10 @@ function synthesis(syntaxTree, scope){
 
 
 @
-this is the render part 
+this is the render part
 
 <<render>>=
-/* 
+/*
  * a function that will compile the jadeimp code to html, an example use for this function is given inside the howToUse
  *
  * @param {String} source is the jadeimp code that you want to convert to html
@@ -118,7 +117,7 @@ function render(jadeString, scope){
 
 /*
  * this function takes in an objects and will output the objects merged together
- * 
+ *
  * @param object target this function takes in any number of arguments that is an object
  * @return {object} an object that combines the objects given as inputs
 */
@@ -145,10 +144,10 @@ module.exports.synthesis = synthesis;
 module.exports.render = render; // will take in the jadeimp code and return the html as a string
 module.exports.compile = function(jadeimpString){
   var syntaxTree = parse(jadeString);
-  return function(scope){ 
+  return function(scope){
     scope = extend({}, scope, syntaxTree.scope);
     var outputHtml = synthesis(syntaxTree, syntaxTree.scope);
-    return render(jadeString, scope);  
+    return render(jadeString, scope);
   }
 }
 
