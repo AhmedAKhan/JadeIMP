@@ -122,7 +122,7 @@ clean: cleanDoc cleanCode
 
 ## run the testers
 rt: runTest
-runTest: 
+runTest: generateCode
 	-mocha
 	-mocha code/*.js
 
