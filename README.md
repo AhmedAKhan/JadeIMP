@@ -1,4 +1,5 @@
 # JadeIMP
+:target: https://travis-ci.org/AhmedAKhan/JadeIM://travis-ci.org/AhmedAKhan/JadeIMP
 
 NOTE: This program requires that you have node installed on the machine. If you don't, just type "brew install node" into the terminal.
 
