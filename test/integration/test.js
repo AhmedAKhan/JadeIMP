@@ -64,8 +64,6 @@ describe("testing the checkEqual function that is inside the tester", function()
 
   it("check with objects", function(done){ checkEqual({},{}); done (); });
   it("check with objects", function(done){ try{ checkEqual({},{'a':1}); }catch(e){ done (); }});
-
-  it("this is a test case that will fail just to check if travis is working", function(done){ throw("got some error to check if error detection works");  });
 });
 
 
