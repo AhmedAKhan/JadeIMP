@@ -121,8 +121,8 @@ clean: cleanDoc cleanCode
 
 
 ## run the testers
-rt: runTest
-runTest: 
+rt: generateCode runTest
+runTest:
 	-mocha
 	-mocha code/*.js
 
