@@ -123,8 +123,8 @@ clean: cleanDoc cleanCode
 ## run the testers
 rt: generateCode runTest
 runTest:
-	-mocha
-	-mocha code/*.js
+	-./node_modules/mocha/bin/mocha
+	-./node_modules/mocha/bin/mocha code/*.js
 
 
 
