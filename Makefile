@@ -126,7 +126,10 @@ runTest:
 	-./node_modules/mocha/bin/mocha
 	-./node_modules/mocha/bin/mocha code/*.js
 
-
+### this will run the tester but will stop at the first error that was thrown, used by travis-cli
+runTestTE:
+	./node_modules/mocha/bin/mocha
+	./node_modules/mocha/bin/mocha code/*.js
 
 
 
